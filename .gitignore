@@ -1,0 +1,11 @@
+*~
+*.bak
+*.kate-swp
+__pycache__
+*.pyc
+*.pyo
+*.xoj
+*.pdf
+
+twisted
+t3k
