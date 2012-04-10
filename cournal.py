@@ -17,7 +17,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import sys
+import sys, os
 
 from gi.repository import Gtk, Poppler, Gdk
 import cairo
@@ -119,8 +119,9 @@ class MyWindow(Gtk.Window):
         
         context.set_source_surface(self.backbuffer, 0, 0)
         context.paint()
-        
-document = Poppler.Document.new_from_file("file:///home/flyser/Ausgabe.pdf",
+
+
+document = Poppler.Document.new_from_file("file://" + os.path.abspath(sys.argv[1]),
                                           None)
 
 
