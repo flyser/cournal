@@ -53,6 +53,19 @@ class MyWindow(Gtk.Window):
         self.drawingarea.connect("button-press-event", self.press_drawingarea)
         self.drawingarea.connect("button-release-event", self.release_drawingarea)
         
+    def set_cursor(self):
+        width, height = 4, 4
+        
+        s = cairo.ImageSurface(cairo.FORMAT_A1, width, height)
+        context = cairo.Context(s)
+        context.set_source_rgb(0,0,0)
+        context.paint()
+        
+        cursor_pixbuf = Gdk.pixbuf_get_from_surface(s, 0, 0, width, height)
+        cursor = Gdk.Cursor.new_from_pixbuf(Gdk.Display.get_default(), \
+                                    cursor_pixbuf, 0, 0)
+        self.drawingarea.get_window().set_cursor(cursor)
+        
     def press_drawingarea(self, widget, event):
         if event.button != 1:
             return
@@ -133,4 +146,5 @@ pageWidth, pageHeight = page.get_size()
 window = MyWindow(title="Cournal")
 window.connect("delete-event", Gtk.main_quit)
 window.show_all()
+window.set_cursor()
 Gtk.main()
