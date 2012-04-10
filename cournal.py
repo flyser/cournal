@@ -62,8 +62,8 @@ class MyWindow(Gtk.Window):
         context.paint()
         
         cursor_pixbuf = Gdk.pixbuf_get_from_surface(s, 0, 0, width, height)
-        cursor = Gdk.Cursor.new_from_pixbuf(Gdk.Display.get_default(), \
-                                    cursor_pixbuf, 0, 0)
+        cursor = Gdk.Cursor.new_from_pixbuf(Gdk.Display.get_default(),
+                                            cursor_pixbuf, width/2, height/2)
         self.drawingarea.get_window().set_cursor(cursor)
         
     def press_drawingarea(self, widget, event):
