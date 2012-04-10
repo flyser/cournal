@@ -103,7 +103,6 @@ class MyWindow(Gtk.Window):
         update_rect.y = y-2
         update_rect.width = x2-x+4
         update_rect.height = y2-y+4
-        print("LOL: " + str((update_rect.x, update_rect.y, update_rect.width, update_rect.height)))
         widget.get_window().invalidate_rect(update_rect, False)
 
         self.lastpoint = [event.x, event.y]
