@@ -44,6 +44,7 @@ and probably a band-aid networking layer till infinote support is in place.
  * Python 3.x
  * Poppler 0.18 or newer
  * GObject Introspection
+ * ZopeInterface
  * GTK+ 3.x
 
 ## Usage ##
