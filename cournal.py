@@ -27,9 +27,10 @@ from gi.repository import Gtk, Poppler, Gdk
 import cairo
 
 class Page():
-    def __init__(self, document, page):
+    def __init__(self, document, page, number):
         self.document = document
         self.pdf = page
+        self.number = number
         self.width, self.height = page.get_size()
 
         self.strokes = list()
@@ -40,13 +41,15 @@ class Document():
                                                   None)
         self.pages = list()
         for i in range(self.pdf.get_n_pages()):
-            page = Page(self, self.pdf.get_page(i))
+            page = Page(self, self.pdf.get_page(i), i)
             self.pages.append(page)
         print("The document has " + str(len(self.pages)) + " pages")
 
+
 class MyDrawingArea(Gtk.DrawingArea):
-    def __init__(self, **args):
+    def __init__(self, page, **args):
         Gtk.DrawingArea.__init__(self, **args)
+        self.page = page
         self.backbuffer = None
         self.lastpoint = None
 
@@ -63,7 +66,10 @@ class MyDrawingArea(Gtk.DrawingArea):
         self.connect("motion_notify_event", self.motion)
         self.connect("button-press-event", self.press)
         self.connect("button-release-event", self.release)
-    
+            
+    def test(self):
+        print("lol")
+
     def press(self, widget, event):
         if event.button != 1:
             return
@@ -71,8 +77,8 @@ class MyDrawingArea(Gtk.DrawingArea):
         actualWidth = widget.get_allocation().width
         
         self.lastpoint = [event.x, event.y]
-        print(currentPage.width, "x", currentPage.height)
-        currentPage.strokes.append([event.x*currentPage.width/actualWidth, event.y*currentPage.width/actualWidth])
+        print(self.page.width, "x", self.page.height)
+        self.page.strokes.append([event.x*self.page.width/actualWidth, event.y*self.page.width/actualWidth])
         
     def release(self, widget, event):
         if self.lastpoint is None:
@@ -81,7 +87,7 @@ class MyDrawingArea(Gtk.DrawingArea):
             return
         #print("Release " + str((event.x,event.y)))
         
-        print(currentPage.strokes)
+        print(self.page.strokes)
         
         self.lastpoint = None
         
@@ -110,7 +116,7 @@ class MyDrawingArea(Gtk.DrawingArea):
         widget.get_window().invalidate_rect(update_rect, False)
 
         self.lastpoint = [event.x, event.y]
-        currentPage.strokes[-1].extend([event.x*currentPage.width/actualWidth, event.y*currentPage.width/actualWidth])
+        self.page.strokes[-1].extend([event.x*self.page.width/actualWidth, event.y*self.page.width/actualWidth])
         
     def set_cursor(self, widget):
         width, height = 4, 4
@@ -126,13 +132,14 @@ class MyDrawingArea(Gtk.DrawingArea):
         self.get_window().set_cursor(cursor)
 
     def configure(self, widget, event):
-        #print("Configure " + str((event.width, event.height)))
+        print("Configure " + str(self.page.number) + ": " + str((event.width, event.height)))
+        print(self.get_visible())
         actualWidth = widget.get_allocation().width
         actualHeight = widget.get_allocation().height
-        factor = actualWidth / currentPage.width
+        factor = actualWidth / self.page.width
         self.backbuffer = widget.get_window().create_similar_surface(cairo.CONTENT_COLOR,
                                                                      actualWidth,
-                                                                     currentPage.height*factor)
+                                                                     self.page.height*factor)
         context = cairo.Context(self.backbuffer)
 
         # Fill buffer with white
@@ -140,20 +147,20 @@ class MyDrawingArea(Gtk.DrawingArea):
         context.paint()
         context.scale(factor,factor)
         # Render PDF
-        currentPage.pdf.render(context)
+        self.page.pdf.render(context)
         
         # Render all strokes again
         context.set_antialias(cairo.ANTIALIAS_GRAY)
         context.set_line_cap(cairo.LINE_CAP_ROUND)
         context.set_source_rgb(0,0,0.4)
-        for stroke in currentPage.strokes:
+        for stroke in self.page.strokes:
             context.move_to(stroke[0], stroke[1])
             for i in range(int(len(stroke)/2)-1):
                 context.line_to(stroke[2*i+2], stroke[2*i+3])
             context.stroke()
         
     def draw(self, widget, context):
-        #print("Draw")
+        print("Draw")
         # you can ignore the width=100 here. it has no effect
         self.set_size_request(width=100, height=self.backbuffer.get_height())
         self.drawingareaContext = context
@@ -164,6 +171,7 @@ class MyDrawingArea(Gtk.DrawingArea):
 class MyWindow(Gtk.Window):
     def __init__(self, **args):
         Gtk.Window.__init__(self, **args)
+        self.drawingareas = list()
         self.set_default_size(width=700, height=800)
         
         # Bob the builder
@@ -174,17 +182,16 @@ class MyWindow(Gtk.Window):
         # Give interesting widgets names:
         self.viewport = Gtk.VBox()
         builder.get_object("viewport").add(self.viewport)
-        self.drawingarea = MyDrawingArea()
+        for page in document.pages:
+            self.drawingareas.append(MyDrawingArea(page))
+            self.viewport.add(self.drawingareas[-1])
         self.foobar = Gtk.Button()
-        self.viewport.add(self.drawingarea)
         self.viewport.add(self.foobar)
         
         
 document = Document(sys.argv[1])
-currentPage = document.pages[0]
 
 window = MyWindow(title="Cournal")
 window.connect("delete-event", Gtk.main_quit)
 window.show_all()
-#window.set_cursor()
 Gtk.main()
