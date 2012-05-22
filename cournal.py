@@ -19,8 +19,29 @@
 
 import sys, os
 
+from twisted.internet import gtk3reactor
+gtk3reactor.install()
+from twisted.internet import reactor
+
 from gi.repository import Gtk, Poppler, Gdk
 import cairo
+
+class Page():
+    def __init__(self, page):
+        self.pdf = page
+        self.width, self.height = page.get_size()
+
+        self.strokes = list()
+
+class Document():
+    def __init__(self, filename):
+        self.pdf = Poppler.Document.new_from_file("file://" + os.path.abspath(filename),
+                                                  None)
+        self.pages = list()
+        for i in range(self.pdf.get_n_pages()):
+            page = Page(self.pdf.get_page(i))
+            self.pages.append(page)
+        print("The document has " + str(len(self.pages)) + " pages")
 
 class MyWindow(Gtk.Window):
     def __init__(self, **args):
@@ -70,8 +91,11 @@ class MyWindow(Gtk.Window):
         if event.button != 1:
             return
         #print("Press " + str((event.x,event.y)))
-
+        actualWidth = widget.get_allocation().width
+        
         self.lastpoint = [event.x, event.y]
+        print(currentPage.width, "x", currentPage.height)
+        currentPage.strokes.append([event.x*currentPage.width/actualWidth, event.y*currentPage.width/actualWidth])
         
     def release_drawingarea(self, widget, event):
         if self.lastpoint is None:
@@ -80,12 +104,15 @@ class MyWindow(Gtk.Window):
             return
         #print("Release " + str((event.x,event.y)))
         
+        print(currentPage.strokes)
+        
         self.lastpoint = None
         
     def motion_drawingarea(self, widget, event):
         if self.lastpoint is None:
             return
         #print("\rMotion "+str((event.x,event.y))+"  ", end="")
+        actualWidth = widget.get_allocation().width
         
         context = cairo.Context(self.backbuffer)
         #context.set_line_width(80)
@@ -106,22 +133,34 @@ class MyWindow(Gtk.Window):
         widget.get_window().invalidate_rect(update_rect, False)
 
         self.lastpoint = [event.x, event.y]
+        currentPage.strokes[-1].extend([event.x*currentPage.width/actualWidth, event.y*currentPage.width/actualWidth])
         
     def configure_drawingarea(self, widget, event):
         #print("Configure " + str((event.width, event.height)))
         actualWidth = widget.get_allocation().width
         actualHeight = widget.get_allocation().height
-        factor = actualWidth / pageWidth
+        factor = actualWidth / currentPage.width
         self.backbuffer = widget.get_window().create_similar_surface(cairo.CONTENT_COLOR,
                                                                      actualWidth,
-                                                                     pageHeight*factor)
+                                                                     currentPage.height*factor)
         context = cairo.Context(self.backbuffer)
 
-        # 'context' is a Cairo Context
+        # Fill buffer with white
         context.set_source_rgb(1,1,1)
         context.paint()
         context.scale(factor,factor)
-        page.render(context)
+        # Render PDF
+        currentPage.pdf.render(context)
+        
+        # Render all strokes again
+        context.set_antialias(cairo.ANTIALIAS_GRAY)
+        context.set_line_cap(cairo.LINE_CAP_ROUND)
+        context.set_source_rgb(0,0,0.4)
+        for stroke in currentPage.strokes:
+            context.move_to(stroke[0], stroke[1])
+            for i in range(int(len(stroke)/2)-1):
+                context.line_to(stroke[2*i+2], stroke[2*i+3])
+            context.stroke()
         
     def draw_drawingarea(self, widget, context):
         #print("Draw")
@@ -133,14 +172,8 @@ class MyWindow(Gtk.Window):
         context.paint()
 
 
-document = Poppler.Document.new_from_file("file://" + os.path.abspath(sys.argv[1]),
-                                          None)
-
-
-
-page = document.get_page(0)
-pageWidth, pageHeight = page.get_size()
-
+document = Document(sys.argv[1])
+currentPage = document.pages[0]
 
 window = MyWindow(title="Cournal")
 window.connect("delete-event", Gtk.main_quit)
