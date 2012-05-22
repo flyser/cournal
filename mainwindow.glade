@@ -200,10 +200,7 @@
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <child>
-              <object class="GtkDrawingArea" id="drawingarea">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-              </object>
+              <placeholder/>
             </child>
           </object>
         </child>
