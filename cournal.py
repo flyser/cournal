@@ -59,6 +59,7 @@ class MyDrawingArea(Gtk.DrawingArea):
                         Gdk.EventMask.BUTTON_RELEASE_MASK |
                         Gdk.EventMask.POINTER_MOTION_MASK)
 #                       Gdk.EventMask.POINTER_MOTION_HINT_MASK)
+        self.set_redraw_on_allocate(False)
         
         self.connect("draw", self.draw)
         self.connect("configure_event", self.configure)
@@ -132,8 +133,7 @@ class MyDrawingArea(Gtk.DrawingArea):
         self.get_window().set_cursor(cursor)
 
     def configure(self, widget, event):
-        print("Configure " + str(self.page.number) + ": " + str((event.width, event.height)))
-        print(self.get_visible())
+        print("Da: Configure " + str(self.page.number) + ": " + str((event.width, event.height)))
         actualWidth = widget.get_allocation().width
         actualHeight = widget.get_allocation().height
         factor = actualWidth / self.page.width
@@ -160,18 +160,47 @@ class MyDrawingArea(Gtk.DrawingArea):
             context.stroke()
         
     def draw(self, widget, context):
-        print("Draw")
-        # you can ignore the width=100 here. it has no effect
-        self.set_size_request(width=100, height=self.backbuffer.get_height())
+        print("Da: Draw " + str(self.page.number))
+        self.set_size_request(width=widget.get_parent().get_allocation().width,
+                              height=self.backbuffer.get_height())
         self.drawingareaContext = context
         
         context.set_source_surface(self.backbuffer, 0, 0)
         context.paint()
 
+class MyLayout(Gtk.Layout):
+    def __init__(self, document, **args):
+        Gtk.Layout.__init__(self, **args)
+        self.document = document
+        doc_width = 0
+        doc_height = 0
+        
+        for page in self.document.pages:
+            doc_width = max(doc_width, page.width)
+            doc_height += page.height
+        self.put(MyDrawingArea(self.document.pages[0]), 0, 0)
+        self.aspect_ratio = doc_height / doc_width
+        
+        self.set_double_buffered(False)
+        self.set_redraw_on_allocate(False)
+
+        self.connect("draw", self.draw)
+        self.connect("size-allocate", self.on_size_allocate)
+        
+    def on_size_allocate(self, widget, allocation):
+        new_width = allocation.width
+        new_height = allocation.height*self.aspect_ratio
+        old_width, old_height = self.get_size()
+        if old_width != new_width:
+            self.set_size(new_width, new_height)
+            print("Ly: resize")
+        
+    def draw(self, widget, context):
+        print("Ly: draw")
+
 class MyWindow(Gtk.Window):
     def __init__(self, **args):
         Gtk.Window.__init__(self, **args)
-        self.drawingareas = list()
         self.set_default_size(width=700, height=800)
         
         # Bob the builder
@@ -180,14 +209,10 @@ class MyWindow(Gtk.Window):
         self.add(builder.get_object("outer_box"))
         
         # Give interesting widgets names:
-        self.viewport = Gtk.VBox()
-        builder.get_object("viewport").add(self.viewport)
-        for page in document.pages:
-            self.drawingareas.append(MyDrawingArea(page))
-            self.viewport.add(self.drawingareas[-1])
-        self.foobar = Gtk.Button()
-        self.viewport.add(self.foobar)
+        self.layout = MyLayout(document)
+        builder.get_object("scrolledwindow").add(self.layout)
         
+
         
 document = Document(sys.argv[1])
 
