@@ -17,22 +17,22 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import sys
-
 from gi.repository import Gtk
-from twisted.internet import gtk3reactor
-gtk3reactor.install()
-from twisted.internet import reactor
 
-from cournal import Document, MainWindow
+from .viewer import Layout
 
-def main():
-    document = Document(sys.argv[1])
-    
-    window = MainWindow(document, title="Cournal")
-    window.connect("delete-event", Gtk.main_quit)
-    window.show_all()
-    Gtk.main()
-    
-if __name__ == "__main__":
-    sys.exit(main())
+class MainWindow(Gtk.Window):
+    def __init__(self, document, **args):
+        Gtk.Window.__init__(self, **args)
+        self.document = document
+        
+        self.set_default_size(width=500, height=700)
+        
+        # Bob the builder
+        builder = Gtk.Builder()
+        builder.add_from_file("mainwindow.glade")
+        self.add(builder.get_object("outer_box"))
+        
+        # Give interesting widgets names:
+        self.layout = Layout(self.document)
+        builder.get_object("scrolledwindow").add(self.layout)

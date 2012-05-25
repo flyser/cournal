@@ -17,22 +17,17 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import sys
+import os
+from gi.repository import Poppler
 
-from gi.repository import Gtk
-from twisted.internet import gtk3reactor
-gtk3reactor.install()
-from twisted.internet import reactor
+from . import Page
 
-from cournal import Document, MainWindow
-
-def main():
-    document = Document(sys.argv[1])
-    
-    window = MainWindow(document, title="Cournal")
-    window.connect("delete-event", Gtk.main_quit)
-    window.show_all()
-    Gtk.main()
-    
-if __name__ == "__main__":
-    sys.exit(main())
+class Document:
+    def __init__(self, filename):
+        self.pdf = Poppler.Document.new_from_file("file://" + os.path.abspath(filename),
+                                                  None)
+        self.pages = list()
+        for i in range(self.pdf.get_n_pages()):
+            page = Page(self, self.pdf.get_page(i), i)
+            self.pages.append(page)
+        print("The document has " + str(len(self.pages)) + " pages")

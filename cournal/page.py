@@ -17,22 +17,11 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import sys
+class Page:
+    def __init__(self, document, page, number):
+        self.document = document
+        self.pdf = page
+        self.number = number
+        self.width, self.height = page.get_size()
 
-from gi.repository import Gtk
-from twisted.internet import gtk3reactor
-gtk3reactor.install()
-from twisted.internet import reactor
-
-from cournal import Document, MainWindow
-
-def main():
-    document = Document(sys.argv[1])
-    
-    window = MainWindow(document, title="Cournal")
-    window.connect("delete-event", Gtk.main_quit)
-    window.show_all()
-    Gtk.main()
-    
-if __name__ == "__main__":
-    sys.exit(main())
+        self.strokes = []
