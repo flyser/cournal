@@ -230,7 +230,7 @@ class MyLayout(Gtk.Layout):
 class MyWindow(Gtk.Window):
     def __init__(self, **args):
         Gtk.Window.__init__(self, **args)
-        self.set_default_size(width=500, height=200)
+        self.set_default_size(width=500, height=700)
         
         # Bob the builder
         builder = Gtk.Builder()
