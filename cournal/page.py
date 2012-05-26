@@ -22,6 +22,6 @@ class Page:
         self.document = document
         self.pdf = page
         self.number = number
+        
         self.width, self.height = page.get_size()
-
         self.strokes = []

@@ -33,6 +33,6 @@ class MainWindow(Gtk.Window):
         builder.add_from_file("mainwindow.glade")
         self.add(builder.get_object("outer_box"))
         
-        # Give interesting widgets names:
+        # Initialize the main pdf viewer layout
         self.layout = Layout(self.document)
         builder.get_object("scrolledwindow").add(self.layout)

@@ -24,10 +24,17 @@ from . import Page
 
 class Document:
     def __init__(self, filename):
-        self.pdf = Poppler.Document.new_from_file("file://" + os.path.abspath(filename),
-                                                  None)
-        self.pages = list()
+        self.pdf = Poppler.Document.new_from_file("file://" + os.path.abspath(filename), None)
+        self.width = 0
+        self.height = 0
+        self.pages = []
+
+        
         for i in range(self.pdf.get_n_pages()):
             page = Page(self, self.pdf.get_page(i), i)
             self.pages.append(page)
+            
+            self.width = max(self.width, page.width)
+            self.height += page.height
+
         print("The document has " + str(len(self.pages)) + " pages")

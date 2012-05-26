@@ -37,9 +37,9 @@ class PageWidget(Gtk.DrawingArea):
                         Gdk.EventMask.POINTER_MOTION_MASK)
 #                       Gdk.EventMask.POINTER_MOTION_HINT_MASK)
 
-        self.connect("draw", self.draw)
-        self.connect("size-allocate", self.on_size_allocate)
         self.connect("realize", self.set_cursor)
+        self.connect("size-allocate", self.on_size_allocate)
+        self.connect("draw", self.draw)
         self.connect("motion_notify_event", self.motion)
         self.connect("button-press-event", self.press)
         self.connect("button-release-event", self.release)
@@ -61,19 +61,19 @@ class PageWidget(Gtk.DrawingArea):
         return Gtk.SizeRequestMode.HEIGHT_FOR_WIDTH
     
     def do_get_preferred_height_for_width(self, width):
-        print("get_preferred_height_for_width(", width, ")")
+        #print("get_preferred_height_for_width(", width, ")")
         page_height = self.page.height
         page_width = self.page.width
         return (width*page_height/page_width, width*page_height/page_width)
 
     def on_size_allocate(self, widget, alloc):
-        print("size_allocate", alloc.width, alloc.height)
+        #print("size_allocate", alloc.width, alloc.height)
         self.set_allocation(alloc)
         self.widget_width = alloc.width
         self.widget_height = alloc.height
     
     def draw(self, widget, context):
-        print("draw")
+        #print("draw")
         
         factor = self.widget_width / self.page.width
         
@@ -110,20 +110,8 @@ class PageWidget(Gtk.DrawingArea):
         actualWidth = widget.get_allocation().width
         
         self.lastpoint = [event.x, event.y]
-        print(self.page.width, "x", self.page.height)
         self.page.strokes.append([event.x*self.page.width/actualWidth, event.y*self.page.width/actualWidth])
-        
-    def release(self, widget, event):
-        if self.lastpoint is None:
-            return
-        if event.button != 1:
-            return
-        #print("Release " + str((event.x,event.y)))
-        
-        print(self.page.strokes)
-        
-        self.lastpoint = None
-        
+            
     def motion(self, widget, event):
         if self.lastpoint is None:
             return
@@ -150,3 +138,9 @@ class PageWidget(Gtk.DrawingArea):
 
         self.lastpoint = [event.x, event.y]
         self.page.strokes[-1].extend([event.x*self.page.width/actualWidth, event.y*self.page.width/actualWidth])
+    
+    def release(self, widget, event):
+        if event.button != 1 or self.lastpoint is None:
+            return
+        
+        self.lastpoint = None
