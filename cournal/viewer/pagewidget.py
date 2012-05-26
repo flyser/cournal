@@ -25,10 +25,13 @@ class PageWidget(Gtk.DrawingArea):
         Gtk.DrawingArea.__init__(self, **args)
         
         self.page = page
+        page.add_newdata_callback(self.draw_remote_stroke)
+        
         self.widget_width = 1
         self.widget_height = 1
         self.backbuffer = None
         self.lastpoint = None
+        self.current_stroke = None
 
         self.set_double_buffered(False)
         self.set_redraw_on_allocate(False)
@@ -110,8 +113,9 @@ class PageWidget(Gtk.DrawingArea):
         actualWidth = widget.get_allocation().width
         
         self.lastpoint = [event.x, event.y]
-        self.page.strokes.append([event.x*self.page.width/actualWidth, event.y*self.page.width/actualWidth])
-            
+        self.current_stroke = [event.x*self.page.width/actualWidth, event.y*self.page.width/actualWidth]
+        self.page.strokes.append(self.current_stroke)
+    
     def motion(self, widget, event):
         if self.lastpoint is None:
             return
@@ -124,7 +128,7 @@ class PageWidget(Gtk.DrawingArea):
         context.set_line_cap(cairo.LINE_CAP_ROUND)
         context.move_to(self.lastpoint[0], self.lastpoint[1])
         
-        context.set_source_rgb(0,0,0.4)
+        context.set_source_rgb(0, 0, 0.4)
         context.line_to(event.x, event.y)
         x, y, x2, y2 = context.stroke_extents()
         context.stroke()
@@ -137,10 +141,36 @@ class PageWidget(Gtk.DrawingArea):
         widget.get_window().invalidate_rect(update_rect, False)
 
         self.lastpoint = [event.x, event.y]
-        self.page.strokes[-1].extend([event.x*self.page.width/actualWidth, event.y*self.page.width/actualWidth])
+        self.current_stroke.extend([event.x*self.page.width/actualWidth, event.y*self.page.width/actualWidth])
     
     def release(self, widget, event):
         if event.button != 1 or self.lastpoint is None:
             return
         
+        self.page.document.network.local_new_stroke(self.page.number, self.current_stroke)
+        
         self.lastpoint = None
+        self.current_stroke = None
+   
+    def draw_remote_stroke(self, stroke):
+        if self.backbuffer:
+            context = cairo.Context(self.backbuffer)
+            context.set_antialias(cairo.ANTIALIAS_GRAY)
+            context.set_line_cap(cairo.LINE_CAP_ROUND)
+            context.set_source_rgb(0,0,0.4)
+            
+            factor = self.widget_width / self.page.width
+            context.scale(factor,factor)
+            
+            context.move_to(stroke[0], stroke[1])
+            for i in range(int(len(stroke)/2)-1):
+                context.line_to(stroke[2*i+2], stroke[2*i+3])
+            x, y, x2, y2 = tuple([a*factor for a in context.stroke_extents()])
+            context.stroke()
+            
+            update_rect = Gdk.Rectangle()
+            update_rect.x = x-2
+            update_rect.y = y-2
+            update_rect.width = x2-x+4
+            update_rect.height = y2-y+4
+            self.get_window().invalidate_rect(update_rect, False)

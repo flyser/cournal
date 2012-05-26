@@ -23,12 +23,14 @@ from gi.repository import Poppler
 from . import Page
 
 class Document:
-    def __init__(self, filename):
+    def __init__(self, filename, network):
         self.pdf = Poppler.Document.new_from_file("file://" + os.path.abspath(filename), None)
+        self.network = network
         self.width = 0
         self.height = 0
         self.pages = []
-
+        
+        network.set_document(self)
         
         for i in range(self.pdf.get_n_pages()):
             page = Page(self, self.pdf.get_page(i), i)

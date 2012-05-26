@@ -24,15 +24,18 @@ from twisted.internet import gtk3reactor
 gtk3reactor.install()
 from twisted.internet import reactor
 
-from cournal import Document, MainWindow
+from cournal import Document, MainWindow, Network
 
 def main():
-    document = Document(sys.argv[1])
+    network = Network()
+    document = Document(sys.argv[1], network)
+    network.connect()
     
     window = MainWindow(document, title="Cournal")
-    window.connect("delete-event", Gtk.main_quit)
+    window.connect("destroy", lambda _: reactor.stop())
     window.show_all()
-    Gtk.main()
+
+    reactor.run() # aka Gtk.main()
     
 if __name__ == "__main__":
     sys.exit(main())

@@ -22,6 +22,15 @@ class Page:
         self.document = document
         self.pdf = page
         self.number = number
+        self.newdata_callback = []
         
         self.width, self.height = page.get_size()
         self.strokes = []
+        
+    def add_newdata_callback(self, callback):
+        self.newdata_callback.append(callback)
+       
+    def somecallback(self, stroke):
+        for callback in self.newdata_callback:
+            callback(stroke)
+       
