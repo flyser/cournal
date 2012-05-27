@@ -20,7 +20,6 @@
 from gi.repository import Gtk
 
 from .viewer import Layout
-from .xojfilewriter import save_xoj_file
 
 class MainWindow(Gtk.Window):
     def __init__(self, document, **args):
@@ -38,11 +37,14 @@ class MainWindow(Gtk.Window):
         self.layout = Layout(self.document)
         builder.get_object("scrolledwindow").add(self.layout)
         
-        # Save button:
+        # Menu Bar:
         self.savebutton = builder.get_object("imagemenuitem_save")
-        self.savebutton.connect("activate", self.on_savebutton_click)
+        self.exportbutton = builder.get_object("imagemenuitem_export_pdf")
         
-    def on_savebutton_click(self, menuitem):
+        self.savebutton.connect("activate", self.on_save_click)
+        self.exportbutton.connect("activate", self.on_export_click)
+        
+    def on_save_click(self, menuitem):
         dialog = Gtk.FileChooserDialog("Save File", self, Gtk.FileChooserAction.SAVE,
                                        (Gtk.STOCK_SAVE, Gtk.ResponseType.ACCEPT,
                                         Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL))
@@ -50,10 +52,17 @@ class MainWindow(Gtk.Window):
         
         if dialog.run() == Gtk.ResponseType.ACCEPT:
             filename = dialog.get_filename()
-            print("Saving to:", filename)
-            save_xoj_file(self.document, filename)
-        else:
-            print("Not saving :-(")
+            self.document.save_xoj_file(filename)
         dialog.destroy()
 
+    def on_export_click(self, menuitem):
+        dialog = Gtk.FileChooserDialog("Export PDF", self, Gtk.FileChooserAction.SAVE,
+                                       (Gtk.STOCK_SAVE, Gtk.ResponseType.ACCEPT,
+                                        Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL))
+        dialog.set_current_name("annotated_document.pdf")
+        
+        if dialog.run() == Gtk.ResponseType.ACCEPT:
+            filename = dialog.get_filename()
+            self.document.export_pdf(filename)
+        dialog.destroy()
         
