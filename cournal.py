@@ -19,7 +19,6 @@
 
 import sys
 
-from gi.repository import Gtk
 from twisted.internet import gtk3reactor
 gtk3reactor.install()
 from twisted.internet import reactor
