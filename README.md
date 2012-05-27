@@ -2,7 +2,7 @@ Cournal is a collaborative note taking and journal application using a stylus
 
 ## Why? ##
 
-I needed something to allow collaborative annotation of PDF files, Cournal is
+I need something to allow collaborative annotation of PDF files, Cournal is
 therefore heavily inspired by [Xournal](http://xournal.sf.net/) (note taking)
 and [Gobby](http://gobby.0x539.de/) (collaboration).
 
@@ -17,7 +17,7 @@ But there is a lot to do, before this will work.
 
 ## Does it work yet ##
 
-No. See next section ;-)
+Yes, in a very crude, barely usable form. Expect more soon :-)
 
 ## How to help ##
 
@@ -32,12 +32,12 @@ Another point on the TODO list is to make GObject Introspection work in
 infinote/libinfinity to get python bindings for free.
 See <https://live.gnome.org/GObjectIntrospection>
 
-The Client side basicly comes down to PDF rendering with
+The Client side basically comes down to PDF rendering with
 [poppler](http://people.freedesktop.org/~ajohnson/docs/poppler-glib/),
 drawing with [cairo](http://cairographics.org/documentation/pycairo/3/),
 saving and loading Xournal files with the XML library of your choice (likely
 [ElementTree](http://docs.python.org/library/xml.etree.elementtree.html))
-and probably a band-aid networking layer till infinote support is in place.
+and the band-aid networking layer till infinote support is in place.
 
 ## Dependencies ##
 
@@ -46,6 +46,7 @@ and probably a band-aid networking layer till infinote support is in place.
  * GObject Introspection
  * ZopeInterface
  * GTK+ 3.x
+ * Twisted for python3 (download script: download-twisted.sh)
 
 ## Usage ##
 
