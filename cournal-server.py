@@ -94,10 +94,9 @@ class Document(pb.Viewable):
     
     def view_new_stroke(self, from_user, pagenum, stroke):
         """
-        Broadcast the stroke received from one to all other clients and return
-        a unique stroke ID to the client for further reference
+        Broadcast the stroke received from one to all other clients
 
-        Called by clients when a new stroke begins.
+        Called by clients to add a new stroek.
         """
         while len(self.pages) <= pagenum:
             self.pages.append(Page())
