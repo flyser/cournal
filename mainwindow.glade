@@ -41,7 +41,7 @@
                   </object>
                 </child>
                 <child>
-                  <object class="GtkImageMenuItem" id="imagemenuitem3">
+                  <object class="GtkImageMenuItem" id="imagemenuitem_save">
                     <property name="label">gtk-save</property>
                     <property name="use_action_appearance">False</property>
                     <property name="visible">True</property>

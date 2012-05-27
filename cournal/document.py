@@ -24,7 +24,8 @@ from . import Page
 
 class Document:
     def __init__(self, filename, network):
-        self.pdf = Poppler.Document.new_from_file("file://" + os.path.abspath(filename), None)
+        self.filename = os.path.abspath(filename)
+        self.pdf = Poppler.Document.new_from_file("file://" + self.filename, None)
         self.network = network
         self.width = 0
         self.height = 0

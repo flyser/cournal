@@ -20,6 +20,7 @@
 from gi.repository import Gtk
 
 from .viewer import Layout
+from .xojfilewriter import save_xoj_file
 
 class MainWindow(Gtk.Window):
     def __init__(self, document, **args):
@@ -36,3 +37,23 @@ class MainWindow(Gtk.Window):
         # Initialize the main pdf viewer layout
         self.layout = Layout(self.document)
         builder.get_object("scrolledwindow").add(self.layout)
+        
+        # Save button:
+        self.savebutton = builder.get_object("imagemenuitem_save")
+        self.savebutton.connect("activate", self.on_savebutton_click)
+        
+    def on_savebutton_click(self, menuitem):
+        dialog = Gtk.FileChooserDialog("Save File", self, Gtk.FileChooserAction.SAVE,
+                                       (Gtk.STOCK_SAVE, Gtk.ResponseType.ACCEPT,
+                                        Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL))
+        dialog.set_current_name("document.xoj")
+        
+        if dialog.run() == Gtk.ResponseType.ACCEPT:
+            filename = dialog.get_filename()
+            print("Saving to:", filename)
+            save_xoj_file(self.document, filename)
+        else:
+            print("Not saving :-(")
+        dialog.destroy()
+
+        
