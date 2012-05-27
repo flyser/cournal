@@ -20,20 +20,20 @@
 from gi.repository import Gtk, Gdk
 import cairo
 
-from .tools import pen
+from .tools import pen, eraser
 
 class PageWidget(Gtk.DrawingArea):
     def __init__(self, page, **args):
         Gtk.DrawingArea.__init__(self, **args)
         
         self.page = page
-        page.add_newdata_callback(self.draw_remote_stroke)
+        page.add_new_stroke_callback(self.draw_remote_stroke)
+        page.add_delete_stroke_callback(self.delete_remote_stroke)
         
         self.widget_width = 1
         self.widget_height = 1
         self.backbuffer = None
-        self.lastpoint = None
-        self.current_stroke = None
+        self.active_tool = None
 
         self.set_double_buffered(False)
         self.set_redraw_on_allocate(False)
@@ -111,15 +111,22 @@ class PageWidget(Gtk.DrawingArea):
     def press(self, widget, event):
         #print("Press " + str((event.x,event.y)))
         if event.button == 1:
-            pen.press(self, event)
+            self.active_tool = pen
+        elif event.button == 3:
+            self.active_tool = eraser
+        else:
+            return
+        self.active_tool.press(self, event)
     
     def motion(self, widget, event):
         #print("\rMotion "+str((event.x,event.y))+"  ", end="")
-        pen.motion(self, event)
+        if self.active_tool is not None:
+            self.active_tool.motion(self, event)
     
     def release(self, widget, event):
-        if event.button == 1:
-            pen.release(self, event)
+        if self.active_tool is not None:
+            self.active_tool.release(self, event)
+            self.active_tool = None
     
     def draw_remote_stroke(self, stroke):
         if self.backbuffer:
@@ -143,3 +150,10 @@ class PageWidget(Gtk.DrawingArea):
             update_rect.width = x2-x+4
             update_rect.height = y2-y+4
             self.get_window().invalidate_rect(update_rect, False)
+    
+    def delete_remote_stroke(self, stroke):
+        print("Trying to remove", stroke, "from", self.page.strokes )
+        self.page.strokes.remove(stroke)
+        if self.backbuffer:
+            self.backbuffer = None
+            self.get_window().invalidate_rect(None, False)

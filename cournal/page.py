@@ -22,15 +22,22 @@ class Page:
         self.document = document
         self.pdf = page
         self.number = number
-        self.newdata_callback = []
+        self.new_stroke_callbacks = []
+        self.delete_stroke_callbacks = []
         
         self.width, self.height = page.get_size()
         self.strokes = []
         
-    def add_newdata_callback(self, callback):
-        self.newdata_callback.append(callback)
+    def add_new_stroke_callback(self, callback):
+        self.new_stroke_callbacks.append(callback)
        
-    def somecallback(self, stroke):
-        for callback in self.newdata_callback:
+    def add_delete_stroke_callback(self, callback):
+        self.delete_stroke_callbacks.append(callback)
+
+    def new_stroke_callback(self, stroke):
+        for callback in self.new_stroke_callbacks:
             callback(stroke)
        
+    def delete_stroke_callback(self, stroke):
+        for callback in self.delete_stroke_callbacks:
+            callback(stroke)

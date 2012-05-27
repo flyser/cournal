@@ -67,8 +67,8 @@ class User(pb.Avatar):
         self.documents.append(document)
         return document
         
-    def send_stroke(self, pagenum, stroke):
-        self.remote.callRemote("add_stroke", pagenum, stroke)
+    def send_stroke(self, method, pagenum, stroke):
+        self.remote.callRemote(method, pagenum, stroke)
 
 class Document(pb.Viewable):
     def __init__(self, documentname):
@@ -87,10 +87,10 @@ class Document(pb.Viewable):
     def removeUser(self, user):
         self.users.remove(user)
         
-    def broadcast(self, pagenum, stroke, except_user=None):
+    def broadcast(self, method, pagenum, stroke, except_user=None):
         for user in self.users:
             if user != except_user:
-                user.send_stroke(pagenum, stroke)
+                user.send_stroke(method, pagenum, stroke)
     
     def view_new_stroke(self, from_user, pagenum, stroke):
         """
@@ -103,8 +103,14 @@ class Document(pb.Viewable):
         self.pages[pagenum].strokes.append(stroke)
         
         debug(3, "New Stroke:", stroke)
-        self.broadcast(pagenum, stroke, except_user=from_user)
+        self.broadcast("add_stroke", pagenum, stroke, except_user=from_user)
         
+    def view_delete_stroke(self, from_user, pagenum, stroke):
+        self.pages[pagenum].strokes.remove(stroke)
+        
+        debug(3, "Delete Stroke:", stroke)
+        self.broadcast("delete_stroke", pagenum, stroke, except_user=from_user)
+
 def debug(level, *args):
     if level <= DEBUGLEVEL:
         print(*args)

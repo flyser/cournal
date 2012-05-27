@@ -65,13 +65,22 @@ class Network(pb.Referenceable):
         self.remote_doc = document
 
     def remote_add_stroke(self, pagenum, stroke):
+        #FIXME: does not fit here?
         self.document.pages[pagenum].strokes.append(stroke)
-        self.document.pages[pagenum].somecallback(stroke)
+        self.document.pages[pagenum].new_stroke_callback(stroke)
         #debug(3, "I know the following strokes:\n", self.strokeList)
     
     def local_new_stroke(self, pagenum, stroke):
         d = self.remote_doc.callRemote("new_stroke", pagenum, stroke)
 #        d.addCallbacks(self.local_testing_strokes_cb, callbackArgs=stroke1)
+
+    def remote_delete_stroke(self, pagenum, stroke):
+        #self.document.pages[pagenum].strokes.remove(stroke)
+        self.document.pages[pagenum].delete_stroke_callback(stroke)
+        #debug(3, "I know the following strokes:\n", self.strokeList)
+    
+    def local_delete_stroke(self, pagenum, stroke):
+        d = self.remote_doc.callRemote("delete_stroke", pagenum, stroke)
 
     def shutdown(self, result):
         reactor.stop()

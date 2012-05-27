@@ -33,8 +33,6 @@ def press(widget, event):
 
 def motion(widget, event):
     global _last_point, _current_stroke
-    if _last_point is None:
-        return
     #print("\rMotion "+str((event.x,event.y))+"  ", end="")
     actualWidth = widget.get_allocation().width
     
@@ -61,9 +59,6 @@ def motion(widget, event):
 
 def release(widget, event):
     global _last_point, _current_stroke
-    if _last_point is None:
-        return
-    
     widget.page.document.network.local_new_stroke(widget.page.number, _current_stroke)
     
     _last_point = None
