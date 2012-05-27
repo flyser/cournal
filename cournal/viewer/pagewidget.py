@@ -152,7 +152,6 @@ class PageWidget(Gtk.DrawingArea):
             self.get_window().invalidate_rect(update_rect, False)
     
     def delete_remote_stroke(self, stroke):
-        print("Trying to remove", stroke, "from", self.page.strokes )
         self.page.strokes.remove(stroke)
         if self.backbuffer:
             self.backbuffer = None
