@@ -20,6 +20,8 @@
 from gi.repository import Gtk, Gdk
 import cairo
 
+from .tools import pen
+
 class PageWidget(Gtk.DrawingArea):
     def __init__(self, page, **args):
         Gtk.DrawingArea.__init__(self, **args)
@@ -107,51 +109,18 @@ class PageWidget(Gtk.DrawingArea):
         context.paint()
         
     def press(self, widget, event):
-        if event.button != 1:
-            return
         #print("Press " + str((event.x,event.y)))
-        actualWidth = widget.get_allocation().width
-        
-        self.lastpoint = [event.x, event.y]
-        self.current_stroke = [event.x*self.page.width/actualWidth, event.y*self.page.width/actualWidth]
-        self.page.strokes.append(self.current_stroke)
+        if event.button == 1:
+            pen.press(self, event)
     
     def motion(self, widget, event):
-        if self.lastpoint is None:
-            return
         #print("\rMotion "+str((event.x,event.y))+"  ", end="")
-        actualWidth = widget.get_allocation().width
-        
-        context = cairo.Context(self.backbuffer)
-        #context.set_line_width(80)
-        context.set_antialias(cairo.ANTIALIAS_GRAY)
-        context.set_line_cap(cairo.LINE_CAP_ROUND)
-        context.move_to(self.lastpoint[0], self.lastpoint[1])
-        
-        context.set_source_rgb(0, 0, 0.4)
-        context.line_to(event.x, event.y)
-        x, y, x2, y2 = context.stroke_extents()
-        context.stroke()
-        
-        update_rect = Gdk.Rectangle()
-        update_rect.x = x-2
-        update_rect.y = y-2
-        update_rect.width = x2-x+4
-        update_rect.height = y2-y+4
-        widget.get_window().invalidate_rect(update_rect, False)
-
-        self.lastpoint = [event.x, event.y]
-        self.current_stroke.extend([event.x*self.page.width/actualWidth, event.y*self.page.width/actualWidth])
+        pen.motion(self, event)
     
     def release(self, widget, event):
-        if event.button != 1 or self.lastpoint is None:
-            return
-        
-        self.page.document.network.local_new_stroke(self.page.number, self.current_stroke)
-        
-        self.lastpoint = None
-        self.current_stroke = None
-   
+        if event.button == 1:
+            pen.release(self, event)
+    
     def draw_remote_stroke(self, stroke):
         if self.backbuffer:
             context = cairo.Context(self.backbuffer)
