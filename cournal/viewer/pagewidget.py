@@ -104,8 +104,8 @@ class PageWidget(Gtk.DrawingArea):
             bb_ctx.set_source_rgb(0,0,0.4)
             for stroke in self.page.strokes:
                 bb_ctx.move_to(stroke[0], stroke[1])
-                for i in range(int(len(stroke)/2)-1):
-                    bb_ctx.line_to(stroke[2*i+2], stroke[2*i+3])
+                for i in range(2, int(len(stroke)), 2):
+                    bb_ctx.line_to(stroke[i], stroke[i+1])
                 bb_ctx.stroke()
         context.set_source_surface(self.backbuffer, 0, 0)
         context.paint()
@@ -141,8 +141,8 @@ class PageWidget(Gtk.DrawingArea):
             context.scale(factor,factor)
             
             context.move_to(stroke[0], stroke[1])
-            for i in range(int(len(stroke)/2)-1):
-                context.line_to(stroke[2*i+2], stroke[2*i+3])
+            for i in range(2, int(len(stroke)), 2):
+                context.line_to(stroke[i], stroke[i+1])
             x, y, x2, y2 = tuple([a*factor for a in context.stroke_extents()])
             context.stroke()
             

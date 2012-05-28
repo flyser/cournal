@@ -40,9 +40,9 @@ def _delete_strokes_near(widget, x, y):
     y *= factor
     
     for stroke in widget.page.strokes:
-        for i in range(int(len(stroke)/2)):
-            s_x = stroke[2*i]
-            s_y = stroke[2*i+1]
+        for i in range(int(len(stroke)), 2):
+            s_x = stroke[i]
+            s_y = stroke[i+1]
             if sqrt((s_x-x)**2 + (s_y-y)**2) < THICKNESS:
                 if network.is_connected:
                     network.local_delete_stroke(widget.page.number, stroke)
