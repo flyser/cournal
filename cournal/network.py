@@ -60,7 +60,8 @@ class Network(pb.Referenceable):
 
     def connection_failed(self, reason):
         debug(0, "Connection failed due to:", reason.getErrorMessage())
-        reactor.stop()
+        self.is_connected = False
+        #reactor.stop()
 
     def gotDocument(self, document, name):
         debug(2, "Started editing", name)
