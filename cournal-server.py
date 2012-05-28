@@ -96,7 +96,7 @@ class Document(pb.Viewable):
         """
         Broadcast the stroke received from one to all other clients
 
-        Called by clients to add a new stroek.
+        Called by clients to add a new stroke.
         """
         while len(self.pages) <= pagenum:
             self.pages.append(Page())
@@ -106,10 +106,11 @@ class Document(pb.Viewable):
         self.broadcast("add_stroke", pagenum, stroke, except_user=from_user)
         
     def view_delete_stroke(self, from_user, pagenum, stroke):
-        self.pages[pagenum].strokes.remove(stroke)
-        
-        debug(3, "Delete Stroke:", stroke)
-        self.broadcast("delete_stroke", pagenum, stroke, except_user=from_user)
+        if stroke in self.pages[pagenum].strokes:
+            self.pages[pagenum].strokes.remove(stroke)
+            
+            debug(3, "Delete Stroke:", stroke)
+            self.broadcast("delete_stroke", pagenum, stroke, except_user=from_user)
 
 def debug(level, *args):
     if level <= DEBUGLEVEL:

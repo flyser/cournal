@@ -40,6 +40,7 @@ class Page:
             callback(stroke)
        
     def delete_stroke_callback(self, stroke):
-        self.strokes.remove(stroke)
-        for callback in self.delete_stroke_callbacks:
-            callback(stroke)
+        if stroke in self.strokes:
+            self.strokes.remove(stroke)
+            for callback in self.delete_stroke_callbacks:
+                callback(stroke)
