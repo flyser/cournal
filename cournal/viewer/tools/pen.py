@@ -20,6 +20,8 @@
 import cairo
 from gi.repository import Gdk
 
+from ... import network
+
 _last_point = None
 _current_stroke = None
 
@@ -59,7 +61,8 @@ def motion(widget, event):
 
 def release(widget, event):
     global _last_point, _current_stroke
-    widget.page.document.network.local_new_stroke(widget.page.number, _current_stroke)
+    if network.is_connected:
+        network.local_new_stroke(widget.page.number, _current_stroke)
     
     _last_point = None
     _current_stroke = None

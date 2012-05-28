@@ -26,15 +26,12 @@ import cairo
 from . import Page
 
 class Document:
-    def __init__(self, filename, network):
+    def __init__(self, filename):
         self.filename = os.path.abspath(filename)
         self.pdf = Poppler.Document.new_from_file("file://" + self.filename, None)
-        self.network = network
         self.width = 0
         self.height = 0
         self.pages = []
-        
-        network.set_document(self)
         
         for i in range(self.pdf.get_n_pages()):
             page = Page(self, self.pdf.get_page(i), i)

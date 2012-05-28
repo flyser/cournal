@@ -18,14 +18,14 @@
 # along with Cournal.  If not, see <http://www.gnu.org/licenses/>.
 
 class Page:
-    def __init__(self, document, page, number):
+    def __init__(self, document, pdf, number):
         self.document = document
-        self.pdf = page
+        self.pdf = pdf
         self.number = number
         self.new_stroke_callbacks = []
         self.delete_stroke_callbacks = []
         
-        self.width, self.height = page.get_size()
+        self.width, self.height = pdf.get_size()
         self.strokes = []
         
     def add_new_stroke_callback(self, callback):
@@ -35,9 +35,11 @@ class Page:
         self.delete_stroke_callbacks.append(callback)
 
     def new_stroke_callback(self, stroke):
+        self.strokes.append(stroke)
         for callback in self.new_stroke_callbacks:
             callback(stroke)
        
     def delete_stroke_callback(self, stroke):
+        self.strokes.remove(stroke)
         for callback in self.delete_stroke_callbacks:
             callback(stroke)

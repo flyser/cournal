@@ -21,6 +21,8 @@ from math import sqrt
 import cairo
 from gi.repository import Gdk
 
+from ... import network
+
 THICKNESS = 5
 
 def press(widget, event):
@@ -42,7 +44,8 @@ def _delete_strokes_near(widget, x, y):
             s_x = stroke[2*i]
             s_y = stroke[2*i+1]
             if sqrt((s_x-x)**2 + (s_y-y)**2) < THICKNESS:
-                widget.page.document.network.local_delete_stroke(widget.page.number, stroke)
+                if network.is_connected:
+                    network.local_delete_stroke(widget.page.number, stroke)
 
                 widget.backbuffer = None
                 #FIXME: calculate stroke extents to improve performance :-)

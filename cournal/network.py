@@ -36,14 +36,17 @@ class Network(pb.Referenceable):
     def __init__(self):
         pb.Referenceable.__init__(self)
         self.document = None
+        self.is_connected = False
     
     def set_document(self, document):
         self.document = document
         
     def connect(self):
-        factory = pb.PBClientFactory()
-        reactor.connectTCP(HOSTNAME, PORT, factory)
-        def1 = factory.login(credentials.UsernamePassword(USERNAME, PASSWORD),
+        if self.document is None:
+            return
+        self.factory = pb.PBClientFactory()
+        reactor.connectTCP(HOSTNAME, PORT, self.factory)
+        def1 = self.factory.login(credentials.UsernamePassword(USERNAME, PASSWORD),
                              client=self)
         def1.addCallbacks(self.connected, self.connection_failed)
 
@@ -52,6 +55,7 @@ class Network(pb.Referenceable):
         # This perspective is a reference to our User object.  Save a reference
         # to it here, otherwise it will get garbage collected after this call,
         # and the server will think we logged out.
+        self.is_connected = True
         self.perspective = perspective
         d = perspective.callRemote("joinDocument", "document1")
         d.addCallbacks(self.gotDocument, callbackArgs=["document1"])
@@ -65,19 +69,16 @@ class Network(pb.Referenceable):
         self.remote_doc = document
 
     def remote_add_stroke(self, pagenum, stroke):
-        #FIXME: does not fit here?
-        self.document.pages[pagenum].strokes.append(stroke)
-        self.document.pages[pagenum].new_stroke_callback(stroke)
-        #debug(3, "I know the following strokes:\n", self.strokeList)
+        if self.document:
+            self.document.pages[pagenum].new_stroke_callback(stroke)
     
     def local_new_stroke(self, pagenum, stroke):
         d = self.remote_doc.callRemote("new_stroke", pagenum, stroke)
 #        d.addCallbacks(self.local_testing_strokes_cb, callbackArgs=stroke1)
 
     def remote_delete_stroke(self, pagenum, stroke):
-        #self.document.pages[pagenum].strokes.remove(stroke)
-        self.document.pages[pagenum].delete_stroke_callback(stroke)
-        #debug(3, "I know the following strokes:\n", self.strokeList)
+        if self.document:
+            self.document.pages[pagenum].delete_stroke_callback(stroke)
     
     def local_delete_stroke(self, pagenum, stroke):
         d = self.remote_doc.callRemote("delete_stroke", pagenum, stroke)
@@ -85,6 +86,9 @@ class Network(pb.Referenceable):
     def shutdown(self, result):
         reactor.stop()
 
+# This is, what will be exported and included in other files:
+network = Network()
+        
 def debug(level, *args):
     if level <= DEBUGLEVEL:
         print(*args)

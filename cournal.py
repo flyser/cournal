@@ -23,14 +23,10 @@ from twisted.internet import gtk3reactor
 gtk3reactor.install()
 from twisted.internet import reactor
 
-from cournal import Document, MainWindow, Network
+from cournal import MainWindow
 
 def main():
-    network = Network()
-    document = Document(sys.argv[1], network)
-    network.connect()
-    
-    window = MainWindow(document, title="Cournal")
+    window = MainWindow()
     window.connect("destroy", lambda _: reactor.stop())
     window.show_all()
 

@@ -20,11 +20,13 @@
 from gi.repository import Gtk
 
 from .viewer import Layout
+from . import Document, network
 
 class MainWindow(Gtk.Window):
-    def __init__(self, document, **args):
-        Gtk.Window.__init__(self, **args)
-        self.document = document
+    def __init__(self, **args):
+        Gtk.Window.__init__(self, title="Cournal", **args)
+        
+        self.document = None
         
         self.set_default_size(width=500, height=700)
         
@@ -34,16 +36,50 @@ class MainWindow(Gtk.Window):
         self.add(builder.get_object("outer_box"))
         
         # Initialize the main pdf viewer layout
-        self.layout = Layout(self.document)
-        builder.get_object("scrolledwindow").add(self.layout)
+        self.layout = None
+        self.scrolledwindow = builder.get_object("scrolledwindow")
         
         # Menu Bar:
+        self.open_pdf = builder.get_object("imagemenuitem_open_pdf")
+        self.connectbutton = builder.get_object("imagemenuitem_connect")
         self.savebutton = builder.get_object("imagemenuitem_save")
         self.exportbutton = builder.get_object("imagemenuitem_export_pdf")
+
+        self.savebutton.set_sensitive(False)
+        self.exportbutton.set_sensitive(False)
         
+        self.open_pdf.connect("activate", self.on_open_pdf_click)
+        self.connectbutton.connect("activate", self.on_connect_click)
         self.savebutton.connect("activate", self.on_save_click)
         self.exportbutton.connect("activate", self.on_export_click)
+    
+    def on_open_pdf_click(self, menuitem):
+        dialog = Gtk.FileChooserDialog("Open File", self, Gtk.FileChooserAction.OPEN,
+                                       (Gtk.STOCK_OPEN, Gtk.ResponseType.ACCEPT,
+                                        Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL))
         
+        if dialog.run() == Gtk.ResponseType.ACCEPT:
+            filename = dialog.get_filename()
+            
+            self.document = Document(filename)
+            for child in self.scrolledwindow.get_children():
+                self.scrolledwindow.remove(child)
+            self.layout = Layout(self.document)
+            self.scrolledwindow.add(self.layout)
+            self.scrolledwindow.show_all()
+            
+            self.savebutton.set_sensitive(True)
+            self.exportbutton.set_sensitive(True)
+
+        dialog.destroy()
+        
+    def on_connect_click(self, menuitem):
+        if self.document:
+            network.set_document(self.document)
+            network.connect()
+        else:
+            pass #FIXME: Display error message
+
     def on_save_click(self, menuitem):
         dialog = Gtk.FileChooserDialog("Save File", self, Gtk.FileChooserAction.SAVE,
                                        (Gtk.STOCK_SAVE, Gtk.ResponseType.ACCEPT,
@@ -54,7 +90,7 @@ class MainWindow(Gtk.Window):
             filename = dialog.get_filename()
             self.document.save_xoj_file(filename)
         dialog.destroy()
-
+    
     def on_export_click(self, menuitem):
         dialog = Gtk.FileChooserDialog("Export PDF", self, Gtk.FileChooserAction.SAVE,
                                        (Gtk.STOCK_SAVE, Gtk.ResponseType.ACCEPT,

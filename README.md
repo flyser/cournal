@@ -17,7 +17,7 @@ But there is a lot to do, before this will work.
 
 ## Does it work yet ##
 
-Yes, in a very crude, barely usable form. Expect more soon :-)
+Yes, but on a very basic (yet usable!) level.
 
 ## How to help ##
 
@@ -50,7 +50,7 @@ and the band-aid networking layer till infinote support is in place.
 
 ## Usage ##
 
-    cournal pdf-file
+Start Cournal, select "Annotate PDF" and then "Connect to Server".
 
 ## File Format ##
 

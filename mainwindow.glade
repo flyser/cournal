@@ -6,6 +6,16 @@
     <property name="can_focus">False</property>
     <property name="stock">gtk-convert</property>
   </object>
+  <object class="GtkImage" id="image2">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="stock">gtk-edit</property>
+  </object>
+  <object class="GtkImage" id="image3">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="stock">gtk-connect</property>
+  </object>
   <object class="GtkBox" id="outer_box">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
@@ -25,23 +35,23 @@
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <child>
-                  <object class="GtkImageMenuItem" id="imagemenuitem1">
-                    <property name="label">gtk-new</property>
+                  <object class="GtkImageMenuItem" id="imagemenuitem_open_pdf">
+                    <property name="label">Annotate PDF</property>
                     <property name="use_action_appearance">False</property>
+                    <property name="visible">True</property>
                     <property name="can_focus">False</property>
-                    <property name="no_show_all">True</property>
-                    <property name="use_underline">True</property>
-                    <property name="use_stock">True</property>
+                    <property name="image">image2</property>
+                    <property name="use_stock">False</property>
                   </object>
                 </child>
                 <child>
-                  <object class="GtkImageMenuItem" id="imagemenuitem2">
-                    <property name="label">gtk-open</property>
+                  <object class="GtkImageMenuItem" id="imagemenuitem_connect">
+                    <property name="label">Connect to Server</property>
                     <property name="use_action_appearance">False</property>
+                    <property name="visible">True</property>
                     <property name="can_focus">False</property>
-                    <property name="no_show_all">True</property>
-                    <property name="use_underline">True</property>
-                    <property name="use_stock">True</property>
+                    <property name="image">image3</property>
+                    <property name="use_stock">False</property>
                   </object>
                 </child>
                 <child>
