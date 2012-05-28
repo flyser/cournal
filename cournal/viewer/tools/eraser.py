@@ -47,7 +47,7 @@ def _delete_strokes_near(widget, x, y):
                 if network.is_connected:
                     network.local_delete_stroke(widget.page.number, stroke)
 
-                widget.backbuffer = None
+                widget.backbuffer_valid = False
                 #FIXME: calculate stroke extents to improve performance :-)
                 widget.get_window().invalidate_rect(None, False)
 
