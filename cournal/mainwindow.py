@@ -20,7 +20,7 @@
 from gi.repository import Gtk
 
 from .viewer import Layout
-from . import Document, network
+from . import Document, network, ConnectionDialog
 
 class MainWindow(Gtk.Window):
     def __init__(self, **args):
@@ -74,11 +74,18 @@ class MainWindow(Gtk.Window):
         dialog.destroy()
         
     def on_connect_click(self, menuitem):
-        if self.document:
+        if not self.document:
+            return
+        dialog = ConnectionDialog(self)
+        
+        if dialog.run() == Gtk.ResponseType.ACCEPT:
+            server = dialog.get_server()
+            port = dialog.get_port()
+            
             network.set_document(self.document)
-            network.connect()
-        else:
-            pass #FIXME: Display error message
+            network.connect(server, port)
+            
+        dialog.destroy()
 
     def on_save_click(self, menuitem):
         dialog = Gtk.FileChooserDialog("Save File", self, Gtk.FileChooserAction.SAVE,

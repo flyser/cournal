@@ -72,7 +72,7 @@ class Document:
         f = gzip.open(filename, "wb")
         
         # Thanks to Xournals awesome XML(-not)-parsing, we cant use elementtree here.
-        # <t a="a" b="b"> is not the same as <t b="b" a="a"> ...
+        # In "Xournal World", <t a="a" b="b"> is not the same as <t b="b" a="a"> ...
         
         r = "<?xml version=\"1.0\" standalone=\"no\"?>\n"
         r += "<xournal version=\"0.4.5\">\n"

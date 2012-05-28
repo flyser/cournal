@@ -27,8 +27,6 @@ from twisted.cred import credentials
 # 3 - maximal
 DEBUGLEVEL = 3
 
-HOSTNAME = "127.0.0.1"
-PORT = 6524
 USERNAME = "test"
 PASSWORD = "testpw"
 
@@ -41,11 +39,11 @@ class Network(pb.Referenceable):
     def set_document(self, document):
         self.document = document
         
-    def connect(self):
+    def connect(self, server, port):
         if self.document is None:
             return
         self.factory = pb.PBClientFactory()
-        reactor.connectTCP(HOSTNAME, PORT, self.factory)
+        reactor.connectTCP(server, port, self.factory)
         def1 = self.factory.login(credentials.UsernamePassword(USERNAME, PASSWORD),
                              client=self)
         def1.addCallbacks(self.connected, self.connection_failed)
