@@ -33,6 +33,7 @@ class PageWidget(Gtk.DrawingArea):
         self.widget_width = 1
         self.widget_height = 1
         self.backbuffer = None
+        self.backbuffer_valid = True
         self.active_tool = None
 
         self.set_double_buffered(False)
@@ -83,9 +84,10 @@ class PageWidget(Gtk.DrawingArea):
         factor = self.widget_width / self.page.width
         
         # Check if the page has already been rendered in the correct size
-        if not self.backbuffer or self.backbuffer.get_width() != self.widget_width:
+        if not self.backbuffer or self.backbuffer.get_width() != self.widget_width or self.backbuffer_valid is False:
             self.backbuffer = widget.get_window().create_similar_surface(
                     cairo.CONTENT_COLOR, self.widget_width, self.widget_height)
+            self.backbuffer_valid = True
             bb_ctx = cairo.Context(self.backbuffer)
             
             # Fill backbuffer with white:
@@ -153,5 +155,5 @@ class PageWidget(Gtk.DrawingArea):
     
     def delete_remote_stroke(self, stroke):
         if self.backbuffer:
-            self.backbuffer = None
+            self.backbuffer_valid = False
             self.get_window().invalidate_rect(None, False)
