@@ -86,17 +86,24 @@ class PageWidget(Gtk.DrawingArea):
         # Check if the page has already been rendered in the correct size
         if not self.backbuffer or self.backbuffer.get_width() != self.widget_width or self.backbuffer_valid is False:
             self.backbuffer = widget.get_window().create_similar_surface(
-                    cairo.CONTENT_COLOR, self.widget_width, self.widget_height)
+                    cairo.CONTENT_COLOR_ALPHA, self.widget_width, self.widget_height)
             self.backbuffer_valid = True
             bb_ctx = cairo.Context(self.backbuffer)
             
-            # Fill backbuffer with white:
+            # For correct rendering of PDF, the PDF is first rendered to a
+            # transparent image (all alpha = 0). */
+            bb_ctx.scale(factor, factor)
+            bb_ctx.save()
+            self.page.pdf.render(bb_ctx)
+            bb_ctx.restore()
+
+            # Then the image is painted on top of a white "page". Instead of
+            # creating a second image, painting it white, then painting the
+            # PDF image over it we can use the cairo.OPERATOR_DEST_OVER
+            # operator to achieve the same effect with the one image.
+            bb_ctx.set_operator(cairo.OPERATOR_DEST_OVER)
             bb_ctx.set_source_rgb(1, 1, 1)
             bb_ctx.paint()
-            bb_ctx.scale(factor,factor)
-            
-            # Render PDF
-            self.page.pdf.render(bb_ctx)
             
             # Render all strokes again
             bb_ctx.set_antialias(cairo.ANTIALIAS_GRAY)

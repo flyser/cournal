@@ -49,14 +49,9 @@ class Document:
             surface.set_size(page.width, page.height)
             context = cairo.Context(surface)
             
-            # Fill backbuffer with white:
-            context.set_source_rgb(1, 1, 1)
-            context.paint()
+            page.pdf.render_for_printing(context)
             
-            # Render PDF
-            page.pdf.render(context)
-            
-            # Render all strokes again
+            # Render all strokes
             context.set_antialias(cairo.ANTIALIAS_GRAY)
             context.set_line_cap(cairo.LINE_CAP_ROUND)
             context.set_source_rgb(0,0,0.4)
@@ -65,6 +60,7 @@ class Document:
                 for i in range(2, int(len(stroke)), 2):
                     context.line_to(stroke[i], stroke[i+1])
                 context.stroke()
+            
             surface.show_page() # aka "next page"
 
     def save_xoj_file(self, filename):
