@@ -62,6 +62,9 @@ class MainWindow(Gtk.Window):
         dialog = Gtk.FileChooserDialog("Open File", self, Gtk.FileChooserAction.OPEN,
                                        (Gtk.STOCK_OPEN, Gtk.ResponseType.ACCEPT,
                                         Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL))
+        pdf_filter = Gtk.FileFilter()
+        pdf_filter.add_mime_type("application/pdf")
+        dialog.set_filter(pdf_filter)
         
         if dialog.run() == Gtk.ResponseType.ACCEPT:
             filename = dialog.get_filename()
@@ -99,6 +102,10 @@ class MainWindow(Gtk.Window):
                                         Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL))
         dialog.set_current_name("document.xoj")
         
+        pdf_filter = Gtk.FileFilter()
+        pdf_filter.add_mime_type("application/x-xoj")
+        dialog.set_filter(pdf_filter)
+
         if dialog.run() == Gtk.ResponseType.ACCEPT:
             filename = dialog.get_filename()
             self.document.save_xoj_file(filename)
@@ -109,6 +116,10 @@ class MainWindow(Gtk.Window):
                                        (Gtk.STOCK_SAVE, Gtk.ResponseType.ACCEPT,
                                         Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL))
         dialog.set_current_name("annotated_document.pdf")
+        
+        pdf_filter = Gtk.FileFilter()
+        pdf_filter.add_mime_type("application/pdf")
+        dialog.set_filter(pdf_filter)
         
         if dialog.run() == Gtk.ResponseType.ACCEPT:
             filename = dialog.get_filename()
