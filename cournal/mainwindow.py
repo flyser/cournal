@@ -20,7 +20,7 @@
 from gi.repository import Gtk
 
 from .viewer import Layout
-from . import Document, network, ConnectionDialog
+from . import Document, network, ConnectionDialog, AboutDialog
 
 class MainWindow(Gtk.Window):
     def __init__(self, **args):
@@ -44,6 +44,7 @@ class MainWindow(Gtk.Window):
         self.connectbutton = builder.get_object("imagemenuitem_connect")
         self.savebutton = builder.get_object("imagemenuitem_save")
         self.exportbutton = builder.get_object("imagemenuitem_export_pdf")
+        self.aboutbutton = builder.get_object("imagemenuitem_about")
 
         self.savebutton.set_sensitive(False)
         self.exportbutton.set_sensitive(False)
@@ -52,6 +53,7 @@ class MainWindow(Gtk.Window):
         self.connectbutton.connect("activate", self.on_connect_click)
         self.savebutton.connect("activate", self.on_save_click)
         self.exportbutton.connect("activate", self.on_export_click)
+        self.aboutbutton.connect("activate", self.on_about_click)
     
     def on_open_pdf_click(self, menuitem):
         dialog = Gtk.FileChooserDialog("Open File", self, Gtk.FileChooserAction.OPEN,
@@ -109,3 +111,7 @@ class MainWindow(Gtk.Window):
             self.document.export_pdf(filename)
         dialog.destroy()
         
+    def on_about_click(self, menuitem):
+        # Need to hold a reference, so the object does not get garbage collected
+        self._about_dialog = AboutDialog()
+        self._about_dialog.run_nonblocking()
