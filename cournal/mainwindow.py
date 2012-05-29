@@ -114,4 +114,8 @@ class MainWindow(Gtk.Window):
     def on_about_click(self, menuitem):
         # Need to hold a reference, so the object does not get garbage collected
         self._about_dialog = AboutDialog()
+        self._about_dialog.connect("destroy", self.about_dialog_destroyed)
         self._about_dialog.run_nonblocking()
+    
+    def about_dialog_destroyed(self, widget):
+        self._about_dialog = None
