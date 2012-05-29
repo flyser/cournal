@@ -68,7 +68,7 @@ class Network(pb.Referenceable):
         self.remote_doc = document
 
     def remote_add_stroke(self, pagenum, stroke):
-        if self.document:
+        if self.document and pagenum < len(self.document.pages):
             self.document.pages[pagenum].new_stroke_callback(stroke)
     
     def local_new_stroke(self, pagenum, stroke):
@@ -76,7 +76,7 @@ class Network(pb.Referenceable):
 #        d.addCallbacks(self.local_testing_strokes_cb, callbackArgs=stroke1)
 
     def remote_delete_stroke(self, pagenum, stroke):
-        if self.document:
+        if self.document and pagenum < len(self.document.pages):
             self.document.pages[pagenum].delete_stroke_callback(stroke)
     
     def local_delete_stroke(self, pagenum, stroke):
