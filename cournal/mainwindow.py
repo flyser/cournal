@@ -45,7 +45,9 @@ class MainWindow(Gtk.Window):
         self.savebutton = builder.get_object("imagemenuitem_save")
         self.exportbutton = builder.get_object("imagemenuitem_export_pdf")
         self.aboutbutton = builder.get_object("imagemenuitem_about")
+        self.quitbutton = builder.get_object("imagemenuitem_quit")
 
+        self.connectbutton.set_sensitive(False)
         self.savebutton.set_sensitive(False)
         self.exportbutton.set_sensitive(False)
         
@@ -54,6 +56,7 @@ class MainWindow(Gtk.Window):
         self.savebutton.connect("activate", self.on_save_click)
         self.exportbutton.connect("activate", self.on_export_click)
         self.aboutbutton.connect("activate", self.on_about_click)
+        self.quitbutton.connect("activate", lambda _: self.destroy())
     
     def on_open_pdf_click(self, menuitem):
         dialog = Gtk.FileChooserDialog("Open File", self, Gtk.FileChooserAction.OPEN,
@@ -70,6 +73,7 @@ class MainWindow(Gtk.Window):
             self.scrolledwindow.add(self.layout)
             self.scrolledwindow.show_all()
             
+            self.connectbutton.set_sensitive(True)
             self.savebutton.set_sensitive(True)
             self.exportbutton.set_sensitive(True)
 
