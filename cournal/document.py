@@ -62,8 +62,8 @@ class Document:
             context.set_source_rgb(0,0,0.4)
             for stroke in page.strokes:
                 context.move_to(stroke[0], stroke[1])
-                for i in range(2, int(len(stroke)), 2):
-                    context.line_to(stroke[i], stroke[i+1])
+                for i in range(int(len(stroke)/2)-1):
+                    context.line_to(stroke[2*i+2], stroke[2*i+3])
                 context.stroke()
             surface.show_page() # aka "next page"
 
