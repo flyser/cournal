@@ -12,6 +12,9 @@ Very good Python tutorial for GTK+ 3.0:
 The GTK+ 3.0 API documentation:
 <http://developer.gnome.org/gtk3/stable/>
 
+An alpha version of the GTK+ 3.0 Python API documentation:
+<http://people.gnome.org/~johnp/girdocsalpha/Gtk/>
+
 
 ### Cairo ###
 
