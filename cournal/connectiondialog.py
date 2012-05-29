@@ -46,12 +46,15 @@ class ConnectionDialog(Gtk.Dialog):
         self.set_transient_for(parent)
         self.add_button(Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL)
         self.add_button(Gtk.STOCK_CONNECT, Gtk.ResponseType.ACCEPT)
+        self.set_default_response(Gtk.ResponseType.ACCEPT)
         grid.set_row_spacing(5)
         grid.set_column_spacing(10)
         grid.set_border_width(10)
+        self.server_port_entry.set_activates_default(True)
         image.set_from_stock(Gtk.STOCK_NETWORK, Gtk.IconSize.DIALOG)
         label.set_text("Please enter the Name and port of the server, you want to connect to.")
         smalllabel.set_text("Server name:")
+        
         self.show_all()
     
     def get_server(self):
@@ -93,6 +96,10 @@ class ServerPortEntry(Gtk.EventBox):
         if not text.isdigit():
             widget.emit_stop_by_name("insert_text")
             return
+
+    def set_activates_default(self, setting):
+        self.port_entry.set_activates_default(setting)
+        self.server_entry.set_activates_default(setting)
 
     def get_server(self):
         return self.server_entry.get_text()
