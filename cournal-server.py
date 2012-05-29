@@ -15,7 +15,6 @@ from twisted.internet.error import *
 # 3 - maximal
 DEBUGLEVEL = 3
 
-PORT = 6524
 USERNAME = "test"
 PASSWORD = "testpw"
 
@@ -123,13 +122,18 @@ def main():
     checker.addUser(USERNAME, PASSWORD)
     p = portal.Portal(realm, [checker])
 
+    if len(sys.argv) > 1:
+        port = int(sys.argv[1])
+    else:
+        port = 6524
+
     try:
-        reactor.listenTCP(PORT, pb.PBServerFactory(p))
+        reactor.listenTCP(port, pb.PBServerFactory(p))
     except CannotListenError as err:
         debug(0, "ERROR: Failed to listen on port", err.port)
         return 1
     
-    debug(2, "Listening on port", PORT)
+    debug(2, "Listening on port", port)
     reactor.run()
 
 if __name__ == '__main__':
