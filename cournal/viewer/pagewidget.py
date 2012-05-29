@@ -97,14 +97,6 @@ class PageWidget(Gtk.DrawingArea):
             self.page.pdf.render(bb_ctx)
             bb_ctx.restore()
 
-            # Then the image is painted on top of a white "page". Instead of
-            # creating a second image, painting it white, then painting the
-            # PDF image over it we can use the cairo.OPERATOR_DEST_OVER
-            # operator to achieve the same effect with the one image.
-            bb_ctx.set_operator(cairo.OPERATOR_DEST_OVER)
-            bb_ctx.set_source_rgb(1, 1, 1)
-            bb_ctx.paint()
-            
             # Render all strokes again
             bb_ctx.set_antialias(cairo.ANTIALIAS_GRAY)
             bb_ctx.set_line_cap(cairo.LINE_CAP_ROUND)
@@ -114,6 +106,15 @@ class PageWidget(Gtk.DrawingArea):
                 for i in range(2, int(len(stroke)), 2):
                     bb_ctx.line_to(stroke[i], stroke[i+1])
                 bb_ctx.stroke()
+            
+            # Then the image is painted on top of a white "page". Instead of
+            # creating a second image, painting it white, then painting the
+            # PDF image over it we can use the cairo.OPERATOR_DEST_OVER
+            # operator to achieve the same effect with the one image.
+            bb_ctx.set_operator(cairo.OPERATOR_DEST_OVER)
+            bb_ctx.set_source_rgb(1, 1, 1)
+            bb_ctx.paint()
+        
         context.set_source_surface(self.backbuffer, 0, 0)
         context.paint()
         
