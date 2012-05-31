@@ -24,6 +24,7 @@ class AboutDialog(Gtk.AboutDialog):
         Gtk.AboutDialog.__init__(self, **args)
         
         self.set_modal(False)    
+        self.set_icon_from_file("Logo/logo01_24.png")
         
         self.set_program_name("Cournal")
         self.set_copyright("© Fabian Henze")
@@ -31,6 +32,7 @@ class AboutDialog(Gtk.AboutDialog):
         self.set_license_type(Gtk.License.GPL_3_0)
         self.set_website("https://github.com/Flyser/cournal")
         self.set_authors(["Fabian Henze"])
+        self.set_artists(["Simon Vetter"])
         
     def response_cb(self, widget, response_id):
         self.destroy()
