@@ -12,8 +12,8 @@ Very good Python tutorial for GTK+ 3.0:
 The GTK+ 3.0 API documentation:
 <http://developer.gnome.org/gtk3/stable/>
 
-An alpha version of the GTK+ 3.0 Python API documentation:
-<http://people.gnome.org/~johnp/girdocsalpha/Gtk/>
+An explanation for of how to the C GTK+ 3.0 API documentation to Python
+<https://live.gnome.org/PyGObject/IntrospectionPorting#How_does_PyGI_work.3F>
 
 
 ### Cairo ###
@@ -27,10 +27,7 @@ The Poppler API reference:
 <http://people.freedesktop.org/~ajohnson/docs/poppler-glib/index.html>
 
 
-### Networking / Threading ###
-
-A good reference of the threading module:
-<http://www.laurentluce.com/posts/python-threads-synchronization-locks-rlocks-semaphores-conditions-events-and-queues/>
+### Networking ###
 
 Twisted (networking) documentation and reference:
 <http://twistedmatrix.com/trac/wiki/Documentation>
