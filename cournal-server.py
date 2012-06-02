@@ -101,14 +101,14 @@ class Document(pb.Viewable):
             self.pages.append(Page())
         self.pages[pagenum].strokes.append(stroke)
         
-        debug(3, "New Stroke:", stroke)
+        debug(3, "New stroke on page", pagenum)
         self.broadcast("add_stroke", pagenum, stroke, except_user=from_user)
         
     def view_delete_stroke(self, from_user, pagenum, stroke):
         if stroke in self.pages[pagenum].strokes:
             self.pages[pagenum].strokes.remove(stroke)
             
-            debug(3, "Delete Stroke:", stroke)
+            debug(3, "Deleted stroke on page", pagenum)
             self.broadcast("delete_stroke", pagenum, stroke, except_user=from_user)
 
 def debug(level, *args):
