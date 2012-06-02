@@ -30,8 +30,6 @@ class Layout(Gtk.Layout):
         for page in self.doc.pages:
             self.children.append(PageWidget(page))
             self.put(self.children[-1], 0, 0)
-        
-        self.set_double_buffered(False)
      
     def do_size_allocate(self, allocation):
         self.set_allocation(allocation)

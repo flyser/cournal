@@ -36,7 +36,6 @@ class PageWidget(Gtk.DrawingArea):
         self.backbuffer_valid = True
         self.active_tool = None
 
-        self.set_double_buffered(False)
         self.set_events(Gdk.EventMask.BUTTON_PRESS_MASK |
                         Gdk.EventMask.BUTTON_RELEASE_MASK |
                         Gdk.EventMask.POINTER_MOTION_MASK)
