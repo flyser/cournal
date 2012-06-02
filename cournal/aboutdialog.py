@@ -21,14 +21,19 @@ import cairo
 from gi.repository import Gtk, Rsvg, GdkPixbuf
 
 class AboutDialog(Gtk.AboutDialog):
-    def __init__(self, **args):
+    def __init__(self, parent=None, **args):
         Gtk.AboutDialog.__init__(self, **args)
         
         self.set_modal(False)    
+<<<<<<< HEAD
         self.set_icon_from_file("Logo/logo01_16.png")
         self.set_logo(GdkPixbuf.Pixbuf.new_from_file("Logo/logo01_128.png"))
+=======
+        self.set_transient_for(parent)
+>>>>>>> upstream/master
         
         self.set_program_name("Cournal")
+        self.set_logo_icon_name("cournal")
         self.set_copyright("© Fabian Henze")
         self.set_comments("A collaborative note taking and journal application using a stylus.")
         self.set_license_type(Gtk.License.GPL_3_0)
