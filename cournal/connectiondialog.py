@@ -18,11 +18,13 @@
 # along with Cournal.  If not, see <http://www.gnu.org/licenses/>.
 
 from gi.repository import Gtk, Gdk
+from . import network
 
 class ConnectionDialog(Gtk.Dialog):
     def __init__(self, parent, **args):
         Gtk.Dialog.__init__(self, **args)
         
+        self.parent = parent
         self.content_area = self.get_content_area()
         grid = Gtk.Grid()
         self.server_port_entry = ServerPortEntry()
@@ -39,9 +41,9 @@ class ConnectionDialog(Gtk.Dialog):
         grid.attach(label, 1, 0, 2, 1)
         grid.attach(second_row, 1, 1, 1, 1)
         
+        self.set_modal(False)
         self.set_has_resize_grip(False)
         self.set_resizable(False)
-        self.set_modal(True)
         self.set_title("Connect to Server")
         self.set_transient_for(parent)
         self.add_button(Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL)
@@ -57,10 +59,27 @@ class ConnectionDialog(Gtk.Dialog):
         
         self.show_all()
     
-    def get_server(self):
-        return self.server_port_entry.get_server()
-    def get_port(self):
-        return self.server_port_entry.get_port()
+    def response_cb(self, widget, response_id):
+        if response_id != Gtk.ResponseType.ACCEPT:
+            self.destroy()
+            return
+        
+        server = self.server_port_entry.get_server()
+        port = self.server_port_entry.get_port()
+        
+        network.set_document(self.parent.document)
+        d = network.connect(server, port)
+        d.addCallbacks(self.on_connected, self.on_connection_failure)
+        
+    def on_connected(self, perspective):
+        self.destroy()
+    
+    def on_connection_failure(self, reason):
+        pass
+
+    def run_nonblocking(self):
+        self.connect('response', self.response_cb)
+        self.show()
 
 class ServerPortEntry(Gtk.EventBox):
     def __init__(self, **args):
