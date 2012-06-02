@@ -100,6 +100,8 @@ class PageWidget(Gtk.DrawingArea):
             # Render all strokes again
             bb_ctx.set_antialias(cairo.ANTIALIAS_GRAY)
             bb_ctx.set_line_cap(cairo.LINE_CAP_ROUND)
+            bb_ctx.set_line_join(cairo.LINE_JOIN_ROUND)
+            
             bb_ctx.set_source_rgb(0,0,0.4)
             for stroke in self.page.strokes:
                 bb_ctx.move_to(stroke[0], stroke[1])
@@ -142,6 +144,7 @@ class PageWidget(Gtk.DrawingArea):
         if self.backbuffer:
             context = cairo.Context(self.backbuffer)
             context.set_antialias(cairo.ANTIALIAS_GRAY)
+            context.set_line_join(cairo.LINE_JOIN_ROUND)
             context.set_line_cap(cairo.LINE_CAP_ROUND)
             context.set_source_rgb(0,0,0.4)
             
