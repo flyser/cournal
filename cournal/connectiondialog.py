@@ -33,6 +33,7 @@ class ConnectionDialog(Gtk.Dialog):
         self.multipage = builder.get_object("multipage")
         self.spinner = builder.get_object("spinner")
         self.error_label = builder.get_object("error_label")
+        self.connecting_label = builder.get_object("connecting_label")
         
         self.get_content_area().add(builder.get_object("main_grid"))
         entry_grid.attach(self.server_entry, 1, 1, 1, 1)
@@ -56,6 +57,12 @@ class ConnectionDialog(Gtk.Dialog):
         
         server = self.server_entry.get_server()
         port = self.server_entry.get_port()
+        
+        if port > 65535 or port < 0:
+            self.error_label.set_text("The port must be below 65535")
+            self.error_label.show()
+            return
+        
         network.set_document(self.parent.document)
         d = network.connect(server, port)
         d.addCallbacks(self.on_connected, self.on_connection_failure)
@@ -63,18 +70,20 @@ class ConnectionDialog(Gtk.Dialog):
         self.multipage.set_current_page(1)
         self.spinner.start()
         self.error_label.set_text("")
+        self.connecting_label.set_text("Connecting to {} ...".format(server))
+        self.get_action_area().set_sensitive(False)
         
     def on_connected(self, perspective):
         self.destroy()
     
     def on_connection_failure(self, reason):
-        error = reason.getErrorMessage().split(':', 2)[2:]
-        error = "Error: " + ':'.join(error).strip()
+        error = reason.getErrorMessage()
 
         self.multipage.set_current_page(0)
         self.spinner.stop()
         self.error_label.set_text(error)
         self.error_label.show()
+        self.get_action_area().set_sensitive(True)
 
     def run_nonblocking(self):
         self.connect('response', self.response_cb)
