@@ -14,8 +14,8 @@
    id="svg2"
    version="1.1"
    inkscape:version="0.48.2 r9819"
-   inkscape:export-xdpi="22.5"
-   inkscape:export-ydpi="22.5">
+   inkscape:export-xdpi="90"
+   inkscape:export-ydpi="90">
   <defs
      id="defs4">
     <inkscape:perspective
@@ -67,10 +67,10 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="1.28"
-     inkscape:cx="107.11301"
+     inkscape:cx="280.94113"
      inkscape:cy="137.10316"
      inkscape:document-units="px"
-     inkscape:current-layer="g3947"
+     inkscape:current-layer="g3960"
      showgrid="false"
      inkscape:snap-grids="true"
      inkscape:snap-page="true"
@@ -166,19 +166,16 @@
          id="path3799-5"
          d="m 145,882.3622 c 0,0 0,-10 0,-15 0,-5 5,-5 5,0 0,5 0,15 0,15 z"
          style="fill:#b3b3b5;fill-opacity:1;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
-      <flowRoot
+      <g
          transform="matrix(2.5353634,0,0,2.5353634,467.27676,619.24598)"
          style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
-         id="flowRoot3952"
-         xml:space="preserve"><flowRegion
-           id="flowRegion3954"><rect
-             y="96.625"
-             x="-152.73438"
-             height="97.65625"
-             width="118.75"
-             id="rect3956" /></flowRegion><flowPara
+         id="flowRoot3952">
+        <path
+           d="m -131.59,132.81217 c -3.68,2.51999 -6.4,3.56 -9.2,3.56 -3.16,0 -5.16,-2.40001 -5.16,-6.2 0,-8.32 5.88001,-16.6 11.8,-16.6 2.4,0 3.6,1.48 3.84,4.64 l 2.96,-2.52 c -0.36,-2.76 -1.8,-4 -4.68,-4 -3.48,0 -7.52,2.04 -11.04,5.56 -3.88,3.87999 -6.16,9.2 -6.16,14.4 0,4.11999 2.28,6.6 6.12,6.6 3.44,0 7.8,-1.64001 11.24,-4.24 l 0.28,-1.2"
            style="font-style:italic;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:URW Chancery L;-inkscape-font-specification:URW Chancery L Bold Italic"
-           id="flowPara3958">C</flowPara></flowRoot>    </g>
+           id="path4111" />
+      </g>
+    </g>
     <g
        id="g3947"
        transform="matrix(0.36413181,0.24777535,-0.49804551,0.65034778,577.98885,261.48708)">
