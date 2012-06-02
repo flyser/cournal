@@ -29,11 +29,7 @@ class MainWindow(Gtk.Window):
         self.document = None
         
         self.set_default_size(width=500, height=700)
-<<<<<<< HEAD
-        self.set_icon_from_file("Logo/logo01_16.png")
-=======
         self.set_icon_name("cournal")
->>>>>>> upstream/master
         
         # Bob the builder
         builder = Gtk.Builder()

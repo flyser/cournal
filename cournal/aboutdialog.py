@@ -17,20 +17,14 @@
 # You should have received a copy of the GNU General Public License
 # along with Cournal.  If not, see <http://www.gnu.org/licenses/>.
 
-import cairo
-from gi.repository import Gtk, Rsvg, GdkPixbuf
+from gi.repository import Gtk
 
 class AboutDialog(Gtk.AboutDialog):
     def __init__(self, parent=None, **args):
         Gtk.AboutDialog.__init__(self, **args)
         
         self.set_modal(False)    
-<<<<<<< HEAD
-        self.set_icon_from_file("Logo/logo01_16.png")
-        self.set_logo(GdkPixbuf.Pixbuf.new_from_file("Logo/logo01_128.png"))
-=======
         self.set_transient_for(parent)
->>>>>>> upstream/master
         
         self.set_program_name("Cournal")
         self.set_logo_icon_name("cournal")
