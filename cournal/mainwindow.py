@@ -29,7 +29,7 @@ class MainWindow(Gtk.Window):
         self.document = None
         
         self.set_default_size(width=500, height=700)
-        self.set_icon_from_file("Logo/logo01_16.png")
+        self.set_icon_name("cournal")
         
         # Bob the builder
         builder = Gtk.Builder()
@@ -129,7 +129,7 @@ class MainWindow(Gtk.Window):
         
     def on_about_click(self, menuitem):
         # Need to hold a reference, so the object does not get garbage collected
-        self._about_dialog = AboutDialog()
+        self._about_dialog = AboutDialog(self)
         self._about_dialog.connect("destroy", self.about_dialog_destroyed)
         self._about_dialog.run_nonblocking()
     
