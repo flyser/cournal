@@ -25,22 +25,18 @@ class ConnectionDialog(Gtk.Dialog):
         Gtk.Dialog.__init__(self, **args)
         
         self.parent = parent
-        self.content_area = self.get_content_area()
-        grid = Gtk.Grid()
-        self.server_port_entry = ServerPortEntry()
-        second_row = Gtk.Box()
-        image = Gtk.Image()
-        label = Gtk.Label()
-        smalllabel = Gtk.Label()
+        
+        builder = Gtk.Builder()
+        builder.add_from_file("connection_dialog.glade")
+        entry_grid = builder.get_object("grid_with_server_entry")
+        self.server_entry = ServerPortEntry()
+        self.multipage = builder.get_object("multipage")
+        self.spinner = builder.get_object("spinner")
+        self.error_label = builder.get_object("error_label")
+        
+        self.get_content_area().add(builder.get_object("main_grid"))
+        entry_grid.attach(self.server_entry, 1, 1, 1, 1)
 
-        second_row.pack_start(smalllabel, False, False, 0)
-        second_row.pack_start(self.server_port_entry, False, True, 5)
-        
-        self.content_area.add(grid)
-        grid.attach(image, 0, 0, 1, 3)
-        grid.attach(label, 1, 0, 2, 1)
-        grid.attach(second_row, 1, 1, 1, 1)
-        
         self.set_modal(False)
         self.set_has_resize_grip(False)
         self.set_resizable(False)
@@ -49,13 +45,7 @@ class ConnectionDialog(Gtk.Dialog):
         self.add_button(Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL)
         self.add_button(Gtk.STOCK_CONNECT, Gtk.ResponseType.ACCEPT)
         self.set_default_response(Gtk.ResponseType.ACCEPT)
-        grid.set_row_spacing(5)
-        grid.set_column_spacing(10)
-        grid.set_border_width(10)
-        self.server_port_entry.set_activates_default(True)
-        image.set_from_stock(Gtk.STOCK_NETWORK, Gtk.IconSize.DIALOG)
-        label.set_text("Please enter the Name and port of the server, you want to connect to.")
-        smalllabel.set_text("Server name:")
+        self.server_entry.set_activates_default(True)
         
         self.show_all()
     
@@ -64,18 +54,27 @@ class ConnectionDialog(Gtk.Dialog):
             self.destroy()
             return
         
-        server = self.server_port_entry.get_server()
-        port = self.server_port_entry.get_port()
-        
+        server = self.server_entry.get_server()
+        port = self.server_entry.get_port()
         network.set_document(self.parent.document)
         d = network.connect(server, port)
         d.addCallbacks(self.on_connected, self.on_connection_failure)
+        
+        self.multipage.set_current_page(1)
+        self.spinner.start()
+        self.error_label.set_text("")
         
     def on_connected(self, perspective):
         self.destroy()
     
     def on_connection_failure(self, reason):
-        pass
+        error = reason.getErrorMessage().split(':', 2)[2:]
+        error = "Error: " + ':'.join(error).strip()
+
+        self.multipage.set_current_page(0)
+        self.spinner.stop()
+        self.error_label.set_text(error)
+        self.error_label.show()
 
     def run_nonblocking(self):
         self.connect('response', self.response_cb)

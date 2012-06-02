@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <!-- interface-requires gtk+ 3.0 -->
+  <object class="GtkGrid" id="main_grid">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="border_width">5</property>
+    <property name="row_spacing">10</property>
+    <property name="column_spacing">10</property>
+    <child>
+      <object class="GtkImage" id="logo">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="stock">gtk-network</property>
+        <property name="icon-size">6</property>
+      </object>
+      <packing>
+        <property name="left_attach">0</property>
+        <property name="top_attach">0</property>
+        <property name="width">1</property>
+        <property name="height">1</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkNotebook" id="multipage">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="tab_pos">bottom</property>
+        <property name="show_tabs">False</property>
+        <property name="show_border">False</property>
+        <child>
+          <object class="GtkGrid" id="grid_with_server_entry">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="row_spacing">5</property>
+            <property name="column_spacing">10</property>
+            <child>
+              <object class="GtkLabel" id="big_label">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="xalign">0</property>
+                <property name="label" translatable="yes">Please enter the Name and port of the server, you want to connect to.</property>
+              </object>
+              <packing>
+                <property name="left_attach">0</property>
+                <property name="top_attach">0</property>
+                <property name="width">2</property>
+                <property name="height">1</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel" id="small_label">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="xalign">0</property>
+                <property name="label" translatable="yes">Server name:</property>
+              </object>
+              <packing>
+                <property name="left_attach">0</property>
+                <property name="top_attach">1</property>
+                <property name="width">1</property>
+                <property name="height">1</property>
+              </packing>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+          </object>
+        </child>
+        <child type="tab">
+          <placeholder/>
+        </child>
+        <child>
+          <object class="GtkGrid" id="grid2">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="row_spacing">10</property>
+            <child>
+              <object class="GtkSpinner" id="spinner">
+                <property name="width_request">24</property>
+                <property name="height_request">24</property>
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="hexpand">True</property>
+              </object>
+              <packing>
+                <property name="left_attach">1</property>
+                <property name="top_attach">1</property>
+                <property name="width">1</property>
+                <property name="height">1</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel" id="connecting_label">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="hexpand">True</property>
+                <property name="label" translatable="yes">Connecting ....</property>
+              </object>
+              <packing>
+                <property name="left_attach">0</property>
+                <property name="top_attach">0</property>
+                <property name="width">3</property>
+                <property name="height">1</property>
+              </packing>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+          </object>
+          <packing>
+            <property name="position">1</property>
+          </packing>
+        </child>
+        <child type="tab">
+          <placeholder/>
+        </child>
+      </object>
+      <packing>
+        <property name="left_attach">1</property>
+        <property name="top_attach">0</property>
+        <property name="width">1</property>
+        <property name="height">1</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkLabel" id="error_label">
+        <property name="can_focus">False</property>
+        <property name="no_show_all">True</property>
+        <property name="halign">start</property>
+        <property name="valign">end</property>
+        <property name="vexpand">True</property>
+        <property name="xalign">0</property>
+        <property name="wrap">True</property>
+        <property name="selectable">True</property>
+      </object>
+      <packing>
+        <property name="left_attach">0</property>
+        <property name="top_attach">1</property>
+        <property name="width">2</property>
+        <property name="height">1</property>
+      </packing>
+    </child>
+  </object>
+</interface>
