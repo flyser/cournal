@@ -91,7 +91,7 @@ class PageWidget(Gtk.DrawingArea):
             bb_ctx = cairo.Context(self.backbuffer)
             
             # For correct rendering of PDF, the PDF is first rendered to a
-            # transparent image (all alpha = 0). */
+            # transparent image (all alpha = 0).
             bb_ctx.scale(factor, factor)
             bb_ctx.save()
             self.page.pdf.render(bb_ctx)
