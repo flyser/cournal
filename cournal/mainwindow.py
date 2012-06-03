@@ -18,6 +18,7 @@
 # along with Cournal.  If not, see <http://www.gnu.org/licenses/>.
 
 from gi.repository import Gtk
+from gi.repository.GLib import GError
 
 from .viewer import Layout
 from . import Document, ConnectionDialog, AboutDialog
@@ -70,7 +71,19 @@ class MainWindow(Gtk.Window):
         if dialog.run() == Gtk.ResponseType.ACCEPT:
             filename = dialog.get_filename()
             
-            self.document = Document(filename)
+            try:
+                document = Document(filename)
+            except GError as ex:
+                message = Gtk.MessageDialog(self, (Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT), Gtk.MessageType.ERROR, Gtk.ButtonsType.OK, "Unable to open PDF" )
+                message.format_secondary_text(ex)
+                message.set_title("Error")
+                message.connect("response", lambda _,x: message.destroy())
+                message.show()
+                print("Unable to open PDF file:", ex)
+                dialog.destroy()
+                return
+            
+            self.document = document
             for child in self.scrolledwindow.get_children():
                 self.scrolledwindow.remove(child)
             self.layout = Layout(self.document)
