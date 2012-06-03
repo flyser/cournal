@@ -21,7 +21,8 @@ from gi.repository import Gtk
 from gi.repository.GLib import GError
 
 from .viewer import Layout
-from . import Document, ConnectionDialog, AboutDialog
+from .document import Document
+from . import ConnectionDialog, AboutDialog
 
 class MainWindow(Gtk.Window):
     def __init__(self, **args):

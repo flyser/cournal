@@ -26,9 +26,9 @@ import cairo
 from . import Page
 
 class Document:
-    def __init__(self, filename):
-        self.filename = os.path.abspath(filename)
-        self.pdf = Poppler.Document.new_from_file("file://" + self.filename, None)
+    def __init__(self, pdfname):
+        self.pdfname = os.path.abspath(pdfname)
+        self.pdf = Poppler.Document.new_from_file("file://" + self.pdfname, None)
         self.width = 0
         self.height = 0
         self.pages = []
@@ -44,7 +44,7 @@ class Document:
         
     def clear_pages(self):
         for page in self.pages:
-            for stroke in page.strokes[:]:
+            for stroke in page.layers[0].strokes[:]:
                 page.delete_stroke_callback(stroke)
         
     def export_pdf(self, filename):
@@ -68,13 +68,15 @@ class Document:
             context.set_line_join(cairo.LINE_JOIN_ROUND)
             context.set_line_width(1.5)
 
-            for stroke in page.strokes:
-                context.move_to(stroke[0], stroke[1])
-                if len(stroke) > 2:
-                    for i in range(2, int(len(stroke)), 2):
-                        context.line_to(stroke[i], stroke[i+1])
+            for stroke in page.layers[0].strokes:
+                first = stroke.coords[0]
+                
+                context.move_to(first[0], first[1])
+                if len(stroke.coords) > 1:
+                    for coord in stroke.coords:
+                        context.line_to(coord[0], coord[1])
                 else:
-                    context.line_to(stroke[0], stroke[1])
+                    context.line_to(first[0], first[1])
                 context.stroke()
             
             surface.show_page() # aka "next page"
@@ -93,27 +95,27 @@ class Document:
         
         r = "<?xml version=\"1.0\" standalone=\"no\"?>\n"
         r += "<xournal version=\"0.4.6\">\n"
-        #r += "<!-- Created with Cournal -->\n"
         r += "<title>Xournal document - see http://math.mit.edu/~auroux/software/xournal/</title>\n"
         
-        for p in self.pages:
-            r += "<page width=\"" + str(round(p.width, 2)) + "\" height=\"" + str(round(p.height, 2)) + "\">\n"
+        for page in self.pages:
+            r += "<page width=\"" + str(round(page.width, 2)) + "\" height=\"" + str(round(page.height, 2)) + "\">\n"
             r += "<background type=\"pdf\""
             if pagenum == 1:
-                r += " domain=\"absolute\" filename=\"" + self.filename + "\""
+                r += " domain=\"absolute\" filename=\"" + self.pdfname + "\""
             r += " pageno=\"" + str(pagenum) + "\" />\n"
             pagenum += 1
             
-            r += "<layer>\n"
-            for s in p.strokes:
-                r += "<stroke tool=\"pen\" color=\"#000066FF\" width=\"1.41\">\n"
-                for coord in s:
-                    r += " " + str(round(coord, 2))
-                if len(s) < 4:
-                    r += " " + str(s[0]) + " " + str(s[1])
-                r += "\n</stroke>\n"
-            r += "</layer>\n"
-            r += "</page>\n"
+            for layer in page.layers:
+                r += "<layer>\n"
+                for stroke in layer.strokes:
+                    r += "<stroke tool=\"pen\" color=\"#000066FF\" width=\"1.41\">\n"
+                    for coord in stroke.coords:
+                        r += " {} {}".format(coord[0], coord[1])
+                    if len(stroke.coords) < 2:
+                        r += " {} {}".format(stroke.coord[0][0], stroke.coords[0][1])
+                    r += "\n</stroke>\n"
+                r += "</layer>\n"
+                r += "</page>\n"
         r += "</xournal>"
         
         f.write(bytes(r, "UTF-8"))
