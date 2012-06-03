@@ -67,6 +67,9 @@ class ConnectionDialog(Gtk.Dialog):
         d = network.connect(server, port)
         d.addCallbacks(self.on_connected, self.on_connection_failure)
         
+        #FIXME: Display warning message, that the whole document goes bye-bye
+        self.parent.document.clear_pages()
+        
         self.multipage.set_current_page(1)
         self.spinner.start()
         self.error_label.set_text("")

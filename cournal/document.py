@@ -42,6 +42,11 @@ class Document:
 
         print("The document has " + str(len(self.pages)) + " pages")
         
+    def clear_pages(self):
+        for page in self.pages:
+            for stroke in page.strokes[:]:
+                page.delete_stroke_callback(stroke)
+        
     def export_pdf(self, filename):
         try:
             surface = cairo.PDFSurface(filename, 0, 0)
