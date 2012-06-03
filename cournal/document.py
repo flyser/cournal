@@ -87,7 +87,7 @@ class Document:
         # In "Xournal World", <t a="a" b="b"> is not the same as <t b="b" a="a"> ...
         
         r = "<?xml version=\"1.0\" standalone=\"no\"?>\n"
-        r += "<xournal version=\"0.4.5\">\n"
+        r += "<xournal version=\"0.4.6\">\n"
         #r += "<!-- Created with Cournal -->\n"
         r += "<title>Xournal document - see http://math.mit.edu/~auroux/software/xournal/</title>\n"
         
