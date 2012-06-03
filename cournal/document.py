@@ -43,7 +43,12 @@ class Document:
         print("The document has " + str(len(self.pages)) + " pages")
         
     def export_pdf(self, filename):
-        surface = cairo.PDFSurface(filename, 0, 0)
+        try:
+            surface = cairo.PDFSurface(filename, 0, 0)
+        except IOError as ex:
+            print("Error saving document:", ex)
+            #FIXME: Move error handler to mainwindow.py and show error message
+            return
         
         for page in self.pages:
             surface.set_size(page.width, page.height)
@@ -71,7 +76,12 @@ class Document:
 
     def save_xoj_file(self, filename):
         pagenum = 1
-        f = gzip.open(filename, "wb")
+        try:
+            f = gzip.open(filename, "wb")
+        except IOError as ex:
+            print("Error saving document:", ex)
+            #FIXME: Move error handler to mainwindow.py and show error message
+            return
         
         # Thanks to Xournals awesome XML(-not)-parsing, we cant use elementtree here.
         # In "Xournal World", <t a="a" b="b"> is not the same as <t b="b" a="a"> ...
