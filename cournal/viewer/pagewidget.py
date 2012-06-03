@@ -95,16 +95,20 @@ class PageWidget(Gtk.DrawingArea):
             self.page.pdf.render(bb_ctx)
             bb_ctx.restore()
 
-            # Render all strokes again
+            bb_ctx.set_source_rgb(0,0,0.4)
             bb_ctx.set_antialias(cairo.ANTIALIAS_GRAY)
             bb_ctx.set_line_cap(cairo.LINE_CAP_ROUND)
             bb_ctx.set_line_join(cairo.LINE_JOIN_ROUND)
+            bb_ctx.set_line_width(1.5)
             
-            bb_ctx.set_source_rgb(0,0,0.4)
+            # Render all strokes again
             for stroke in self.page.strokes:
                 bb_ctx.move_to(stroke[0], stroke[1])
-                for i in range(2, int(len(stroke)), 2):
-                    bb_ctx.line_to(stroke[i], stroke[i+1])
+                if len(stroke) > 2:
+                    for i in range(2, int(len(stroke)), 2):
+                        bb_ctx.line_to(stroke[i], stroke[i+1])
+                else:
+                    bb_ctx.line_to(stroke[0], stroke[1])
                 bb_ctx.stroke()
             
             # Then the image is painted on top of a white "page". Instead of
@@ -140,18 +144,22 @@ class PageWidget(Gtk.DrawingArea):
     
     def draw_remote_stroke(self, stroke):
         if self.backbuffer:
+            factor = self.widget_width / self.page.width
             context = cairo.Context(self.backbuffer)
+            
+            context.scale(factor,factor)
+            context.set_source_rgb(0,0,0.4)
             context.set_antialias(cairo.ANTIALIAS_GRAY)
             context.set_line_join(cairo.LINE_JOIN_ROUND)
             context.set_line_cap(cairo.LINE_CAP_ROUND)
-            context.set_source_rgb(0,0,0.4)
-            
-            factor = self.widget_width / self.page.width
-            context.scale(factor,factor)
+            context.set_line_width(1.5)
             
             context.move_to(stroke[0], stroke[1])
-            for i in range(2, int(len(stroke)), 2):
-                context.line_to(stroke[i], stroke[i+1])
+            if len(stroke) > 2:
+                for i in range(2, int(len(stroke)), 2):
+                    context.line_to(stroke[i], stroke[i+1])
+            else:
+                context.line_to(stroke[0], stroke[1])
             x, y, x2, y2 = tuple([a*factor for a in context.stroke_extents()])
             context.stroke()
             

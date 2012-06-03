@@ -30,21 +30,22 @@ def press(widget, event):
     actualWidth = widget.get_allocation().width
     
     _last_point = [event.x, event.y]
-    _current_stroke = [event.x*widget.page.width/actualWidth, event.y*widget.page.width/actualWidth]
+    _current_stroke = []
+    motion(widget, event)
     widget.page.strokes.append(_current_stroke)
 
 def motion(widget, event):
     global _last_point, _current_stroke
     #print("\rMotion "+str((event.x,event.y))+"  ", end="")
     actualWidth = widget.get_allocation().width
-    
     context = cairo.Context(widget.backbuffer)
-    #context.set_line_width(80)
-    context.set_antialias(cairo.ANTIALIAS_GRAY)
-    context.set_line_cap(cairo.LINE_CAP_ROUND)
-    context.move_to(_last_point[0], _last_point[1])
     
     context.set_source_rgb(0, 0, 0.4)
+    context.set_antialias(cairo.ANTIALIAS_GRAY)
+    context.set_line_cap(cairo.LINE_CAP_ROUND)
+    context.set_line_width(1.5*actualWidth/widget.page.width)
+    
+    context.move_to(_last_point[0], _last_point[1])
     context.line_to(event.x, event.y)
     x, y, x2, y2 = context.stroke_extents()
     context.stroke()
