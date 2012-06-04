@@ -120,7 +120,7 @@ class Document(pb.Viewable):
             self.pages.append(Page())
         self.pages[pagenum].strokes.append(stroke)
         
-        debug(3, "New stroke on page", pagenum)
+        debug(3, "New stroke on page", pagenum+1)
         self.broadcast("add_stroke", pagenum, stroke, except_user=from_user)
         
     def view_delete_stroke_with_coords(self, from_user, pagenum, coords):
@@ -128,7 +128,7 @@ class Document(pb.Viewable):
             if stroke.coords == coords:
                 self.pages[pagenum].strokes.remove(stroke)
                 
-                debug(3, "Deleted stroke on page", pagenum)
+                debug(3, "Deleted stroke on page", pagenum+1)
                 self.broadcast("delete_stroke_with_coords", pagenum, coords, except_user=from_user)
 
 def debug(level, *args):
