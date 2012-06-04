@@ -26,8 +26,8 @@ from ...document import Stroke
 _last_point = None
 _current_coords = None
 _current_stroke = None
-linewidth = 4
-color = (200,0,0,150)
+linewidth = 1.5
+color = (0,0,128,255)
 
 def press(widget, event):
     global _last_point, _current_coords, _current_stroke, linewidth, color
