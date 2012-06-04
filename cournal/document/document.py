@@ -69,15 +69,7 @@ class Document:
             context.set_line_width(1.5)
 
             for stroke in page.layers[0].strokes:
-                first = stroke.coords[0]
-                
-                context.move_to(first[0], first[1])
-                if len(stroke.coords) > 1:
-                    for coord in stroke.coords:
-                        context.line_to(coord[0], coord[1])
-                else:
-                    context.line_to(first[0], first[1])
-                context.stroke()
+                stroke.draw(context)
             
             surface.show_page() # aka "next page"
 
