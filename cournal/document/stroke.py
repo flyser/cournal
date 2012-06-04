@@ -19,7 +19,9 @@
 
 from xojtools import Stroke as XojStroke
 
-class Stroke(XojStroke):
+from twisted.spread import pb
+
+class Stroke(XojStroke, pb.Copyable, pb.RemoteCopy):
     def __init__(self, layer, **kwargs):
         XojStroke.__init__(self, **kwargs)
         self.layer = layer
@@ -31,3 +33,13 @@ class Stroke(XojStroke):
         width = stroke.width
         
         return cls(stroke, layer, color, coords, width)
+    
+    def getStateToCopy(self):
+        # d would be self.__dict__.copy()
+        d = dict()
+        d["color"] = self.color
+        d["coords"] = self.coords
+        d["width"] = self.width
+        return d
+
+pb.setUnjellyableForClass(Stroke, Stroke)

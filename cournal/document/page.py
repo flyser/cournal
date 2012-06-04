@@ -48,11 +48,13 @@ class Page(XojPage):
 
     def new_stroke_callback(self, stroke):
         self.layers[0].strokes.append(stroke)
+        stroke.layer = self.layers[0]
         for callback in self.new_stroke_callbacks:
             callback(stroke)
        
-    def delete_stroke_callback(self, stroke):
-        if stroke in self.strokes:
-            self.layers[0].strokes.remove(stroke)
-            for callback in self.delete_stroke_callbacks:
-                callback(stroke)
+    def delete_stroke_with_coords_callback(self, coords):
+        for stroke in self.layers[0].strokes:
+            if stroke.coords == coords:
+                self.layers[0].strokes.remove(stroke)
+                for callback in self.delete_stroke_callbacks:
+                    callback(stroke)

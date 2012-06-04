@@ -25,21 +25,22 @@ from ...document import Stroke
 
 _last_point = None
 _current_coords = None
+_current_stroke = None
 
 def press(widget, event):
-    global _last_point, _current_coords
+    global _last_point, _current_coords, _current_stroke
     actualWidth = widget.get_allocation().width
     
-    current_stroke = Stroke(widget.page.layers[0], color=(0,0,102,255))
-    _current_coords = current_stroke.coords
+    _current_stroke = Stroke(widget.page.layers[0], color=(0,0,102,255))
+    _current_coords = _current_stroke.coords
 
     _last_point = [event.x, event.y]
     motion(widget, event)
     
-    widget.page.layers[0].strokes.append(current_stroke)
+    widget.page.layers[0].strokes.append(_current_stroke)
 
 def motion(widget, event):
-    global _last_point, _current_coords
+    global _last_point, _current_coords, _current_stroke
     #print("\rMotion "+str((event.x,event.y))+"  ", end="")
     actualWidth = widget.get_allocation().width
     context = cairo.Context(widget.backbuffer)
@@ -65,9 +66,10 @@ def motion(widget, event):
     _current_coords.append([event.x*widget.page.width/actualWidth, event.y*widget.page.width/actualWidth])
 
 def release(widget, event):
-    global _last_point, _current_coords
+    global _last_point, _current_coords, _current_stroke
     if network.is_connected:
-        network.local_new_stroke(widget.page.number, _current_coords)
+        network.local_new_stroke(widget.page.number, _current_stroke)
     
     _last_point = None
     _current_coords = None
+    _current_stroke = None

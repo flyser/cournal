@@ -45,7 +45,7 @@ class Document:
     def clear_pages(self):
         for page in self.pages:
             for stroke in page.layers[0].strokes[:]:
-                page.delete_stroke_callback(stroke)
+                page.delete_stroke_with_coords_callback(stroke.coords)
         
     def export_pdf(self, filename):
         try:

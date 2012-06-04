@@ -34,6 +34,6 @@ def main():
     window.show_all()
 
     reactor.run() # aka Gtk.main()
-    
+
 if __name__ == "__main__":
     sys.exit(main())

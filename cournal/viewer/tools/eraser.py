@@ -45,7 +45,7 @@ def _delete_strokes_near(widget, x, y):
             s_y = coord[1]
             if sqrt((s_x-x)**2 + (s_y-y)**2) < THICKNESS:
                 if network.is_connected:
-                    network.local_delete_stroke(widget.page.number, stroke)
+                    network.local_delete_stroke_with_coords(widget.page.number, stroke.coords)
 
                 widget.backbuffer_valid = False
                 #FIXME: calculate stroke extents to improve performance :-)
