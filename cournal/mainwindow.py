@@ -22,7 +22,7 @@ from gi.repository.GLib import GError
 
 from .viewer import Layout
 from .document import Document
-from . import ConnectionDialog, AboutDialog
+from . import ConnectionDialog, AboutDialog, network
 
 class MainWindow(Gtk.Window):
     def __init__(self, **args):
@@ -49,6 +49,7 @@ class MainWindow(Gtk.Window):
         self.exportbutton = builder.get_object("imagemenuitem_export_pdf")
         self.aboutbutton = builder.get_object("imagemenuitem_about")
         self.quitbutton = builder.get_object("imagemenuitem_quit")
+        self.statusbar = builder.get_object("statusbar")
 
         self.connectbutton.set_sensitive(False)
         self.savebutton.set_sensitive(False)
@@ -144,3 +145,10 @@ class MainWindow(Gtk.Window):
         
     def connection_dialog_destroyed(self, widget):
         self._connection_dialog = None
+        self.fill_statusbar()
+
+    def fill_statusbar(self):
+        if network.is_connected:
+            self.statusbar.push(self.statusbar.get_context_id("connected"), "Connected to: {} on Port {}".format(network.server, network.port))
+        else:
+            self.statusbar.push(self.statusbar.get_context_id("not connected"), "Connection to {}:{} failed".format(network.server, network.port))
