@@ -40,6 +40,9 @@ class Network(pb.Referenceable):
         self.document = document
         
     def connect(self, server, port):
+        self.server = server
+        self.port = port
+        
         if self.document is None:
             return
         self.factory = pb.PBClientFactory()
