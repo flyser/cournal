@@ -306,8 +306,8 @@
         <child>
           <object class="GtkSeparatorToolItem" id="tool_seperator2">
             <property name="use_action_appearance">False</property>
-            <property name="visible">True</property>
             <property name="can_focus">False</property>
+            <property name="no_show_all">True</property>
             <property name="use_action_appearance">False</property>
           </object>
           <packing>
@@ -318,8 +318,8 @@
         <child>
           <object class="GtkToolItem" id="tool_color_chooser">
             <property name="use_action_appearance">False</property>
-            <property name="visible">True</property>
             <property name="can_focus">False</property>
+            <property name="no_show_all">True</property>
             <property name="use_action_appearance">False</property>
             <child>
               <object class="GtkColorButton" id="tool_pen_color">
