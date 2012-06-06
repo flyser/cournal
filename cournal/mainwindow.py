@@ -59,6 +59,27 @@ class MainWindow(Gtk.Window):
         self.exportbutton.connect("activate", self.on_export_click)
         self.aboutbutton.connect("activate", self.on_about_click)
         self.quitbutton.connect("activate", lambda _: self.destroy())
+        
+        # Tool Bar:
+        self.open_pdftool = builder.get_object("tool_open_pdf")
+        self.connecttool = builder.get_object("tool_connect")
+        self.zoom_in_tool = builder.get_object("tool_zoom_in")
+        self.zoom_out_tool = builder.get_object("tool_zoom_out")
+        self.zoom_100_tool = builder.get_object("tool_zoom_100")
+        self.pen_color_tool = builder.get_object("tool_pen_color")
+
+        self.connecttool.set_sensitive(False)
+        self.pen_color_tool.set_sensitive(False)
+        self.zoom_100_tool.set_sensitive(False)
+        self.zoom_in_tool.set_sensitive(False)
+        self.zoom_out_tool.set_sensitive(False)
+        
+        self.open_pdftool.connect("clicked", self.on_open_pdf_click)
+        self.connecttool.connect("clicked", self.on_connect_click)
+        self.zoom_in_tool.connect("clicked", self.on_zoom_in_click)
+        self.zoom_out_tool.connect("clicked", self.on_zoom_out_click)
+        self.zoom_100_tool.connect("clicked", self.on_zoom_100_click)
+        self.pen_color_tool.connect("color-set", self.on_pen_color_change)
     
     def on_open_pdf_click(self, menuitem):
         dialog = Gtk.FileChooserDialog("Open File", self, Gtk.FileChooserAction.OPEN,
@@ -93,6 +114,10 @@ class MainWindow(Gtk.Window):
             self.connectbutton.set_sensitive(True)
             self.savebutton.set_sensitive(True)
             self.exportbutton.set_sensitive(True)
+            self.connecttool.set_sensitive(True)
+            self.zoom_100_tool.set_sensitive(True)
+            self.zoom_in_tool.set_sensitive(True)
+            self.zoom_out_tool.set_sensitive(True)
 
         dialog.destroy()
         
@@ -137,9 +162,24 @@ class MainWindow(Gtk.Window):
         self._about_dialog = AboutDialog(self)
         self._about_dialog.connect("destroy", self.about_dialog_destroyed)
         self._about_dialog.run_nonblocking()
+
+    def on_pen_color_change(self, menuitem):
+        #TODO: Change Stroke Color
+        print(menuitem.get_color())
+
+    def on_zoom_in_click(self, menuitem):
+        self.layout.set_zoom(change=0.2)
+
+    def on_zoom_out_click(self, menuitem):
+        self.layout.set_zoom(change=-0.2)
     
+    def on_zoom_100_click(self, menuitem):
+        self.layout.set_zoom(1)
+        
     def about_dialog_destroyed(self, widget):
         self._about_dialog = None
         
     def connection_dialog_destroyed(self, widget):
         self._connection_dialog = None
+        
+        
