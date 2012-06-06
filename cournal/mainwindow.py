@@ -18,9 +18,10 @@
 # along with Cournal.  If not, see <http://www.gnu.org/licenses/>.
 
 from gi.repository import Gtk
+from gi.repository.GLib import GError
 
 from .viewer import Layout
-from . import Document, network, ConnectionDialog, AboutDialog
+from . import Document, ConnectionDialog, AboutDialog
 
 class MainWindow(Gtk.Window):
     def __init__(self, **args):
@@ -70,7 +71,19 @@ class MainWindow(Gtk.Window):
         if dialog.run() == Gtk.ResponseType.ACCEPT:
             filename = dialog.get_filename()
             
-            self.document = Document(filename)
+            try:
+                document = Document(filename)
+            except GError as ex:
+                message = Gtk.MessageDialog(self, (Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT), Gtk.MessageType.ERROR, Gtk.ButtonsType.OK, "Unable to open PDF" )
+                message.format_secondary_text(ex)
+                message.set_title("Error")
+                message.connect("response", lambda _,x: message.destroy())
+                message.show()
+                print("Unable to open PDF file:", ex)
+                dialog.destroy()
+                return
+            
+            self.document = document
             for child in self.scrolledwindow.get_children():
                 self.scrolledwindow.remove(child)
             self.layout = Layout(self.document)
@@ -84,18 +97,10 @@ class MainWindow(Gtk.Window):
         dialog.destroy()
         
     def on_connect_click(self, menuitem):
-        if not self.document:
-            return
-        dialog = ConnectionDialog(self)
-        
-        if dialog.run() == Gtk.ResponseType.ACCEPT:
-            server = dialog.get_server()
-            port = dialog.get_port()
-            
-            network.set_document(self.document)
-            network.connect(server, port)
-            
-        dialog.destroy()
+        # Need to hold a reference, so the object does not get garbage collected
+        self._connection_dialog = ConnectionDialog(self)
+        self._connection_dialog.connect("destroy", self.connection_dialog_destroyed)
+        self._connection_dialog.run_nonblocking()
 
     def on_save_click(self, menuitem):
         dialog = Gtk.FileChooserDialog("Save File", self, Gtk.FileChooserAction.SAVE,
@@ -135,3 +140,6 @@ class MainWindow(Gtk.Window):
     
     def about_dialog_destroyed(self, widget):
         self._about_dialog = None
+        
+    def connection_dialog_destroyed(self, widget):
+        self._connection_dialog = None

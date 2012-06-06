@@ -42,8 +42,18 @@ class Document:
 
         print("The document has " + str(len(self.pages)) + " pages")
         
+    def clear_pages(self):
+        for page in self.pages:
+            for stroke in page.strokes[:]:
+                page.delete_stroke_callback(stroke)
+        
     def export_pdf(self, filename):
-        surface = cairo.PDFSurface(filename, 0, 0)
+        try:
+            surface = cairo.PDFSurface(filename, 0, 0)
+        except IOError as ex:
+            print("Error saving document:", ex)
+            #FIXME: Move error handler to mainwindow.py and show error message
+            return
         
         for page in self.pages:
             surface.set_size(page.width, page.height)
@@ -52,26 +62,37 @@ class Document:
             page.pdf.render_for_printing(context)
             
             # Render all strokes
+            context.set_source_rgb(0,0,0.4)
             context.set_antialias(cairo.ANTIALIAS_GRAY)
             context.set_line_cap(cairo.LINE_CAP_ROUND)
-            context.set_source_rgb(0,0,0.4)
+            context.set_line_join(cairo.LINE_JOIN_ROUND)
+            context.set_line_width(1.5)
+
             for stroke in page.strokes:
                 context.move_to(stroke[0], stroke[1])
-                for i in range(2, int(len(stroke)), 2):
-                    context.line_to(stroke[i], stroke[i+1])
+                if len(stroke) > 2:
+                    for i in range(2, int(len(stroke)), 2):
+                        context.line_to(stroke[i], stroke[i+1])
+                else:
+                    context.line_to(stroke[0], stroke[1])
                 context.stroke()
             
             surface.show_page() # aka "next page"
 
     def save_xoj_file(self, filename):
         pagenum = 1
-        f = gzip.open(filename, "wb")
+        try:
+            f = gzip.open(filename, "wb")
+        except IOError as ex:
+            print("Error saving document:", ex)
+            #FIXME: Move error handler to mainwindow.py and show error message
+            return
         
         # Thanks to Xournals awesome XML(-not)-parsing, we cant use elementtree here.
         # In "Xournal World", <t a="a" b="b"> is not the same as <t b="b" a="a"> ...
         
         r = "<?xml version=\"1.0\" standalone=\"no\"?>\n"
-        r += "<xournal version=\"0.4.5\">\n"
+        r += "<xournal version=\"0.4.6\">\n"
         #r += "<!-- Created with Cournal -->\n"
         r += "<title>Xournal document - see http://math.mit.edu/~auroux/software/xournal/</title>\n"
         

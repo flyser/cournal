@@ -44,9 +44,11 @@ class Network(pb.Referenceable):
             return
         self.factory = pb.PBClientFactory()
         reactor.connectTCP(server, port, self.factory)
-        def1 = self.factory.login(credentials.UsernamePassword(USERNAME, PASSWORD),
-                             client=self)
-        def1.addCallbacks(self.connected, self.connection_failed)
+        
+        d = self.factory.login(credentials.UsernamePassword(USERNAME, PASSWORD),
+                               client=self)
+        d.addCallbacks(self.connected, self.connection_failed)
+        return d
 
     def connected(self, perspective):
         debug(1, "Connected")
@@ -57,12 +59,15 @@ class Network(pb.Referenceable):
         self.perspective = perspective
         d = perspective.callRemote("joinDocument", "document1")
         d.addCallbacks(self.gotDocument, callbackArgs=["document1"])
+        
+        return d
 
     def connection_failed(self, reason):
         debug(0, "Connection failed due to:", reason.getErrorMessage())
         self.is_connected = False
-        #reactor.stop()
-
+        
+        return reason
+        
     def gotDocument(self, document, name):
         debug(2, "Started editing", name)
         self.remote_doc = document

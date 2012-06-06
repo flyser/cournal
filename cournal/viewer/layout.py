@@ -30,9 +30,6 @@ class Layout(Gtk.Layout):
         for page in self.doc.pages:
             self.children.append(PageWidget(page))
             self.put(self.children[-1], 0, 0)
-            
-        self.set_double_buffered(False)
-        self.set_redraw_on_allocate(False)
      
     def do_size_allocate(self, allocation):
         self.set_allocation(allocation)
@@ -51,9 +48,9 @@ class Layout(Gtk.Layout):
         # Shamelessly copied from the GtkLayout source code:
         if self.get_realized():
             self.get_window().move_resize(allocation.x, allocation.y,
-                                          allocation.width, new_height)
-            self.get_bin_window().resize(max(0, allocation.width),
-                                         max(0, new_height))
+                                          allocation.width, allocation.height)
+            self.get_bin_window().resize(max(allocation.width, new_width),
+                                         max(allocation.height, new_height))
     
     def allocate_child(self, child, x, y, width):
         r = Gdk.Rectangle()
