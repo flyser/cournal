@@ -35,7 +35,7 @@ class Layout(Gtk.Layout):
         self.set_allocation(allocation)
 
         new_width = allocation.width
-        new_height = allocation.width*self.doc.height/self.doc.width
+        new_height = allocation.width*self.doc.height/self.doc.width + 5*(len(self.doc.pages)-1)
         old_width, old_height = self.get_size()
         
         if old_width != new_width:
@@ -43,7 +43,7 @@ class Layout(Gtk.Layout):
             self.set_size(new_width, new_height)
             y_shift = 0
             for child in self.children:
-                y_shift += self.allocate_child(child, 0, y_shift, new_width)
+                y_shift += self.allocate_child(child, 0, y_shift, new_width) + 5
         
         # Shamelessly copied from the GtkLayout source code:
         if self.get_realized():
