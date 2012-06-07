@@ -21,7 +21,7 @@ from gi.repository import Gtk
 from gi.repository.GLib import GError
 
 from .viewer import Layout
-from . import Document, ConnectionDialog, AboutDialog
+from . import Document, ConnectionDialog, AboutDialog, DocumentChooserDialog
 
 class MainWindow(Gtk.Window):
     def __init__(self, **args):
@@ -135,7 +135,7 @@ class MainWindow(Gtk.Window):
         self._connection_dialog = ConnectionDialog(self)
         self._connection_dialog.connect("destroy", self.connection_dialog_destroyed)
         self._connection_dialog.run_nonblocking()
-
+        
     def on_save_click(self, menuitem):
         if self.filename:
             self.document.save_xoj_file(self.filename)
