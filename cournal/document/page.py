@@ -22,15 +22,17 @@ from xojtools import Page as XojPage
 from . import Layer
 
 class Page(XojPage):
-    def __init__(self, document, pdf, number, **kwargs):
-        width, height = pdf.get_size()
-        XojPage.__init__(self, number=number, width=width, height=height, **kwargs)
+    def __init__(self, document, pdf, number, layers=None, width=-1, height=-1):
+        width, height = pdf.get_size() # just overwrite given width and height
+        XojPage.__init__(self, number=number, width=width, height=height)
         self.document = document
         self.pdf = pdf
+        self.layers = layers
+        if self.layers is None:
+            self.layers = [Layer(self, 0)]
+        
         self.new_stroke_callbacks = []
         self.delete_stroke_callbacks = []
-        if self.layers == []:
-            self.layers.append(Layer(self))
             
     @classmethod
     def fromXojPage(cls, page, document, pdf):

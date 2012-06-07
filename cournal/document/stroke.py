@@ -25,8 +25,8 @@ from xojtools import Stroke as XojStroke
 
 
 class Stroke(XojStroke, pb.Copyable, pb.RemoteCopy):
-    def __init__(self, layer, **kwargs):
-        XojStroke.__init__(self, **kwargs)
+    def __init__(self, layer, color, width, coords=None):
+        XojStroke.__init__(self, color=color, width=width, coords=coords)
         self.layer = layer
             
     @classmethod

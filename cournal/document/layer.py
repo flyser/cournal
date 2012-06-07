@@ -20,9 +20,13 @@
 from xojtools import Layer as XojLayer
 
 class Layer(XojLayer):
-    def __init__(self, page, number=0, **kwargs):
-        XojLayer.__init__(self, number=number, **kwargs)
+    def __init__(self, page, number, strokes=None):
+        XojLayer.__init__(self, number=number)
         self.page = page
+        self.strokes = strokes
+        
+        if self.strokes is None:
+            self.strokes = []
             
     @classmethod
     def fromXojLayer(cls, layer, page):

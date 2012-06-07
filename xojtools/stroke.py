@@ -25,7 +25,7 @@ class Stroke:
     If a stroke has variable width, self.coords contains tuples of three
     else tuples of two floats.
     """
-    def __init__(self, color=None, coords=None, width=0):
+    def __init__(self, color=None, width=0, coords=None):
         """
         Constructor
         
