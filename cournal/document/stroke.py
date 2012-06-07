@@ -17,9 +17,12 @@
 # You should have received a copy of the GNU General Public License
 # along with Cournal.  If not, see <http://www.gnu.org/licenses/>.
 
-from xojtools import Stroke as XojStroke
+import cairo
 
 from twisted.spread import pb
+
+from xojtools import Stroke as XojStroke
+
 
 class Stroke(XojStroke, pb.Copyable, pb.RemoteCopy):
     def __init__(self, layer, **kwargs):
@@ -42,4 +45,28 @@ class Stroke(XojStroke, pb.Copyable, pb.RemoteCopy):
         d["width"] = self.width
         return d
 
+    def draw(self, context, scaling=1):
+        context.save()
+        r, g, b, opacity = self.color
+        linewidth = self.width
+        
+        context.set_source_rgba(r/255, g/255, b/255, opacity/255)
+        context.set_antialias(cairo.ANTIALIAS_GRAY)
+        context.set_line_join(cairo.LINE_JOIN_ROUND)
+        context.set_line_cap(cairo.LINE_CAP_ROUND)
+        context.set_line_width(linewidth)
+        
+        first = self.coords[0]
+        context.move_to(first[0], first[1])
+        if len(self.coords) > 1:
+            for coord in self.coords[1:]:
+                context.line_to(coord[0], coord[1])
+        else:
+            context.line_to(first[0], first[1])
+        x, y, x2, y2 = (a*scaling for a in context.stroke_extents())
+        context.stroke()
+        context.restore()
+        
+        return (x, y, x2, y2)
+        
 pb.setUnjellyableForClass(Stroke, Stroke)

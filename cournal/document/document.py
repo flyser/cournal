@@ -69,15 +69,7 @@ class Document:
             context.set_line_width(1.5)
 
             for stroke in page.layers[0].strokes:
-                first = stroke.coords[0]
-                
-                context.move_to(first[0], first[1])
-                if len(stroke.coords) > 1:
-                    for coord in stroke.coords:
-                        context.line_to(coord[0], coord[1])
-                else:
-                    context.line_to(first[0], first[1])
-                context.stroke()
+                stroke.draw(context)
             
             surface.show_page() # aka "next page"
 
@@ -98,21 +90,23 @@ class Document:
         r += "<title>Xournal document - see http://math.mit.edu/~auroux/software/xournal/</title>\n"
         
         for page in self.pages:
-            r += "<page width=\"" + str(round(page.width, 2)) + "\" height=\"" + str(round(page.height, 2)) + "\">\n"
+            r += "<page width=\"{}\" height=\"{}\">\n".format(round(page.width, 2), round(page.height, 2))
             r += "<background type=\"pdf\""
             if pagenum == 1:
-                r += " domain=\"absolute\" filename=\"" + self.pdfname + "\""
-            r += " pageno=\"" + str(pagenum) + "\" />\n"
+                r += " domain=\"absolute\" filename=\"{}\"".format(self.pdfname)
+            r += " pageno=\"{}\" />\n".format(pagenum)
             pagenum += 1
             
             for layer in page.layers:
                 r += "<layer>\n"
                 for stroke in layer.strokes:
-                    r += "<stroke tool=\"pen\" color=\"#000066FF\" width=\"1.41\">\n"
+                    red, g, b, opacity = stroke.color
+                    r += "<stroke tool=\"pen\" color=\"#{:02X}{:02X}{:02X}{:02X}\" width=\"{}\">\n".format(red, g, b, opacity, stroke.width)
+                    first = stroke.coords[0]
                     for coord in stroke.coords:
                         r += " {} {}".format(coord[0], coord[1])
                     if len(stroke.coords) < 2:
-                        r += " {} {}".format(stroke.coord[0][0], stroke.coords[0][1])
+                        r += " {} {}".format(first[0], first[1])
                     r += "\n</stroke>\n"
                 r += "</layer>\n"
                 r += "</page>\n"
