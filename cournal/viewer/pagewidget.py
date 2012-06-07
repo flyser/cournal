@@ -27,9 +27,7 @@ class PageWidget(Gtk.DrawingArea):
         Gtk.DrawingArea.__init__(self, **args)
         
         self.page = page
-        page.add_new_stroke_callback(self.draw_remote_stroke)
-        page.add_delete_stroke_callback(self.delete_remote_stroke)
-        
+        page.widget = self        
         self.widget_width = 1
         self.widget_height = 1
         self.backbuffer = None
@@ -66,9 +64,8 @@ class PageWidget(Gtk.DrawingArea):
     
     def do_get_preferred_height_for_width(self, width):
         #print("get_preferred_height_for_width(", width, ")")
-        page_height = self.page.height
-        page_width = self.page.width
-        return (width*page_height/page_width, width*page_height/page_width)
+        aspect_ratio = self.page.width / self.page.height
+        return (width / aspect_ratio, width / aspect_ratio)
 
     def on_size_allocate(self, widget, alloc):
         #print("size_allocate", alloc.width, alloc.height)
@@ -79,7 +76,7 @@ class PageWidget(Gtk.DrawingArea):
     def draw(self, widget, context):
         #print("draw")
         
-        factor = self.widget_width / self.page.width
+        scaling = self.widget_width / self.page.width
         
         # Check if the page has already been rendered in the correct size
         if not self.backbuffer or self.backbuffer.get_width() != self.widget_width or self.backbuffer_valid is False:
@@ -90,13 +87,13 @@ class PageWidget(Gtk.DrawingArea):
             
             # For correct rendering of PDF, the PDF is first rendered to a
             # transparent image (all alpha = 0).
-            bb_ctx.scale(factor, factor)
+            bb_ctx.scale(scaling, scaling)
             bb_ctx.save()
             self.page.pdf.render(bb_ctx)
             bb_ctx.restore()
             
             for stroke in self.page.layers[0].strokes:
-                stroke.draw(bb_ctx, factor)
+                stroke.draw(bb_ctx, scaling)
             
             # Then the image is painted on top of a white "page". Instead of
             # creating a second image, painting it white, then painting the
@@ -113,7 +110,7 @@ class PageWidget(Gtk.DrawingArea):
         #print("Press " + str((event.x,event.y)))
         if event.button == 1:
             self.active_tool = pen
-        elif event.button == 3:
+        elif event.button == 3 or event.button == 2:
             self.active_tool = eraser
         else:
             return
@@ -131,11 +128,11 @@ class PageWidget(Gtk.DrawingArea):
     
     def draw_remote_stroke(self, stroke):
         if self.backbuffer:
-            factor = self.widget_width / self.page.width
+            scaling = self.widget_width / self.page.width
             context = cairo.Context(self.backbuffer)
             
-            context.scale(factor,factor)
-            x, y, x2, y2 = stroke.draw(context, factor)
+            context.scale(scaling, scaling)
+            x, y, x2, y2 = stroke.draw(context, scaling)
             
             update_rect = Gdk.Rectangle()
             update_rect.x = x-2

@@ -24,18 +24,21 @@ from . import PageWidget
 class Layout(Gtk.Layout):
     def __init__(self, document, **args):
         Gtk.Layout.__init__(self, **args)
-        self.doc = document
+        self.document = document
         self.children = []
         
-        for page in self.doc.pages:
+        for page in self.document.pages:
             self.children.append(PageWidget(page))
             self.put(self.children[-1], 0, 0)
-     
+    
+    def get_height_for_width(self, width):
+        return width * self.document.height / self.document.width
+    
     def do_size_allocate(self, allocation):
         self.set_allocation(allocation)
 
         new_width = allocation.width
-        new_height = allocation.width*self.doc.height/self.doc.width
+        new_height = self.get_height_for_width(allocation.width)
         old_width, old_height = self.get_size()
         
         if old_width != new_width:
@@ -49,8 +52,7 @@ class Layout(Gtk.Layout):
         if self.get_realized():
             self.get_window().move_resize(allocation.x, allocation.y,
                                           allocation.width, allocation.height)
-            self.get_bin_window().resize(max(allocation.width, new_width),
-                                         max(allocation.height, new_height))
+            self.get_bin_window().resize(new_width, max(allocation.height, new_height))
     
     def allocate_child(self, child, x, y, width):
         r = Gdk.Rectangle()

@@ -22,10 +22,10 @@ import cairo
 from twisted.spread import pb
 
 class Stroke(pb.Copyable, pb.RemoteCopy):
-    def __init__(self, layer, color, width, coords=None):
+    def __init__(self, layer, color, linewidth, coords=None):
         self.layer = layer
         self.color = color
-        self.width = width
+        self.linewidth = linewidth
         self.coords = coords
         if self.coords is None:
             self.coords = []
@@ -35,19 +35,18 @@ class Stroke(pb.Copyable, pb.RemoteCopy):
         d = dict()
         d["color"] = self.color
         d["coords"] = self.coords
-        d["width"] = self.width
+        d["linewidth"] = self.linewidth
         return d
 
     def draw(self, context, scaling=1):
         context.save()
         r, g, b, opacity = self.color
-        linewidth = self.width
         
         context.set_source_rgba(r/255, g/255, b/255, opacity/255)
         context.set_antialias(cairo.ANTIALIAS_GRAY)
         context.set_line_join(cairo.LINE_JOIN_ROUND)
         context.set_line_cap(cairo.LINE_CAP_ROUND)
-        context.set_line_width(linewidth)
+        context.set_line_width(self.linewidth)
         
         first = self.coords[0]
         context.move_to(first[0], first[1])

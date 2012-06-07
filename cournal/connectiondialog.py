@@ -50,7 +50,7 @@ class ConnectionDialog(Gtk.Dialog):
         
         self.show_all()
     
-    def response_cb(self, widget, response_id):
+    def response(self, widget, response_id):
         if response_id != Gtk.ResponseType.ACCEPT:
             self.destroy()
             return
@@ -68,6 +68,10 @@ class ConnectionDialog(Gtk.Dialog):
                 return
             self.parent.document.clear_pages()
             
+        self.new_connection(server, port)
+            
+    
+    def new_connection(self, server, port):
         network.set_document(self.parent.document)
         d = network.connect(server, port)
         d.addCallbacks(self.on_connected, self.on_connection_failure)
@@ -77,6 +81,7 @@ class ConnectionDialog(Gtk.Dialog):
         self.error_label.set_text("")
         self.connecting_label.set_text("Connecting to {} ...".format(server))
         self.get_action_area().set_sensitive(False)
+        
     
     def confirm_clear_document(self):
         message = Gtk.MessageDialog(self, (Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT), Gtk.MessageType.WARNING, Gtk.ButtonsType.YES_NO, "Close current document?" )
@@ -101,7 +106,7 @@ class ConnectionDialog(Gtk.Dialog):
         self.get_action_area().set_sensitive(True)
 
     def run_nonblocking(self):
-        self.connect('response', self.response_cb)
+        self.connect('response', self.response)
         self.show()
 
 class ServerPortEntry(Gtk.EventBox):

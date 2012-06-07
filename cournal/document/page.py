@@ -17,7 +17,10 @@
 # You should have received a copy of the GNU General Public License
 # along with Cournal.  If not, see <http://www.gnu.org/licenses/>.
 
-from . import Layer
+from math import sqrt
+
+from . import Layer, Stroke
+from .. import network
 
 class Page:
     def __init__(self, document, pdf, number, layers=None):
@@ -28,27 +31,42 @@ class Page:
         if self.layers is None:
             self.layers = [Layer(self, 0)]
         
+        self.widget = None
         self.width, self.height = pdf.get_size()
-        
-        self.new_stroke_callbacks = []
-        self.delete_stroke_callbacks = []
     
-    #FIXME: Move to layer
-    def add_new_stroke_callback(self, callback):
-        self.new_stroke_callbacks.append(callback)
-       
-    def add_delete_stroke_callback(self, callback):
-        self.delete_stroke_callbacks.append(callback)
-
-    def new_stroke_callback(self, stroke):
+    def new_stroke(self, stroke, send_to_network=False):
         self.layers[0].strokes.append(stroke)
         stroke.layer = self.layers[0]
-        for callback in self.new_stroke_callbacks:
-            callback(stroke)
-       
-    def delete_stroke_with_coords_callback(self, coords):
-        for stroke in self.layers[0].strokes:
+        if self.widget:
+            self.widget.draw_remote_stroke(stroke)
+        if send_to_network:
+            network.new_stroke(self.number, stroke)
+        
+    def new_unfinished_stroke(self, color, linewidth):
+        return Stroke(layer=self.layers[0], color=color, linewidth=linewidth, coords=[])
+    
+    def finish_stroke(self, stroke):
+        #TODO: rerender portion of screen.
+        network.new_stroke(self.number, stroke)
+
+    def delete_stroke_with_coords(self, coords):
+        for stroke in self.layers[0].strokes[:]:
             if stroke.coords == coords:
-                self.layers[0].strokes.remove(stroke)
-                for callback in self.delete_stroke_callbacks:
-                    callback(stroke)
+                self.delete_stroke(stroke, send_to_network=False)
+    
+    def delete_stroke(self, stroke, send_to_network=False):
+        self.layers[0].strokes.remove(stroke)
+        if self.widget:
+            self.widget.delete_remote_stroke(stroke)
+        if send_to_network:
+            network.delete_stroke_with_coords(self.number, stroke.coords)
+    
+    def get_strokes_near(self, x, y, radius):
+        for stroke in self.layers[0].strokes[:]:
+            for coord in stroke.coords:
+                s_x = coord[0]
+                s_y = coord[1]
+                if sqrt((s_x-x)**2 + (s_y-y)**2) < radius:
+                    yield stroke
+                    break
+    

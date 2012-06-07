@@ -16,6 +16,10 @@
     <property name="can_focus">False</property>
     <property name="stock">gtk-connect</property>
   </object>
+  <object class="GtkImage" id="image4">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+  </object>
   <object class="GtkBox" id="outer_box">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
@@ -35,6 +39,16 @@
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <child>
+                  <object class="GtkImageMenuItem" id="imagemenuitem_open_xoj">
+                    <property name="label">gtk-open</property>
+                    <property name="use_action_appearance">False</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="use_underline">True</property>
+                    <property name="use_stock">True</property>
+                  </object>
+                </child>
+                <child>
                   <object class="GtkImageMenuItem" id="imagemenuitem_open_pdf">
                     <property name="label">Annotate PDF</property>
                     <property name="use_action_appearance">False</property>
@@ -52,15 +66,6 @@
                     <property name="can_focus">False</property>
                     <property name="image">image3</property>
                     <property name="use_stock">False</property>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkImageMenuItem" id="imagemenuitem_open_xoj">
-                    <property name="label">gtk-open</property>
-                    <property name="use_action_appearance">False</property>
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="use_stock">True</property>
                   </object>
                 </child>
                 <child>
@@ -84,12 +89,29 @@
                   </object>
                 </child>
                 <child>
+                  <object class="GtkSeparatorMenuItem" id="separatormenuitem2">
+                    <property name="use_action_appearance">False</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                  </object>
+                </child>
+                <child>
                   <object class="GtkImageMenuItem" id="imagemenuitem_export_pdf">
                     <property name="label">Export PDF</property>
                     <property name="use_action_appearance">False</property>
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="image">image1</property>
+                    <property name="use_stock">False</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkImageMenuItem" id="imagemenuitem_import_xoj">
+                    <property name="label">Import</property>
+                    <property name="use_action_appearance">False</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="image">image4</property>
                     <property name="use_stock">False</property>
                   </object>
                 </child>

@@ -17,8 +17,8 @@
 # You should have received a copy of the GNU General Public License
 # along with Cournal.  If not, see <http://www.gnu.org/licenses/>.
 
-import os
-import gzip
+from os.path import abspath
+from gzip import open as open_xoj
 
 from gi.repository import Poppler, GLib
 import cairo
@@ -27,7 +27,7 @@ from . import Page
 
 class Document:
     def __init__(self, pdfname):
-        self.pdfname = os.path.abspath(pdfname)
+        self.pdfname = abspath(pdfname)
         uri = GLib.filename_to_uri(self.pdfname, None)
         self.pdf = Poppler.Document.new_from_file(uri, None)
         self.width = 0
@@ -52,7 +52,7 @@ class Document:
     def clear_pages(self):
         for page in self.pages:
             for stroke in page.layers[0].strokes[:]:
-                page.delete_stroke_with_coords_callback(stroke.coords)
+                page.delete_stroke(stroke)
     
     def export_pdf(self, filename):
         try:
@@ -68,13 +68,6 @@ class Document:
             
             page.pdf.render_for_printing(context)
             
-            # Render all strokes
-            context.set_source_rgb(0,0,0.4)
-            context.set_antialias(cairo.ANTIALIAS_GRAY)
-            context.set_line_cap(cairo.LINE_CAP_ROUND)
-            context.set_line_join(cairo.LINE_JOIN_ROUND)
-            context.set_line_width(1.5)
-
             for stroke in page.layers[0].strokes:
                 stroke.draw(context)
             
@@ -83,7 +76,7 @@ class Document:
     def save_xoj_file(self, filename):
         pagenum = 1
         try:
-            f = gzip.open(filename, "wb")
+            f = open_xoj(filename, "wb")
         except IOError as ex:
             print("Error saving document:", ex)
             #FIXME: Move error handler to mainwindow.py and show error message

@@ -20,9 +20,6 @@
 import cairo
 from gi.repository import Gdk
 
-from ... import network
-from ...document import Stroke
-
 _last_point = None
 _current_coords = None
 _current_stroke = None
@@ -33,7 +30,7 @@ def press(widget, event):
     global _last_point, _current_coords, _current_stroke, linewidth, color
     actualWidth = widget.get_allocation().width
     
-    _current_stroke = Stroke(widget.page.layers[0], color=color, width=linewidth)
+    _current_stroke = widget.page.new_unfinished_stroke(color=color, linewidth=linewidth)
     _current_coords = _current_stroke.coords
 
     _last_point = [event.x, event.y]
@@ -71,8 +68,7 @@ def motion(widget, event):
 
 def release(widget, event):
     global _last_point, _current_coords, _current_stroke
-    if network.is_connected:
-        network.local_new_stroke(widget.page.number, _current_stroke)
+    widget.page.finish_stroke(_current_stroke)
     
     _last_point = None
     _current_coords = None

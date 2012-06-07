@@ -17,13 +17,7 @@
 # You should have received a copy of the GNU General Public License
 # along with Cournal.  If not, see <http://www.gnu.org/licenses/>.
 
-from math import sqrt
-import cairo
-from gi.repository import Gdk
-
-from ... import network
-
-THICKNESS = 8 # pt
+THICKNESS = 6 # pt
 
 def press(widget, event):
     _delete_strokes_near(widget, event.x, event.y)
@@ -32,25 +26,13 @@ def motion(widget, event):
     _delete_strokes_near(widget, event.x, event.y)
 
 def release(widget, event):
-    _active = False
+    pass
 
 def _delete_strokes_near(widget, x, y):
-    factor = widget.page.width / widget.get_allocation().width
-    x *= factor
-    y *= factor
+    scaling = widget.page.width / widget.get_allocation().width
+    x *= scaling
+    y *= scaling
     
-    for stroke in widget.page.layers[0].strokes:
-        for coord in stroke.coords:
-            s_x = coord[0]
-            s_y = coord[1]
-            if sqrt((s_x-x)**2 + (s_y-y)**2) < THICKNESS:
-                if network.is_connected:
-                    network.local_delete_stroke_with_coords(widget.page.number, stroke.coords)
+    for stroke in widget.page.get_strokes_near(x, y, THICKNESS):
+        widget.page.delete_stroke(stroke, send_to_network=True)
 
-                widget.backbuffer_valid = False
-                #FIXME: calculate stroke extents to improve performance :-)
-                widget.get_window().invalidate_rect(None, False)
-
-                #FIXME: Does this work reliably? Deleting items while iterating.
-                widget.page.layers[0].strokes.remove(stroke)
-                break

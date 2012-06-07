@@ -23,8 +23,7 @@ from gzip import open as open_xoj
 
 import xml.etree.cElementTree as ET
 
-from . import Document, Page, Layer, Stroke
-from .. import network
+from . import Document, Stroke
 
 """A simplified parser for Xournal files using the ElementTree API."""
 
@@ -60,9 +59,7 @@ def import_into_document(document, filename, window):
         strokes = pages[p].findall("layer/stroke")
         for s in range(len(strokes)):
             stroke = _parse_stroke(strokes[s], document.pages[p].layers[0])
-            document.pages[p].layers[0].strokes.append(stroke)
-            if network.is_connected:
-                network.local_new_stroke(p, stroke)    
+            document.pages[p].new_stroke(stroke, send_to_network=True)
     return document
 
 def _parse_stroke(stroke, layer):
@@ -91,8 +88,12 @@ def _parse_stroke(stroke, layer):
             coordinates.append([x, y, width])
         else:
             coordinates.append([x, y])
+    
+    # If the stroke is just a point, Xournal saves the same coordinates twice
+    if len(coordinates) == 2 and coordinates[0] == coordinates[1]:
+        del coordinates[1]
 
-    return Stroke(layer, color=color, width=nominalWidth, coords=coordinates)
+    return Stroke(layer, color=color, linewidth=nominalWidth, coords=coordinates)
 
 def _get_background(tree):
     """Gets the background pdf file name of a xournal document"""

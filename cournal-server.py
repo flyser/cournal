@@ -100,7 +100,7 @@ class Document(pb.Viewable):
         self.users.append(user)
         for pagenum in range(len(self.pages)):
             for stroke in self.pages[pagenum].strokes:
-                user.remote.callRemote("add_stroke", pagenum, stroke)
+                user.remote.callRemote("new_stroke", pagenum, stroke)
     
     def removeUser(self, user):
         self.users.remove(user)
@@ -121,7 +121,7 @@ class Document(pb.Viewable):
         self.pages[pagenum].strokes.append(stroke)
         
         debug(3, "New stroke on page", pagenum+1)
-        self.broadcast("add_stroke", pagenum, stroke, except_user=from_user)
+        self.broadcast("new_stroke", pagenum, stroke, except_user=from_user)
         
     def view_delete_stroke_with_coords(self, from_user, pagenum, coords):
         for stroke in self.pages[pagenum].strokes:
