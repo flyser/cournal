@@ -20,7 +20,7 @@
 import os
 import gzip
 
-from gi.repository import Poppler
+from gi.repository import Poppler, GLib
 import cairo
 
 from . import Page
@@ -28,7 +28,8 @@ from . import Page
 class Document:
     def __init__(self, pdfname):
         self.pdfname = os.path.abspath(pdfname)
-        self.pdf = Poppler.Document.new_from_file("file://" + self.pdfname, None)
+        uri = GLib.filename_to_uri(self.pdfname, None)
+        self.pdf = Poppler.Document.new_from_file(uri, None)
         self.width = 0
         self.height = 0
         self.pages = []
@@ -39,14 +40,14 @@ class Document:
             
             self.width = max(self.width, page.width)
             self.height += page.height
-
-        print("The document has " + str(len(self.pages)) + " pages")
         
+        print("The document has {} pages".format(len(self.pages)))
+            
     def clear_pages(self):
         for page in self.pages:
             for stroke in page.layers[0].strokes[:]:
                 page.delete_stroke_with_coords_callback(stroke.coords)
-        
+    
     def export_pdf(self, filename):
         try:
             surface = cairo.PDFSurface(filename, 0, 0)

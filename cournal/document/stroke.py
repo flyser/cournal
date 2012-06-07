@@ -21,21 +21,14 @@ import cairo
 
 from twisted.spread import pb
 
-from xojtools import Stroke as XojStroke
-
-
-class Stroke(XojStroke, pb.Copyable, pb.RemoteCopy):
+class Stroke(pb.Copyable, pb.RemoteCopy):
     def __init__(self, layer, color, width, coords=None):
-        XojStroke.__init__(self, color=color, width=width, coords=coords)
         self.layer = layer
-            
-    @classmethod
-    def fromXojStroke(cls, stroke, layer):
-        color = stroke.color
-        coords = stroke.coords
-        width = stroke.width
-        
-        return cls(stroke, layer, color, coords, width)
+        self.color = color
+        self.width = width
+        self.coords = coords
+        if self.coords is None:
+            self.coords = []
     
     def getStateToCopy(self):
         # d would be self.__dict__.copy()

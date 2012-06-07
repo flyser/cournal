@@ -21,7 +21,7 @@ from gi.repository import Gtk
 from gi.repository.GLib import GError
 
 from .viewer import Layout
-from .document import Document
+from .document import Document, xojparser
 from . import ConnectionDialog, AboutDialog
 
 class MainWindow(Gtk.Window):
@@ -45,6 +45,7 @@ class MainWindow(Gtk.Window):
         # Menu Bar:
         self.open_pdf = builder.get_object("imagemenuitem_open_pdf")
         self.connectbutton = builder.get_object("imagemenuitem_connect")
+        self.open_xojbutton = builder.get_object("imagemenuitem_open_xoj")
         self.savebutton = builder.get_object("imagemenuitem_save")
         self.exportbutton = builder.get_object("imagemenuitem_export_pdf")
         self.aboutbutton = builder.get_object("imagemenuitem_about")
@@ -53,9 +54,11 @@ class MainWindow(Gtk.Window):
         self.connectbutton.set_sensitive(False)
         self.savebutton.set_sensitive(False)
         self.exportbutton.set_sensitive(False)
+        self.open_xojbutton.set_sensitive(False)
         
         self.open_pdf.connect("activate", self.on_open_pdf_click)
         self.connectbutton.connect("activate", self.on_connect_click)
+        self.open_xojbutton.connect("activate", self.on_open_xoj_click)
         self.savebutton.connect("activate", self.on_save_click)
         self.exportbutton.connect("activate", self.on_export_click)
         self.aboutbutton.connect("activate", self.on_about_click)
@@ -92,6 +95,7 @@ class MainWindow(Gtk.Window):
             self.scrolledwindow.show_all()
             
             self.connectbutton.set_sensitive(True)
+            self.open_xojbutton.set_sensitive(True)
             self.savebutton.set_sensitive(True)
             self.exportbutton.set_sensitive(True)
 
@@ -103,21 +107,52 @@ class MainWindow(Gtk.Window):
         self._connection_dialog.connect("destroy", self.connection_dialog_destroyed)
         self._connection_dialog.run_nonblocking()
 
+    def on_open_xoj_click(self, menuitem):
+        dialog = Gtk.FileChooserDialog("Open File", self, Gtk.FileChooserAction.OPEN,
+                                       (Gtk.STOCK_OPEN, Gtk.ResponseType.ACCEPT,
+                                        Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL))
+        xoj_filter = Gtk.FileFilter()
+        xoj_filter.add_mime_type("application/x-xoj")
+        dialog.set_filter(xoj_filter)
+
+        if dialog.run() == Gtk.ResponseType.ACCEPT:
+            filename = dialog.get_filename()
+            document = xojparser.import_into_document(self.document, filename, self)
+#            try:
+#            except Exception as ex:
+#                print(ex)
+#                dialog.destroy()
+#                return
+#            
+#            self.document = document
+#            for child in self.scrolledwindow.get_children():
+#                self.scrolledwindow.remove(child)
+#            self.layout = Layout(self.document)
+#            self.scrolledwindow.add(self.layout)
+#            self.scrolledwindow.show_all()
+#            
+#            self.connectbutton.set_sensitive(True)
+#            #self.open_xojbutton.set_sensitive(True)
+#            self.savebutton.set_sensitive(True)
+#            self.exportbutton.set_sensitive(True)
+
+        dialog.destroy()
+    
     def on_save_click(self, menuitem):
         dialog = Gtk.FileChooserDialog("Save File", self, Gtk.FileChooserAction.SAVE,
                                        (Gtk.STOCK_SAVE, Gtk.ResponseType.ACCEPT,
                                         Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL))
         dialog.set_current_name("document.xoj")
         
-        pdf_filter = Gtk.FileFilter()
-        pdf_filter.add_mime_type("application/x-xoj")
-        dialog.set_filter(pdf_filter)
+        xoj_filter = Gtk.FileFilter()
+        xoj_filter.add_mime_type("application/x-xoj")
+        dialog.set_filter(xoj_filter)
 
         if dialog.run() == Gtk.ResponseType.ACCEPT:
             filename = dialog.get_filename()
             self.document.save_xoj_file(filename)
         dialog.destroy()
-    
+
     def on_export_click(self, menuitem):
         dialog = Gtk.FileChooserDialog("Export PDF", self, Gtk.FileChooserAction.SAVE,
                                        (Gtk.STOCK_SAVE, Gtk.ResponseType.ACCEPT,

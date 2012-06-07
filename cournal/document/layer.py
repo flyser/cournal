@@ -17,20 +17,16 @@
 # You should have received a copy of the GNU General Public License
 # along with Cournal.  If not, see <http://www.gnu.org/licenses/>.
 
-from xojtools import Layer as XojLayer
-
-class Layer(XojLayer):
+class Layer:
+    """
+    Stores information about a Xournal Layer.
+    
+    A layer contains one or more strokes.
+    """
     def __init__(self, page, number, strokes=None):
-        XojLayer.__init__(self, number=number)
+        self.number = number
         self.page = page
         self.strokes = strokes
         
         if self.strokes is None:
             self.strokes = []
-            
-    @classmethod
-    def fromXojLayer(cls, layer, page):
-        number = layer.number
-        strokes = layer.strokes
-        
-        return cls(page, number, strokes=strokes)

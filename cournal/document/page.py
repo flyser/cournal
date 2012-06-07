@@ -17,29 +17,21 @@
 # You should have received a copy of the GNU General Public License
 # along with Cournal.  If not, see <http://www.gnu.org/licenses/>.
 
-from xojtools import Page as XojPage
-
 from . import Layer
 
-class Page(XojPage):
-    def __init__(self, document, pdf, number, layers=None, width=-1, height=-1):
-        width, height = pdf.get_size() # just overwrite given width and height
-        XojPage.__init__(self, number=number, width=width, height=height)
+class Page:
+    def __init__(self, document, pdf, number, layers=None):
         self.document = document
         self.pdf = pdf
+        self.number = number
         self.layers = layers
         if self.layers is None:
             self.layers = [Layer(self, 0)]
         
+        self.width, self.height = pdf.get_size()
+        
         self.new_stroke_callbacks = []
         self.delete_stroke_callbacks = []
-            
-    @classmethod
-    def fromXojPage(cls, page, document, pdf):
-        number = page.number
-        layers = page.layers
-        
-        return cls(document, pdf, number, layers=layers)
     
     #FIXME: Move to layer
     def add_new_stroke_callback(self, callback):
