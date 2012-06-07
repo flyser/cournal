@@ -19,7 +19,7 @@
 
 import sys
 
-from zope.interface import implements
+from zope.interface import implementer
 
 from twisted.cred import portal, checkers
 from twisted.spread import pb
@@ -50,8 +50,8 @@ class CournalServer:
         self.documents[documentname].addUser(user)
         return self.documents[documentname]
 
+@implementer(portal.IRealm)
 class CournalRealm:
-    implements(portal.IRealm)
     def requestAvatar(self, avatarID, mind, *interfaces):
         assert pb.IPerspective in interfaces
         avatar = User(avatarID)

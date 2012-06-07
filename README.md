@@ -44,7 +44,7 @@ and the band-aid networking layer till infinote support is in place.
  * Python 3.x
  * Poppler 0.18 or newer
  * GObject Introspection
- * ZopeInterface
+ * ZopeInterface 3.6.0 or newer
  * GTK+ 3.x
  * Twisted for python3 (download script: download-twisted.sh)
 
