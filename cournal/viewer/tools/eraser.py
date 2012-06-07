@@ -23,7 +23,7 @@ from gi.repository import Gdk
 
 from ... import network
 
-THICKNESS = 5
+THICKNESS = 8 # pt
 
 def press(widget, event):
     _delete_strokes_near(widget, event.x, event.y)
@@ -39,18 +39,18 @@ def _delete_strokes_near(widget, x, y):
     x *= factor
     y *= factor
     
-    for stroke in widget.page.strokes:
-        for i in range(0, int(len(stroke)), 2):
-            s_x = stroke[i]
-            s_y = stroke[i+1]
+    for stroke in widget.page.layers[0].strokes:
+        for coord in stroke.coords:
+            s_x = coord[0]
+            s_y = coord[1]
             if sqrt((s_x-x)**2 + (s_y-y)**2) < THICKNESS:
                 if network.is_connected:
-                    network.local_delete_stroke(widget.page.number, stroke)
+                    network.local_delete_stroke_with_coords(widget.page.number, stroke.coords)
 
                 widget.backbuffer_valid = False
                 #FIXME: calculate stroke extents to improve performance :-)
                 widget.get_window().invalidate_rect(None, False)
 
                 #FIXME: Does this work reliably? Deleting items while iterating.
-                widget.page.strokes.remove(stroke)
+                widget.page.layers[0].strokes.remove(stroke)
                 break

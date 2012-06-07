@@ -26,6 +26,8 @@ from twisted.spread import pb
 from twisted.internet import reactor
 from twisted.internet.error import *
 
+from cournal.document.stroke import Stroke
+
 # 0 - none
 # 1 - minimal
 # 2 - medium
@@ -121,12 +123,13 @@ class Document(pb.Viewable):
         debug(3, "New stroke on page", pagenum)
         self.broadcast("add_stroke", pagenum, stroke, except_user=from_user)
         
-    def view_delete_stroke(self, from_user, pagenum, stroke):
-        if stroke in self.pages[pagenum].strokes:
-            self.pages[pagenum].strokes.remove(stroke)
-            
-            debug(3, "Deleted stroke on page", pagenum)
-            self.broadcast("delete_stroke", pagenum, stroke, except_user=from_user)
+    def view_delete_stroke_with_coords(self, from_user, pagenum, coords):
+        for stroke in self.pages[pagenum].strokes:
+            if stroke.coords == coords:
+                self.pages[pagenum].strokes.remove(stroke)
+                
+                debug(3, "Deleted stroke on page", pagenum)
+                self.broadcast("delete_stroke_with_coords", pagenum, coords, except_user=from_user)
 
 def debug(level, *args):
     if level <= DEBUGLEVEL:

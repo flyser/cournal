@@ -102,13 +102,14 @@ class PageWidget(Gtk.DrawingArea):
             bb_ctx.set_line_width(1.5)
             
             # Render all strokes again
-            for stroke in self.page.strokes:
-                bb_ctx.move_to(stroke[0], stroke[1])
-                if len(stroke) > 2:
-                    for i in range(2, int(len(stroke)), 2):
-                        bb_ctx.line_to(stroke[i], stroke[i+1])
+            for stroke in self.page.layers[0].strokes:
+                first = stroke.coords[0]
+                bb_ctx.move_to(first[0], first[1])
+                if len(stroke.coords) > 1:
+                    for coord in stroke.coords[1:]:
+                        bb_ctx.line_to(coord[0], coord[1])
                 else:
-                    bb_ctx.line_to(stroke[0], stroke[1])
+                    bb_ctx.line_to(first[0], first[1])
                 bb_ctx.stroke()
             
             # Then the image is painted on top of a white "page". Instead of
@@ -154,12 +155,13 @@ class PageWidget(Gtk.DrawingArea):
             context.set_line_cap(cairo.LINE_CAP_ROUND)
             context.set_line_width(1.5)
             
-            context.move_to(stroke[0], stroke[1])
-            if len(stroke) > 2:
-                for i in range(2, int(len(stroke)), 2):
-                    context.line_to(stroke[i], stroke[i+1])
+            first = stroke.coords[0]
+            context.move_to(first[0], first[1])
+            if len(stroke.coords) > 1:
+                for coord in stroke.coords[1:]:
+                    context.line_to(coord[0], coord[1])
             else:
-                context.line_to(stroke[0], stroke[1])
+                context.line_to(first[0], first[1])
             x, y, x2, y2 = tuple([a*factor for a in context.stroke_extents()])
             context.stroke()
             

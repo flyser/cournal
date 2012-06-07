@@ -78,14 +78,13 @@ class Network(pb.Referenceable):
     
     def local_new_stroke(self, pagenum, stroke):
         d = self.remote_doc.callRemote("new_stroke", pagenum, stroke)
-#        d.addCallbacks(self.local_testing_strokes_cb, callbackArgs=stroke1)
 
-    def remote_delete_stroke(self, pagenum, stroke):
+    def remote_delete_stroke_with_coords(self, pagenum, coords):
         if self.document and pagenum < len(self.document.pages):
-            self.document.pages[pagenum].delete_stroke_callback(stroke)
+            self.document.pages[pagenum].delete_stroke_with_coords_callback(coords)
     
-    def local_delete_stroke(self, pagenum, stroke):
-        d = self.remote_doc.callRemote("delete_stroke", pagenum, stroke)
+    def local_delete_stroke_with_coords(self, pagenum, coords):
+        d = self.remote_doc.callRemote("delete_stroke_with_coords", pagenum, coords)
 
     def shutdown(self, result):
         reactor.stop()

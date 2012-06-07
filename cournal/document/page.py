@@ -17,17 +17,29 @@
 # You should have received a copy of the GNU General Public License
 # along with Cournal.  If not, see <http://www.gnu.org/licenses/>.
 
-class Page:
-    def __init__(self, document, pdf, number):
+from xojtools import Page as XojPage
+
+from . import Layer
+
+class Page(XojPage):
+    def __init__(self, document, pdf, number, **kwargs):
+        width, height = pdf.get_size()
+        XojPage.__init__(self, number=number, width=width, height=height, **kwargs)
         self.document = document
         self.pdf = pdf
-        self.number = number
         self.new_stroke_callbacks = []
         self.delete_stroke_callbacks = []
+        if self.layers == []:
+            self.layers.append(Layer(self))
+            
+    @classmethod
+    def fromXojPage(cls, page, document, pdf):
+        number = page.number
+        layers = page.layers
         
-        self.width, self.height = pdf.get_size()
-        self.strokes = []
-        
+        return cls(document, pdf, number, layers=layers)
+    
+    #FIXME: Move to layer
     def add_new_stroke_callback(self, callback):
         self.new_stroke_callbacks.append(callback)
        
@@ -35,12 +47,14 @@ class Page:
         self.delete_stroke_callbacks.append(callback)
 
     def new_stroke_callback(self, stroke):
-        self.strokes.append(stroke)
+        self.layers[0].strokes.append(stroke)
+        stroke.layer = self.layers[0]
         for callback in self.new_stroke_callbacks:
             callback(stroke)
        
-    def delete_stroke_callback(self, stroke):
-        if stroke in self.strokes:
-            self.strokes.remove(stroke)
-            for callback in self.delete_stroke_callbacks:
-                callback(stroke)
+    def delete_stroke_with_coords_callback(self, coords):
+        for stroke in self.layers[0].strokes:
+            if stroke.coords == coords:
+                self.layers[0].strokes.remove(stroke)
+                for callback in self.delete_stroke_callbacks:
+                    callback(stroke)
