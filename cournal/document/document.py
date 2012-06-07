@@ -42,7 +42,13 @@ class Document:
             self.height += page.height
         
         print("The document has {} pages".format(len(self.pages)))
-            
+        
+    def is_empty(self):
+        for page in self.pages:
+            if len(page.layers[0].strokes) != 0:
+                return False
+        return True
+
     def clear_pages(self):
         for page in self.pages:
             for stroke in page.layers[0].strokes[:]:
@@ -83,7 +89,7 @@ class Document:
             #FIXME: Move error handler to mainwindow.py and show error message
             return
         
-        # Thanks to Xournals awesome XML(-not)-parsing, we cant use elementtree here.
+        # Thanks to Xournals awesome XML(-not)-parsing, we can't use elementtree here.
         # In "Xournal World", <t a="a" b="b"> is not the same as <t b="b" a="a"> ...
         
         r = "<?xml version=\"1.0\" standalone=\"no\"?>\n"

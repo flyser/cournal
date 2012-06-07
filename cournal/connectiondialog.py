@@ -63,19 +63,31 @@ class ConnectionDialog(Gtk.Dialog):
             self.error_label.show()
             return
         
+        if not self.parent.document.is_empty():
+            if not self.confirm_clear_document():
+                return
+            self.parent.document.clear_pages()
+            
         network.set_document(self.parent.document)
         d = network.connect(server, port)
         d.addCallbacks(self.on_connected, self.on_connection_failure)
-        
-        #FIXME: Display warning message, that the whole document goes bye-bye
-        self.parent.document.clear_pages()
         
         self.multipage.set_current_page(1)
         self.spinner.start()
         self.error_label.set_text("")
         self.connecting_label.set_text("Connecting to {} ...".format(server))
         self.get_action_area().set_sensitive(False)
-        
+    
+    def confirm_clear_document(self):
+        message = Gtk.MessageDialog(self, (Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT), Gtk.MessageType.WARNING, Gtk.ButtonsType.YES_NO, "Close current document?" )
+        message.format_secondary_text("You will loose all changes to your current document, if you connect to a server. Continue without saving?")
+        message.set_title("Warning")
+        if message.run() != Gtk.ResponseType.YES:
+            message.destroy()
+            return False
+        message.destroy()
+        return True
+
     def on_connected(self, perspective):
         self.destroy()
     
