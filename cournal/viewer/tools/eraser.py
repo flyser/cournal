@@ -35,4 +35,3 @@ def _delete_strokes_near(widget, x, y):
     
     for stroke in widget.page.get_strokes_near(x, y, THICKNESS):
         widget.page.delete_stroke(stroke, send_to_network=True)
-

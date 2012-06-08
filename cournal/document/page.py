@@ -69,4 +69,3 @@ class Page:
                 if sqrt((s_x-x)**2 + (s_y-y)**2) < radius:
                     yield stroke
                     break
-    
