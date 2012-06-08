@@ -43,17 +43,18 @@ class Layout(Gtk.Layout):
         self.set_allocation(allocation)
 
         new_width = allocation.width
-        new_height = self.get_height_for_width(new_width) + PAGE_SEPARATOR * len(self.document.pages[1:])
         old_width, old_height = self.get_size()
         
         if old_width != new_width:
             #print("Ly: size_allocate")
-            self.set_size(new_width, new_height)
-            y_shift = 0
+            new_height = 0
             for child in self.children:
-                y_shift += self.allocate_child(child, 0, y_shift, new_width)
-                y_shift += PAGE_SEPARATOR
-        
+                new_height += self.allocate_child(child, 0, new_height, new_width)
+                new_height += PAGE_SEPARATOR
+            new_height -= PAGE_SEPARATOR
+        else:
+            new_height = old_height
+        self.set_size(new_width, new_height)
         # Shamelessly copied from the GtkLayout source code:
         if self.get_realized():
             self.get_window().move_resize(allocation.x, allocation.y,
