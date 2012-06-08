@@ -125,7 +125,7 @@ class ServerPortEntry(Gtk.EventBox):
         server_port_align.pack_start(colon_label, False, False, 0)
         server_port_align.pack_start(self.port_entry, False, False, 0)
         
-        self.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(255,255,255,255))
+        self.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(1,1,1,1))
         frame.set_shadow_type(Gtk.ShadowType.IN)
         
         self.server_entry.set_has_frame(False)
