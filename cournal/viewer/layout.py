@@ -21,12 +21,17 @@ from gi.repository import Gtk, Gdk
 
 from . import PageWidget
 
+PAGE_SEPARATOR = 10 # px
+
 class Layout(Gtk.Layout):
     def __init__(self, document, **args):
         Gtk.Layout.__init__(self, **args)
         self.document = document
         self.children = []
         
+        #color =
+        #print(color)
+        self.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(79/255,78/255,77/255,1))
         for page in self.document.pages:
             self.children.append(PageWidget(page))
             self.put(self.children[-1], 0, 0)
@@ -38,7 +43,7 @@ class Layout(Gtk.Layout):
         self.set_allocation(allocation)
 
         new_width = allocation.width
-        new_height = self.get_height_for_width(allocation.width)
+        new_height = self.get_height_for_width(new_width) + PAGE_SEPARATOR * len(self.document.pages[1:])
         old_width, old_height = self.get_size()
         
         if old_width != new_width:
@@ -47,6 +52,7 @@ class Layout(Gtk.Layout):
             y_shift = 0
             for child in self.children:
                 y_shift += self.allocate_child(child, 0, y_shift, new_width)
+                y_shift += PAGE_SEPARATOR
         
         # Shamelessly copied from the GtkLayout source code:
         if self.get_realized():
