@@ -28,6 +28,7 @@ class Layout(Gtk.Layout):
         Gtk.Layout.__init__(self, **args)
         self.document = document
         self.children = []
+        self.zoomlevel = 1
         
         #color =
         #print(color)
@@ -42,7 +43,7 @@ class Layout(Gtk.Layout):
     def do_size_allocate(self, allocation):
         self.set_allocation(allocation)
 
-        new_width = allocation.width
+        new_width = allocation.width*self.zoomlevel
         old_width, old_height = self.get_size()
         
         if old_width != new_width:
@@ -69,3 +70,11 @@ class Layout(Gtk.Layout):
         r.height = child.do_get_preferred_height_for_width(width)[0]
         child.size_allocate(r)
         return r.height
+    
+    def set_zoomlevel(self, absolute=None, change=None):
+        if absolute:
+            self.zoomlevel = absolute
+        elif change:
+            self.zoomlevel += change
+        self.zoomlevel = min(max(self.zoomlevel, 0.2),3)
+        self.do_size_allocate(self.get_allocation())

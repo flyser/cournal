@@ -82,6 +82,12 @@ class MainWindow(Gtk.Window):
         self.menu_import_xoj.connect("activate", self.run_import_xoj_dialog)
         self.menu_quit.connect("activate", lambda _: self.destroy())
         self.menu_about.connect("activate", self.run_about_dialog)
+        self.tool_open_pdf.connect("clicked", self.run_open_pdf_dialog)
+        self.tool_connect.connect("clicked", self.run_connection_dialog)
+        self.tool_zoom_in.connect("clicked", self.zoom_in)
+        self.tool_zoom_out.connect("clicked", self.zoom_out)
+        self.tool_zoom_100.connect("clicked", self.zoom_100)
+        self.tool_pen_color.connect("color-set", self.change_pen_color)
     
     def _set_document(self, document):
         self.document = document
@@ -193,4 +199,17 @@ class MainWindow(Gtk.Window):
         message.format_secondary_text(second)
         message.set_title("Error")
         message.connect("response", lambda _,x: message.destroy())
-        message.show()        
+        message.show()
+        
+    def change_pen_color(self, menuitem):
+        #TODO: Change Stroke Color
+        print(menuitem.get_color())
+    
+    def zoom_in(self, menuitem):
+        self.layout.set_zoomlevel(change=0.2)
+    
+    def zoom_out(self, menuitem):
+        self.layout.set_zoomlevel(change=-0.2)
+    
+    def zoom_100(self, menuitem):
+        self.layout.set_zoomlevel(1)
