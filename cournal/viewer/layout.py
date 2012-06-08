@@ -26,18 +26,27 @@ class Layout(Gtk.Layout):
         Gtk.Layout.__init__(self, **args)
         self.document = document
         self.children = []
+        self.zoom = 1
         
         for page in self.document.pages:
             self.children.append(PageWidget(page))
             self.put(self.children[-1], 0, 0)
     
+    def set_zoom(self, absolute=None, change=None):
+        if absolute:
+            self.zoom = absolute
+        elif change:
+            self.zoom += change
+        self.zoom = min(max(self.zoom, 0.2),3)
+        self.do_size_allocate(self.get_allocation())
+
     def get_height_for_width(self, width):
-        return width * self.document.height / self.document.width
+        return width * self.zoom * self.document.height / self.document.width + 5 * (len(self.document.pages)-1)
     
     def do_size_allocate(self, allocation):
         self.set_allocation(allocation)
 
-        new_width = allocation.width
+        new_width = allocation.width*self.zoom
         new_height = self.get_height_for_width(allocation.width)
         old_width, old_height = self.get_size()
         
@@ -46,7 +55,7 @@ class Layout(Gtk.Layout):
             self.set_size(new_width, new_height)
             y_shift = 0
             for child in self.children:
-                y_shift += self.allocate_child(child, 0, y_shift, new_width)
+                y_shift += self.allocate_child(child, 0, y_shift, new_width) + 5
         
         # Shamelessly copied from the GtkLayout source code:
         if self.get_realized():

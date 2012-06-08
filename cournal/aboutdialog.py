@@ -32,7 +32,7 @@ class AboutDialog(Gtk.AboutDialog):
         self.set_comments("A collaborative note taking and journal application using a stylus.")
         self.set_license_type(Gtk.License.GPL_3_0)
         self.set_website("https://github.com/Flyser/cournal")
-        self.set_authors(["Fabian Henze"])
+        self.set_authors(["Fabian Henze","Simon Vetter"])
         self.set_artists(["Simon Vetter"])
         
     def response_cb(self, widget, response_id):
