@@ -58,7 +58,7 @@ class Network(pb.Referenceable):
         self.is_connected = True
         self.perspective = perspective
         d = perspective.callRemote("joinDocument", "document1")
-        d.addCallbacks(self.gotDocument, callbackArgs=["document1"])
+        d.addCallbacks(self.got_server_document, callbackArgs=["document1"])
         
         return d
 
@@ -68,24 +68,29 @@ class Network(pb.Referenceable):
         
         return reason
         
-    def gotDocument(self, document, name):
+    def got_server_document(self, server_document, name):
         debug(2, "Started editing", name)
-        self.remote_doc = document
+        self.server_document = server_document
 
-    def remote_add_stroke(self, pagenum, stroke):
+    def remote_new_stroke(self, pagenum, stroke):
+        """Called by the server"""
         if self.document and pagenum < len(self.document.pages):
-            self.document.pages[pagenum].new_stroke_callback(stroke)
+            self.document.pages[pagenum].new_stroke(stroke)
     
-    def local_new_stroke(self, pagenum, stroke):
-        d = self.remote_doc.callRemote("new_stroke", pagenum, stroke)
-#        d.addCallbacks(self.local_testing_strokes_cb, callbackArgs=stroke1)
+    def new_stroke(self, pagenum, stroke):
+        """Called by local code"""
+        if self.is_connected:
+            self.server_document.callRemote("new_stroke", pagenum, stroke)
 
-    def remote_delete_stroke(self, pagenum, stroke):
+    def remote_delete_stroke_with_coords(self, pagenum, coords):
+        """Called by the server"""
         if self.document and pagenum < len(self.document.pages):
-            self.document.pages[pagenum].delete_stroke_callback(stroke)
+            self.document.pages[pagenum].delete_stroke_with_coords(coords)
     
-    def local_delete_stroke(self, pagenum, stroke):
-        d = self.remote_doc.callRemote("delete_stroke", pagenum, stroke)
+    def delete_stroke_with_coords(self, pagenum, coords):
+        """Called by local code"""
+        if self.is_connected:
+            self.server_document.callRemote("delete_stroke_with_coords", pagenum, coords)
 
     def shutdown(self, result):
         reactor.stop()

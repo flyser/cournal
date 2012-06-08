@@ -20,30 +20,36 @@
 import cairo
 from gi.repository import Gdk
 
-from ... import network
-
 _last_point = None
+_current_coords = None
 _current_stroke = None
+linewidth = 1.5
+color = (0,0,128,255)
 
 def press(widget, event):
-    global _last_point, _current_stroke
+    global _last_point, _current_coords, _current_stroke, linewidth, color
     actualWidth = widget.get_allocation().width
     
+    _current_stroke = widget.page.new_unfinished_stroke(color=color, linewidth=linewidth)
+    _current_coords = _current_stroke.coords
+
     _last_point = [event.x, event.y]
-    _current_stroke = []
     motion(widget, event)
-    widget.page.strokes.append(_current_stroke)
+    
+    widget.page.layers[0].strokes.append(_current_stroke)
 
 def motion(widget, event):
-    global _last_point, _current_stroke
+    global _last_point, _current_coords, _current_stroke
     #print("\rMotion "+str((event.x,event.y))+"  ", end="")
+    
+    r, g, b, opacity = color
     actualWidth = widget.get_allocation().width
     context = cairo.Context(widget.backbuffer)
     
-    context.set_source_rgb(0, 0, 0.4)
+    context.set_source_rgba(r/255, g/255, b/255, opacity/255)
     context.set_antialias(cairo.ANTIALIAS_GRAY)
     context.set_line_cap(cairo.LINE_CAP_ROUND)
-    context.set_line_width(1.5*actualWidth/widget.page.width)
+    context.set_line_width(linewidth*actualWidth/widget.page.width)
     
     context.move_to(_last_point[0], _last_point[1])
     context.line_to(event.x, event.y)
@@ -58,12 +64,12 @@ def motion(widget, event):
     widget.get_window().invalidate_rect(update_rect, False)
 
     _last_point = [event.x, event.y]
-    _current_stroke.extend([event.x*widget.page.width/actualWidth, event.y*widget.page.width/actualWidth])
+    _current_coords.append([event.x*widget.page.width/actualWidth, event.y*widget.page.width/actualWidth])
 
 def release(widget, event):
-    global _last_point, _current_stroke
-    if network.is_connected:
-        network.local_new_stroke(widget.page.number, _current_stroke)
+    global _last_point, _current_coords, _current_stroke
+    widget.page.finish_stroke(_current_stroke)
     
     _last_point = None
+    _current_coords = None
     _current_stroke = None

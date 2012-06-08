@@ -27,9 +27,7 @@ class PageWidget(Gtk.DrawingArea):
         Gtk.DrawingArea.__init__(self, **args)
         
         self.page = page
-        page.add_new_stroke_callback(self.draw_remote_stroke)
-        page.add_delete_stroke_callback(self.delete_remote_stroke)
-        
+        page.widget = self        
         self.widget_width = 1
         self.widget_height = 1
         self.backbuffer = None
@@ -66,9 +64,8 @@ class PageWidget(Gtk.DrawingArea):
     
     def do_get_preferred_height_for_width(self, width):
         #print("get_preferred_height_for_width(", width, ")")
-        page_height = self.page.height
-        page_width = self.page.width
-        return (width*page_height/page_width, width*page_height/page_width)
+        aspect_ratio = self.page.width / self.page.height
+        return (width / aspect_ratio, width / aspect_ratio)
 
     def on_size_allocate(self, widget, alloc):
         #print("size_allocate", alloc.width, alloc.height)
@@ -79,7 +76,7 @@ class PageWidget(Gtk.DrawingArea):
     def draw(self, widget, context):
         #print("draw")
         
-        factor = self.widget_width / self.page.width
+        scaling = self.widget_width / self.page.width
         
         # Check if the page has already been rendered in the correct size
         if not self.backbuffer or self.backbuffer.get_width() != self.widget_width or self.backbuffer_valid is False:
@@ -90,26 +87,13 @@ class PageWidget(Gtk.DrawingArea):
             
             # For correct rendering of PDF, the PDF is first rendered to a
             # transparent image (all alpha = 0).
-            bb_ctx.scale(factor, factor)
+            bb_ctx.scale(scaling, scaling)
             bb_ctx.save()
             self.page.pdf.render(bb_ctx)
             bb_ctx.restore()
-
-            bb_ctx.set_source_rgb(0,0,0.4)
-            bb_ctx.set_antialias(cairo.ANTIALIAS_GRAY)
-            bb_ctx.set_line_cap(cairo.LINE_CAP_ROUND)
-            bb_ctx.set_line_join(cairo.LINE_JOIN_ROUND)
-            bb_ctx.set_line_width(1.5)
             
-            # Render all strokes again
-            for stroke in self.page.strokes:
-                bb_ctx.move_to(stroke[0], stroke[1])
-                if len(stroke) > 2:
-                    for i in range(2, int(len(stroke)), 2):
-                        bb_ctx.line_to(stroke[i], stroke[i+1])
-                else:
-                    bb_ctx.line_to(stroke[0], stroke[1])
-                bb_ctx.stroke()
+            for stroke in self.page.layers[0].strokes:
+                stroke.draw(bb_ctx, scaling)
             
             # Then the image is painted on top of a white "page". Instead of
             # creating a second image, painting it white, then painting the
@@ -126,7 +110,7 @@ class PageWidget(Gtk.DrawingArea):
         #print("Press " + str((event.x,event.y)))
         if event.button == 1:
             self.active_tool = pen
-        elif event.button == 3:
+        elif event.button == 3 or event.button == 2:
             self.active_tool = eraser
         else:
             return
@@ -144,24 +128,11 @@ class PageWidget(Gtk.DrawingArea):
     
     def draw_remote_stroke(self, stroke):
         if self.backbuffer:
-            factor = self.widget_width / self.page.width
+            scaling = self.widget_width / self.page.width
             context = cairo.Context(self.backbuffer)
             
-            context.scale(factor,factor)
-            context.set_source_rgb(0,0,0.4)
-            context.set_antialias(cairo.ANTIALIAS_GRAY)
-            context.set_line_join(cairo.LINE_JOIN_ROUND)
-            context.set_line_cap(cairo.LINE_CAP_ROUND)
-            context.set_line_width(1.5)
-            
-            context.move_to(stroke[0], stroke[1])
-            if len(stroke) > 2:
-                for i in range(2, int(len(stroke)), 2):
-                    context.line_to(stroke[i], stroke[i+1])
-            else:
-                context.line_to(stroke[0], stroke[1])
-            x, y, x2, y2 = tuple([a*factor for a in context.stroke_extents()])
-            context.stroke()
+            context.scale(scaling, scaling)
+            x, y, x2, y2 = stroke.draw(context, scaling)
             
             update_rect = Gdk.Rectangle()
             update_rect.x = x-2

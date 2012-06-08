@@ -17,22 +17,16 @@
 # You should have received a copy of the GNU General Public License
 # along with Cournal.  If not, see <http://www.gnu.org/licenses/>.
 
-THICKNESS = 6 # pt
-
-def press(widget, event):
-    _delete_strokes_near(widget, event.x, event.y)
-
-def motion(widget, event):
-    _delete_strokes_near(widget, event.x, event.y)
-
-def release(widget, event):
-    pass
-
-def _delete_strokes_near(widget, x, y):
-    scaling = widget.page.width / widget.get_allocation().width
-    x *= scaling
-    y *= scaling
+class Layer:
+    """
+    Stores information about a Xournal Layer.
     
-    for stroke in widget.page.get_strokes_near(x, y, THICKNESS):
-        widget.page.delete_stroke(stroke, send_to_network=True)
-
+    A layer contains one or more strokes.
+    """
+    def __init__(self, page, number, strokes=None):
+        self.number = number
+        self.page = page
+        self.strokes = strokes
+        
+        if self.strokes is None:
+            self.strokes = []

@@ -19,12 +19,14 @@
 
 import sys
 
-from zope.interface import implements
+from zope.interface import implementer
 
 from twisted.cred import portal, checkers
 from twisted.spread import pb
 from twisted.internet import reactor
 from twisted.internet.error import *
+
+from cournal.document.stroke import Stroke
 
 # 0 - none
 # 1 - minimal
@@ -50,8 +52,8 @@ class CournalServer:
         self.documents[documentname].addUser(user)
         return self.documents[documentname]
 
+@implementer(portal.IRealm)
 class CournalRealm:
-    implements(portal.IRealm)
     def requestAvatar(self, avatarID, mind, *interfaces):
         assert pb.IPerspective in interfaces
         avatar = User(avatarID)
@@ -98,7 +100,7 @@ class Document(pb.Viewable):
         self.users.append(user)
         for pagenum in range(len(self.pages)):
             for stroke in self.pages[pagenum].strokes:
-                user.remote.callRemote("add_stroke", pagenum, stroke)
+                user.remote.callRemote("new_stroke", pagenum, stroke)
     
     def removeUser(self, user):
         self.users.remove(user)
@@ -118,15 +120,16 @@ class Document(pb.Viewable):
             self.pages.append(Page())
         self.pages[pagenum].strokes.append(stroke)
         
-        debug(3, "New stroke on page", pagenum)
-        self.broadcast("add_stroke", pagenum, stroke, except_user=from_user)
+        debug(3, "New stroke on page", pagenum+1)
+        self.broadcast("new_stroke", pagenum, stroke, except_user=from_user)
         
-    def view_delete_stroke(self, from_user, pagenum, stroke):
-        if stroke in self.pages[pagenum].strokes:
-            self.pages[pagenum].strokes.remove(stroke)
-            
-            debug(3, "Deleted stroke on page", pagenum)
-            self.broadcast("delete_stroke", pagenum, stroke, except_user=from_user)
+    def view_delete_stroke_with_coords(self, from_user, pagenum, coords):
+        for stroke in self.pages[pagenum].strokes:
+            if stroke.coords == coords:
+                self.pages[pagenum].strokes.remove(stroke)
+                
+                debug(3, "Deleted stroke on page", pagenum+1)
+                self.broadcast("delete_stroke_with_coords", pagenum, coords, except_user=from_user)
 
 def debug(level, *args):
     if level <= DEBUGLEVEL:

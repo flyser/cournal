@@ -17,18 +17,19 @@
 # You should have received a copy of the GNU General Public License
 # along with Cournal.  If not, see <http://www.gnu.org/licenses/>.
 
-import os
-import gzip
+from os.path import abspath
+from gzip import open as open_xoj
 
-from gi.repository import Poppler
+from gi.repository import Poppler, GLib
 import cairo
 
 from . import Page
 
 class Document:
-    def __init__(self, filename):
-        self.filename = os.path.abspath(filename)
-        self.pdf = Poppler.Document.new_from_file("file://" + self.filename, None)
+    def __init__(self, pdfname):
+        self.pdfname = abspath(pdfname)
+        uri = GLib.filename_to_uri(self.pdfname, None)
+        self.pdf = Poppler.Document.new_from_file(uri, None)
         self.width = 0
         self.height = 0
         self.pages = []
@@ -39,14 +40,20 @@ class Document:
             
             self.width = max(self.width, page.width)
             self.height += page.height
-
-        print("The document has " + str(len(self.pages)) + " pages")
         
+        print("The document has {} pages".format(len(self.pages)))
+        
+    def is_empty(self):
+        for page in self.pages:
+            if len(page.layers[0].strokes) != 0:
+                return False
+        return True
+
     def clear_pages(self):
         for page in self.pages:
-            for stroke in page.strokes[:]:
-                page.delete_stroke_callback(stroke)
-        
+            for stroke in page.layers[0].strokes[:]:
+                page.delete_stroke(stroke)
+    
     def export_pdf(self, filename):
         try:
             surface = cairo.PDFSurface(filename, 0, 0)
@@ -61,59 +68,48 @@ class Document:
             
             page.pdf.render_for_printing(context)
             
-            # Render all strokes
-            context.set_source_rgb(0,0,0.4)
-            context.set_antialias(cairo.ANTIALIAS_GRAY)
-            context.set_line_cap(cairo.LINE_CAP_ROUND)
-            context.set_line_join(cairo.LINE_JOIN_ROUND)
-            context.set_line_width(1.5)
-
-            for stroke in page.strokes:
-                context.move_to(stroke[0], stroke[1])
-                if len(stroke) > 2:
-                    for i in range(2, int(len(stroke)), 2):
-                        context.line_to(stroke[i], stroke[i+1])
-                else:
-                    context.line_to(stroke[0], stroke[1])
-                context.stroke()
+            for stroke in page.layers[0].strokes:
+                stroke.draw(context)
             
             surface.show_page() # aka "next page"
 
     def save_xoj_file(self, filename):
         pagenum = 1
         try:
-            f = gzip.open(filename, "wb")
+            f = open_xoj(filename, "wb")
         except IOError as ex:
             print("Error saving document:", ex)
             #FIXME: Move error handler to mainwindow.py and show error message
             return
         
-        # Thanks to Xournals awesome XML(-not)-parsing, we cant use elementtree here.
+        # Thanks to Xournals awesome XML(-not)-parsing, we can't use elementtree here.
         # In "Xournal World", <t a="a" b="b"> is not the same as <t b="b" a="a"> ...
         
         r = "<?xml version=\"1.0\" standalone=\"no\"?>\n"
         r += "<xournal version=\"0.4.6\">\n"
-        #r += "<!-- Created with Cournal -->\n"
         r += "<title>Xournal document - see http://math.mit.edu/~auroux/software/xournal/</title>\n"
         
-        for p in self.pages:
-            r += "<page width=\"" + str(round(p.width, 2)) + "\" height=\"" + str(round(p.height, 2)) + "\">\n"
+        for page in self.pages:
+            r += "<page width=\"{}\" height=\"{}\">\n".format(round(page.width, 2), round(page.height, 2))
             r += "<background type=\"pdf\""
             if pagenum == 1:
-                r += " domain=\"absolute\" filename=\"" + self.filename + "\""
-            r += " pageno=\"" + str(pagenum) + "\" />\n"
+                r += " domain=\"absolute\" filename=\"{}\"".format(self.pdfname)
+            r += " pageno=\"{}\" />\n".format(pagenum)
             pagenum += 1
             
-            r += "<layer>\n"
-            for s in p.strokes:
-                r += "<stroke tool=\"pen\" color=\"#000066FF\" width=\"1.41\">\n"
-                for coord in s:
-                    r += " " + str(round(coord, 2))
-                if len(s) < 4:
-                    r += " " + str(s[0]) + " " + str(s[1])
-                r += "\n</stroke>\n"
-            r += "</layer>\n"
-            r += "</page>\n"
+            for layer in page.layers:
+                r += "<layer>\n"
+                for stroke in layer.strokes:
+                    red, g, b, opacity = stroke.color
+                    r += "<stroke tool=\"pen\" color=\"#{:02X}{:02X}{:02X}{:02X}\" width=\"{}\">\n".format(red, g, b, opacity, stroke.width)
+                    first = stroke.coords[0]
+                    for coord in stroke.coords:
+                        r += " {} {}".format(coord[0], coord[1])
+                    if len(stroke.coords) < 2:
+                        r += " {} {}".format(first[0], first[1])
+                    r += "\n</stroke>\n"
+                r += "</layer>\n"
+                r += "</page>\n"
         r += "</xournal>"
         
         f.write(bytes(r, "UTF-8"))
