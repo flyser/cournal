@@ -101,7 +101,7 @@ class Document:
                 r += "<layer>\n"
                 for stroke in layer.strokes:
                     red, g, b, opacity = stroke.color
-                    r += "<stroke tool=\"pen\" color=\"#{:02X}{:02X}{:02X}{:02X}\" width=\"{}\">\n".format(red, g, b, opacity, stroke.width)
+                    r += "<stroke tool=\"pen\" color=\"#{:02X}{:02X}{:02X}{:02X}\" width=\"{}\">\n".format(red, g, b, opacity, stroke.linewidth)
                     first = stroke.coords[0]
                     for coord in stroke.coords:
                         r += " {} {}".format(coord[0], coord[1])
