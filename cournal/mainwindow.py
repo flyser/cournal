@@ -103,7 +103,6 @@ class MainWindow(Gtk.Window):
         self.layout = Layout(self.document)
         self.scrolledwindow.add(self.layout)
         self.scrolledwindow.show_all()
-        
         self.last_filename = None
         
         self.menu_connect.set_sensitive(True)
