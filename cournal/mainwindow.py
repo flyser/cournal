@@ -56,11 +56,23 @@ class MainWindow(Gtk.Window):
         self.menu_import_xoj = builder.get_object("imagemenuitem_import_xoj")
         self.menu_quit = builder.get_object("imagemenuitem_quit")
         self.menu_about = builder.get_object("imagemenuitem_about")
+        # Toolbar:
+        self.tool_open_pdf = builder.get_object("tool_open_pdf")
+        self.tool_connect = builder.get_object("tool_connect")
+        self.tool_zoom_in = builder.get_object("tool_zoom_in")
+        self.tool_zoom_out = builder.get_object("tool_zoom_out")
+        self.tool_zoom_100 = builder.get_object("tool_zoom_100")
+        self.tool_pen_color = builder.get_object("tool_pen_color")
 
         self.menu_connect.set_sensitive(False)
         self.menu_save.set_sensitive(False)
         self.menu_export_pdf.set_sensitive(False)
         self.menu_import_xoj.set_sensitive(False)
+        self.tool_connect.set_sensitive(False)
+        self.tool_zoom_in.set_sensitive(False)
+        self.tool_zoom_out.set_sensitive(False)
+        self.tool_zoom_100.set_sensitive(False)
+        self.tool_pen_color.set_sensitive(False)
         
         self.menu_open_xoj.connect("activate", self.run_open_xoj_dialog)
         self.menu_open_pdf.connect("activate", self.run_open_pdf_dialog)
@@ -83,6 +95,11 @@ class MainWindow(Gtk.Window):
         self.menu_save.set_sensitive(True)
         self.menu_export_pdf.set_sensitive(True)
         self.menu_import_xoj.set_sensitive(True)
+        self.tool_connect.set_sensitive(True)
+        self.tool_zoom_in.set_sensitive(True)
+        self.tool_zoom_out.set_sensitive(True)
+        self.tool_zoom_100.set_sensitive(True)
+        self.tool_pen_color.set_sensitive(True)
     
     def run_open_pdf_dialog(self, menuitem):
         dialog = Gtk.FileChooserDialog("Open File", self, Gtk.FileChooserAction.OPEN,
