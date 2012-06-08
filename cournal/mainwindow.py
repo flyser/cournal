@@ -34,6 +34,7 @@ class MainWindow(Gtk.Window):
         Gtk.Window.__init__(self, title="Cournal", **args)
         
         self.document = None
+        self.last_filename = None
         
         self.set_default_size(width=500, height=700)
         self.set_icon_name("cournal")
@@ -52,12 +53,14 @@ class MainWindow(Gtk.Window):
         self.menu_open_pdf = builder.get_object("imagemenuitem_open_pdf")
         self.menu_connect = builder.get_object("imagemenuitem_connect")
         self.menu_save = builder.get_object("imagemenuitem_save")
+        self.menu_save_as = builder.get_object("imagemenuitem_save_as")
         self.menu_export_pdf = builder.get_object("imagemenuitem_export_pdf")
         self.menu_import_xoj = builder.get_object("imagemenuitem_import_xoj")
         self.menu_quit = builder.get_object("imagemenuitem_quit")
         self.menu_about = builder.get_object("imagemenuitem_about")
         # Toolbar:
         self.tool_open_pdf = builder.get_object("tool_open_pdf")
+        self.tool_save = builder.get_object("tool_save")
         self.tool_connect = builder.get_object("tool_connect")
         self.tool_zoom_in = builder.get_object("tool_zoom_in")
         self.tool_zoom_out = builder.get_object("tool_zoom_out")
@@ -66,8 +69,10 @@ class MainWindow(Gtk.Window):
 
         self.menu_connect.set_sensitive(False)
         self.menu_save.set_sensitive(False)
+        self.menu_save_as.set_sensitive(False)
         self.menu_export_pdf.set_sensitive(False)
         self.menu_import_xoj.set_sensitive(False)
+        self.tool_save.set_sensitive(False)
         self.tool_connect.set_sensitive(False)
         self.tool_zoom_in.set_sensitive(False)
         self.tool_zoom_out.set_sensitive(False)
@@ -77,12 +82,14 @@ class MainWindow(Gtk.Window):
         self.menu_open_xoj.connect("activate", self.run_open_xoj_dialog)
         self.menu_open_pdf.connect("activate", self.run_open_pdf_dialog)
         self.menu_connect.connect("activate", self.run_connection_dialog)
-        self.menu_save.connect("activate", self.run_save_dialog)
+        self.menu_save.connect("activate", self.save)
+        self.menu_save_as.connect("activate", self.run_save_as_dialog)
         self.menu_export_pdf.connect("activate", self.run_export_pdf_dialog)
         self.menu_import_xoj.connect("activate", self.run_import_xoj_dialog)
         self.menu_quit.connect("activate", lambda _: self.destroy())
         self.menu_about.connect("activate", self.run_about_dialog)
         self.tool_open_pdf.connect("clicked", self.run_open_pdf_dialog)
+        self.tool_save.connect("clicked", self.save)
         self.tool_connect.connect("clicked", self.run_connection_dialog)
         self.tool_zoom_in.connect("clicked", self.zoom_in)
         self.tool_zoom_out.connect("clicked", self.zoom_out)
@@ -99,8 +106,10 @@ class MainWindow(Gtk.Window):
         
         self.menu_connect.set_sensitive(True)
         self.menu_save.set_sensitive(True)
+        self.menu_save_as.set_sensitive(True)
         self.menu_export_pdf.set_sensitive(True)
         self.menu_import_xoj.set_sensitive(True)
+        self.tool_save.set_sensitive(True)
         self.tool_connect.set_sensitive(True)
         self.tool_zoom_in.set_sensitive(True)
         self.tool_zoom_out.set_sensitive(True)
@@ -159,10 +168,17 @@ class MainWindow(Gtk.Window):
                 dialog.destroy()
                 return
             self._set_document(document)
+            self.last_filename = filename
         dialog.destroy()
 
-    def run_save_dialog(self, menuitem):
-        dialog = Gtk.FileChooserDialog("Save File", self, Gtk.FileChooserAction.SAVE,
+    def save(self, menuitem):
+        if self.last_filename:
+            self.document.save_xoj_file(self.last_filename)
+        else:
+            self.run_save_as_dialog(menuitem)
+    
+    def run_save_as_dialog(self, menuitem):
+        dialog = Gtk.FileChooserDialog("Save File As", self, Gtk.FileChooserAction.SAVE,
                                        (Gtk.STOCK_SAVE, Gtk.ResponseType.ACCEPT,
                                         Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL))
         dialog.set_filter(xoj_filter)
@@ -171,6 +187,7 @@ class MainWindow(Gtk.Window):
         if dialog.run() == Gtk.ResponseType.ACCEPT:
             filename = dialog.get_filename()
             self.document.save_xoj_file(filename)
+            self.last_filename = filename
         dialog.destroy()
 
     def run_export_pdf_dialog(self, menuitem):
