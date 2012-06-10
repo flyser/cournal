@@ -1,5 +1,11 @@
 Version 0.2 (not yet released)
-  * nothing so far
+  * Support colored strokes and line width
+  * Can now open .xoj files (though it does not support all features of files created by Xournal)
+  * Zoom page support
+  * Huge amount of cleanups
+  * Minor bugfixes
+  * Improved usability
+  * Broke network compatibility to 0.1
 
 Version 0.1 -- 2012-06-03
   * Not many features, but it should work as expected
