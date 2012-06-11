@@ -30,6 +30,10 @@ pdf_filter.add_mime_type("application/pdf")
 xoj_filter = Gtk.FileFilter()
 xoj_filter.add_mime_type("application/x-xoj")
 
+LINEWIDTH_SMALL = 0.7
+LINEWIDTH_NORMAL = 1.5
+LINEWIDTH_BIG = 8.0
+
 class MainWindow(Gtk.Window):
     def __init__(self, **args):
         Gtk.Window.__init__(self, title="Cournal", **args)
@@ -67,6 +71,9 @@ class MainWindow(Gtk.Window):
         self.tool_zoom_out = builder.get_object("tool_zoom_out")
         self.tool_zoom_100 = builder.get_object("tool_zoom_100")
         self.tool_pen_color = builder.get_object("tool_pen_color")
+        self.tool_pensize_small = builder.get_object("tool_pensize_small")
+        self.tool_pensize_normal = builder.get_object("tool_pensize_normal")
+        self.tool_pensize_big = builder.get_object("tool_pensize_big")
 
         self.menu_connect.set_sensitive(False)
         self.menu_save.set_sensitive(False)
@@ -79,6 +86,9 @@ class MainWindow(Gtk.Window):
         self.tool_zoom_out.set_sensitive(False)
         self.tool_zoom_100.set_sensitive(False)
         self.tool_pen_color.set_sensitive(False)
+        self.tool_pensize_small.set_sensitive(False)
+        self.tool_pensize_normal.set_sensitive(False)
+        self.tool_pensize_big.set_sensitive(False)
         
         self.menu_open_xoj.connect("activate", self.run_open_xoj_dialog)
         self.menu_open_pdf.connect("activate", self.run_open_pdf_dialog)
@@ -96,6 +106,9 @@ class MainWindow(Gtk.Window):
         self.tool_zoom_out.connect("clicked", self.zoom_out)
         self.tool_zoom_100.connect("clicked", self.zoom_100)
         self.tool_pen_color.connect("color-set", self.change_pen_color)
+        self.tool_pensize_small.connect("clicked", self.change_pen_size, LINEWIDTH_SMALL)
+        self.tool_pensize_normal.connect("clicked", self.change_pen_size, LINEWIDTH_NORMAL)
+        self.tool_pensize_big.connect("clicked", self.change_pen_size, LINEWIDTH_BIG)
     
     def _set_document(self, document):
         self.document = document
@@ -117,6 +130,9 @@ class MainWindow(Gtk.Window):
         self.tool_zoom_out.set_sensitive(True)
         self.tool_zoom_100.set_sensitive(True)
         self.tool_pen_color.set_sensitive(True)
+        self.tool_pensize_small.set_sensitive(True)
+        self.tool_pensize_normal.set_sensitive(True)
+        self.tool_pensize_big.set_sensitive(True)
     
     def run_open_pdf_dialog(self, menuitem):
         dialog = Gtk.FileChooserDialog("Open File", self, Gtk.FileChooserAction.OPEN,
@@ -229,6 +245,9 @@ class MainWindow(Gtk.Window):
         
         pen.color = red, green, blue, opacity        
     
+    def change_pen_size(self, menuitem, linewidth):
+        pen.linewidth = linewidth
+        
     def zoom_in(self, menuitem):
         self.layout.set_zoomlevel(change=0.2)
     
