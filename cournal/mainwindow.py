@@ -21,6 +21,7 @@ from gi.repository import Gtk
 from gi.repository.GLib import GError
 
 from .viewer import Layout
+from .viewer.tools import pen
 from .document import Document, xojparser
 from . import ConnectionDialog, AboutDialog
 
@@ -220,8 +221,13 @@ class MainWindow(Gtk.Window):
         message.show()
         
     def change_pen_color(self, menuitem):
-        #TODO: Change Stroke Color
-        print(menuitem.get_color())
+        color = menuitem.get_rgba()
+        red = int(color.red*255)
+        green = int(color.green*255)
+        blue = int(color.blue*255)
+        opacity = int(color.alpha*255)
+        
+        pen.color = red, green, blue, opacity        
     
     def zoom_in(self, menuitem):
         self.layout.set_zoomlevel(change=0.2)
