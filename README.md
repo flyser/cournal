@@ -1,4 +1,4 @@
-Cournal is a collaborative note taking and journal application using a stylus
+Cournal is a collaborative note taking and journal application using a stylus.
 
 ## Why? ##
 
@@ -8,36 +8,29 @@ and [Gobby](http://gobby.0x539.de/) (collaboration).
 
 ## Aim ##
 
-The ultimate goal of this project is a note taking application similar
-to Xournal, that is able to connect to an
-[infinote server](http://gobby.0x539.de/trac/wiki/Infinote/Infinoted)
-(that's the server software Gobby uses).
+The goal of this project is a note taking application similar
+to Xournal, but with networking support.
 
-But there is a lot to do, before this will work.
+### Why not extend Xournal? ###
+
+There has been numerous discussions over many years on the Xournal mailing list
+and Xournal++ even had experimental networking support, but it didn't work out.
+So I started Cournal, which got networking support just after PDF viewing and
+simple drawing was done and was therefore designed with
+networking in mind from the ground up.
 
 ## Does it work yet ##
 
-Yes, but on a very basic (yet usable!) level.
+Yes, but you might miss some features (to change that, see next section ;-)). 
 
 ## How to help ##
 
 You are very welcome to support the project!
 
-If you want to work on the server side of this, clone infinote on
-<http://git.0x539.de/?p=infinote.git;a=summary> and write a new library
-similar to libinftext, which handles Xournal files instead of text files.
-You can find [API documentation here](http://gobby.0x539.de/trac/wiki/APIReference)
-
-Another point on the TODO list is to make GObject Introspection work in
-infinote/libinfinity to get python bindings for free.
-See <https://live.gnome.org/GObjectIntrospection>
-
-The Client side basically comes down to PDF rendering with
-[poppler](http://people.freedesktop.org/~ajohnson/docs/poppler-glib/),
-drawing with [cairo](http://cairographics.org/documentation/pycairo/3/),
-saving and loading Xournal files with the XML library of your choice (likely
-[ElementTree](http://docs.python.org/library/xml.etree.elementtree.html))
-and the band-aid networking layer till infinote support is in place.
+To get into Cournal hacking, have a look at LINKS.md, which contains a list of
+most things you need to know.
+Feel free to contact me, if questions arise or if you want to improve Cournal,
+but don't know what needs work.
 
 ## Dependencies ##
 
@@ -48,10 +41,26 @@ and the band-aid networking layer till infinote support is in place.
  * GTK+ 3.x
  * Twisted for python3 (download script: download-twisted.sh)
 
+## Installation ##
+
+A proper installation is unsupported at the moment. To start Cournal run
+    ./download-twisted.sh
+in Cournals base directory
+
+Patches to support system-wide installation are very welcome.
+
 ## Usage ##
 
+##### Server ######
+
+    cournal-server.py [portnumber]
+
+##### Client ######
+    
 Start Cournal, select "Annotate PDF" and then "Connect to Server".
 
 ## File Format ##
 
-The file format should be compatible to Xournals .xoj files.
+The file format is compatible to Xournals .xoj files, but Cournal might not be
+able to open some .xoj files created by Xournal, because the it doesn't support
+all features of the file format. The other way around should work though.
