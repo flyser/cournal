@@ -18,6 +18,7 @@
 # along with Cournal.  If not, see <http://www.gnu.org/licenses/>.
 
 import sys
+import argparse
 
 from zope.interface import implementer
 
@@ -34,6 +35,8 @@ from cournal.document.stroke import Stroke
 # 3 - maximal
 DEBUGLEVEL = 3
 
+VERSION = "0.2pre"
+DEFAULT_PORT = 6524
 USERNAME = "test"
 PASSWORD = "testpw"
 
@@ -141,12 +144,10 @@ def main():
     checker = checkers.InMemoryUsernamePasswordDatabaseDontUse()
     checker.addUser(USERNAME, PASSWORD)
     p = portal.Portal(realm, [checker])
-
-    if len(sys.argv) > 1:
-        port = int(sys.argv[1])
-    else:
-        port = 6524
-
+    args = CmdlineParser().parse()
+    
+    port = args.port
+    
     try:
         reactor.listenTCP(port, pb.PBServerFactory(p))
     except CannotListenError as err:
@@ -155,6 +156,29 @@ def main():
     
     debug(2, "Listening on port", port)
     reactor.run()
+
+class CmdlineParser():
+    """
+    Parse commandline options. Results are available as attributes of this class
+    """
+    def __init__(self):
+        """Constructor. All variables initialized here are public"""
+        self.port = DEFAULT_PORT
+        
+    def parse(self):
+        """
+        Parse commandline options.
+        """
+        parser = argparse.ArgumentParser(description="Server for Cournal.",
+                                         epilog="e.g.: %(prog)s -p port")
+        parser.add_argument("-p", "--port", nargs=1, type=int, default=[DEFAULT_PORT],
+                            help="Port to listen on")
+        parser.add_argument("-v", "--version", action="version",
+                            version="%(prog)s " + VERSION)
+        args = parser.parse_args()
+        
+        self.port = args.port[0]
+        return self
 
 if __name__ == '__main__':
     sys.exit(main())
