@@ -45,6 +45,7 @@ class Layout(Gtk.Layout):
 
         new_width = allocation.width*self.zoomlevel
         old_width, old_height = self.get_size()
+        adjustment = self.get_vadjustment()
         
         if old_width != new_width:
             #print("Ly: size_allocate")
@@ -53,6 +54,8 @@ class Layout(Gtk.Layout):
                 new_height += self.allocate_child(child, 0, new_height, new_width)
                 new_height += PAGE_SEPARATOR
             new_height -= PAGE_SEPARATOR
+            # Preserve position when the window is resized.
+            adjustment.set_value(adjustment.get_value() * new_height / old_height)
         else:
             new_height = old_height
         self.set_size(new_width, new_height)
