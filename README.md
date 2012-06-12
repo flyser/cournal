@@ -43,7 +43,8 @@ but don't know what needs work.
 
 ## Installation ##
 
-A proper installation is unsupported at the moment. To start Cournal run
+A proper installation is unsupported at the moment. To download twisted for
+python3, run
     ./download-twisted.sh
 in Cournals base directory
 
