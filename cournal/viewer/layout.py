@@ -55,6 +55,7 @@ class Layout(Gtk.Layout):
                 new_height += PAGE_SEPARATOR
             new_height -= PAGE_SEPARATOR
             # Preserve position when the window is resized.
+            adjustment.set_upper(adjustment.get_upper() * new_height / old_height)
             adjustment.set_value(adjustment.get_value() * new_height / old_height)
         else:
             new_height = old_height
