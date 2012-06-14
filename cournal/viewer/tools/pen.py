@@ -83,7 +83,7 @@ def motion(widget, event):
 
 def release(widget, event):
     """
-    Mouse release event. Inform the corresponding Page instance, that the strokes
+    Mouse release event. Inform the corresponding Page instance, that the stroke
     is finished.
     
     This will cause the stroke to be sent to the server, if it is connected.

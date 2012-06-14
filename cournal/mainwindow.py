@@ -261,7 +261,7 @@ class MainWindow(Gtk.Window):
         
     def run_about_dialog(self, menuitem):
         """
-        Run an "About" dialog.
+        Run the "About" dialog.
         """
         def destroyed(widget):
             self._about_dialog = None

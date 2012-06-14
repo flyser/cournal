@@ -85,7 +85,7 @@ class PageWidget(Gtk.DrawingArea):
     
     def do_get_preferred_height_for_width(self, width):
         """
-        Tell Gtk what height we would like to have occupy, if it gives us a width
+        Tell Gtk what height we would like to occupy, if it gives us a width.
         
         Positional arguments:
         width -- width given by Gtk
@@ -181,7 +181,7 @@ class PageWidget(Gtk.DrawingArea):
     def draw_remote_stroke(self, stroke):
         """
         Draw a single stroke on the widget.
-        Meant do be called by networking code, when a remote user drew a stroke.
+        Meant to be called by networking code, when a remote user drew a stroke.
         
         Positional arguments:
         stroke -- The Stroke object, which is to be drawn.

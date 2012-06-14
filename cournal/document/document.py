@@ -96,7 +96,7 @@ class Document:
 
     def save_xoj_file(self, filename):
         """
-        Save the while document as a .xoj file.
+        Save the whole document as a .xoj file.
         
         Positional arguments:
         filename -- filename of the new .xoj file

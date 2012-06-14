@@ -197,7 +197,7 @@ class ServerPortEntry(Gtk.EventBox):
     
     def set_activates_default(self, setting):
         """
-        Let pressing Enter in this widget activate the default widget for the
+        Pressing Enter in this widget will activate the default widget for the
         window containing this widget.
         
         In other words: If setting is True, pressing enter equals pressing "Connect"

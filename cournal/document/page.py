@@ -57,7 +57,7 @@ class Page:
         stroke -- The Stroke object, that will be added to this page
         
         Keyword arguments:
-        send_to_network -- Set to True, to send the stroke the server
+        send_to_network -- Set True, to send the stroke to the server
                            (defaults to False)
         """
         self.layers[0].strokes.append(stroke)

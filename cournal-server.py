@@ -270,12 +270,13 @@ def main():
     """Start a Cournal server"""
     args = CmdlineParser().parse()
     port = args.port
-
+    
     realm = CournalRealm()
     realm.server = CournalServer()
-    checker = checkers.FilePasswordDB("passwddb")
+    checker = checkers.InMemoryUsernamePasswordDatabaseDontUse()
+    checker.addUser(USERNAME, PASSWORD)
     p = portal.Portal(realm, [checker])
-
+    
     try:
         reactor.listenTCP(port, pb.PBServerFactory(p))
     except CannotListenError as err:
