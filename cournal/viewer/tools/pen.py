@@ -20,6 +20,10 @@
 import cairo
 from gi.repository import Gdk
 
+"""
+A pen tool. Draws a stroke with a certain color and size.
+"""
+
 _last_point = None
 _current_coords = None
 _current_stroke = None
@@ -27,6 +31,13 @@ linewidth = 1.5
 color = (0,0,128,255)
 
 def press(widget, event):
+    """
+    Mouse down event. Draw a point on the pointer location.
+    
+    Positional arguments:
+    widget -- The PageWidget, which triggered the event
+    event -- The Gdk.Event, which stores the location of the pointer
+    """
     global _last_point, _current_coords, _current_stroke, linewidth, color
     actualWidth = widget.get_allocation().width
     
@@ -39,8 +50,12 @@ def press(widget, event):
     widget.page.layers[0].strokes.append(_current_stroke)
 
 def motion(widget, event):
+    """
+    Mouse motion event. Draw a line from the last to the new pointer location.
+    
+    Positional arguments: see press()
+    """
     global _last_point, _current_coords, _current_stroke
-    #print("\rMotion "+str((event.x,event.y))+"  ", end="")
     
     r, g, b, opacity = color
     actualWidth = widget.get_allocation().width
@@ -67,6 +82,14 @@ def motion(widget, event):
     _current_coords.append([event.x*widget.page.width/actualWidth, event.y*widget.page.width/actualWidth])
 
 def release(widget, event):
+    """
+    Mouse release event. Inform the corresponding Page instance, that the strokes
+    is finished.
+    
+    This will cause the stroke to be sent to the server, if it is connected.
+    
+    Positional arguments: see press()
+    """
     global _last_point, _current_coords, _current_stroke
     widget.page.finish_stroke(_current_stroke)
     

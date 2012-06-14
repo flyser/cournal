@@ -22,7 +22,25 @@ import cairo
 from twisted.spread import pb
 
 class Stroke(pb.Copyable, pb.RemoteCopy):
+    """
+    A pen stroke on a layer, having a color, a linewidth and a list of coordinates
+    
+    If a stroke has variable width, self.coords contains tuples of three,
+    else tuples of two floats.
+    FIXME: don't ignore the variable width
+    """
     def __init__(self, layer, color, linewidth, coords=None):
+        """
+        Constructor
+        
+        Positional arguments:
+        layer -- The Layer object, which is the parent of the stroke.
+        color -- tuple of four: (red, green, blue, opacity)
+        linewidth -- Line width in pt
+        
+        Keyword arguments:
+        coords -- A list of coordinates (defaults to [])
+        """
         self.layer = layer
         self.color = color
         self.linewidth = linewidth
@@ -31,6 +49,8 @@ class Stroke(pb.Copyable, pb.RemoteCopy):
             self.coords = []
     
     def getStateToCopy(self):
+        """Gather state to send when I am serialized for a peer."""
+        
         # d would be self.__dict__.copy()
         d = dict()
         d["color"] = self.color
@@ -39,6 +59,15 @@ class Stroke(pb.Copyable, pb.RemoteCopy):
         return d
 
     def draw(self, context, scaling=1):
+        """
+        Render this stroke
+        
+        Positional arguments:
+        context -- The cairo context to draw on
+        
+        Keyword arguments:
+        scaling -- scale the stroke by this factor (defaults to 1.0)
+        """
         context.save()
         r, g, b, opacity = self.color
         
@@ -60,5 +89,6 @@ class Stroke(pb.Copyable, pb.RemoteCopy):
         context.restore()
         
         return (x, y, x2, y2)
-        
+
+# Tell Twisted, that this class is allowed to be transmitted over the network.
 pb.setUnjellyableForClass(Stroke, Stroke)

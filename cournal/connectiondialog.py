@@ -21,7 +21,19 @@ from gi.repository import Gtk, Gdk
 from . import network
 
 class ConnectionDialog(Gtk.Dialog):
+    """
+    The "Connect to Server" dialog of Cournal.
+    """
     def __init__(self, parent, **args):
+        """
+        Constructor.
+        
+        Positional arguments:
+        parent -- Parent window of this dialog
+        
+        Keyword arguments:
+        **args -- Arguments passed to the Gtk.Dialog constructor
+        """
         Gtk.Dialog.__init__(self, **args)
         
         self.parent = parent
@@ -51,6 +63,14 @@ class ConnectionDialog(Gtk.Dialog):
         self.show_all()
     
     def response(self, widget, response_id):
+        """
+        Called, when the user clicked on a button ('Connect' or 'Abort').
+        Initiate a new connection or close the dialog.
+        
+        Positional arguments:
+        widget -- The widget, which triggered the response.
+        response_id -- A Gtk.ResponseType indicating, which button the user pressed.
+        """
         if response_id != Gtk.ResponseType.ACCEPT:
             self.destroy()
             return
@@ -70,19 +90,6 @@ class ConnectionDialog(Gtk.Dialog):
             
         self.new_connection(server, port)
             
-    
-    def new_connection(self, server, port):
-        network.set_document(self.parent.document)
-        d = network.connect(server, port)
-        d.addCallbacks(self.on_connected, self.on_connection_failure)
-        
-        self.multipage.set_current_page(1)
-        self.spinner.start()
-        self.error_label.set_text("")
-        self.connecting_label.set_text("Connecting to {} ...".format(server))
-        self.get_action_area().set_sensitive(False)
-        
-    
     def confirm_clear_document(self):
         message = Gtk.MessageDialog(self, (Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT), Gtk.MessageType.WARNING, Gtk.ButtonsType.YES_NO, "Close current document?" )
         message.format_secondary_text("You will loose all changes to your current document, if you connect to a server. Continue without saving?")
@@ -93,10 +100,34 @@ class ConnectionDialog(Gtk.Dialog):
         message.destroy()
         return True
 
+    def new_connection(self, server, port):
+        """
+        Start to connect to a server and update UI accordingly.
+        
+        Positional arguments:
+        server -- The hostname of the server to connect to.
+        port -- The port on the server
+        """
+        network.set_document(self.parent.document)
+        d = network.connect(server, port)
+        d.addCallbacks(self.on_connected, self.on_connection_failure)
+        
+        self.multipage.set_current_page(1)
+        self.spinner.start()
+        self.error_label.set_text("")
+        self.connecting_label.set_text("Connecting to {} ...".format(server))
+        self.get_action_area().set_sensitive(False)
+        
     def on_connected(self, perspective):
+        """
+        Called, when the connection to the server succeeded. Just close the dialog.
+        """
         self.destroy()
     
     def on_connection_failure(self, reason):
+        """
+        Called, when the connection to the server failed. Display error message.
+        """
         error = reason.getErrorMessage()
 
         self.multipage.set_current_page(0)
@@ -106,11 +137,21 @@ class ConnectionDialog(Gtk.Dialog):
         self.get_action_area().set_sensitive(True)
 
     def run_nonblocking(self):
+        """Run the dialog asynchronously, reusing the mainloop of the parent."""
         self.connect('response', self.response)
         self.show()
 
 class ServerPortEntry(Gtk.EventBox):
+    """
+    A Gtk.Entry-like widget with one field for a hostname and one for a port.
+    """
     def __init__(self, **args):
+        """
+        Constructor.
+        
+        Keyword arguments:
+        **args -- Arguments passed to the Gtk.EventBox constructor
+        """
         Gtk.EventBox.__init__(self, **args)
         
         frame = Gtk.Frame()
@@ -138,20 +179,41 @@ class ServerPortEntry(Gtk.EventBox):
         self.port_entry.set_text("6524")
         
         self.port_entry.connect("insert_text", self.port_entry_updated)
-
+    
     def port_entry_updated(self, widget, text, length, position):
+        """
+        Prevent wrong input in the port entry.
+        Called each time the user changed the content of the port entry.
+        
+        Positional arguments: (see GtkEditable "insert-text" documentation)
+        widget -- The widget that was updated.
+        text -- The text to append.
+        length -- The length of the text in bytes, or -1.
+        position -- Location of the position text will be inserted at.
+        """
         if not text.isdigit():
             widget.emit_stop_by_name("insert_text")
             return
-
+    
     def set_activates_default(self, setting):
+        """
+        Let pressing Enter in this widget activate the default widget for the
+        window containing this widget.
+        
+        In other words: If setting is True, pressing enter equals pressing "Connect"
+        
+        Positional Arguments:
+        setting -- True, to activate default widget when pressing enter.
+        """
         self.port_entry.set_activates_default(setting)
         self.server_entry.set_activates_default(setting)
-
+    
     def get_server(self):
+        """Return the hostname of the server given by the user"""
         return self.server_entry.get_text()
     
     def get_port(self):
+        """Return the portnumber given by the user"""
         return int(self.port_entry.get_text())
 
 # For testing purposes:

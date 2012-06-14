@@ -27,6 +27,7 @@ from gi.repository import Gtk
 from cournal import MainWindow
 
 def main():
+    """Start Cournal"""
     Gtk.IconTheme.get_default().prepend_search_path("./icons")
     
     window = MainWindow()

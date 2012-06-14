@@ -23,7 +23,21 @@ import cairo
 from .tools import pen, eraser
 
 class PageWidget(Gtk.DrawingArea):
+    """
+    A widget displaying a PDF page and its annotations
+    """
+
     def __init__(self, page, **args):
+        """
+        Constructor
+        
+        Positional arguments:
+        page -- The Page object to display
+        
+        Keyword arguments:
+        **args -- Arguments passed to the Gtk.DrawingArea constructor
+        """
+
         Gtk.DrawingArea.__init__(self, **args)
         
         self.page = page
@@ -47,6 +61,12 @@ class PageWidget(Gtk.DrawingArea):
         self.connect("button-release-event", self.release)
 
     def set_cursor(self, widget):
+        """
+        Set the cursor to a black square indicating the pen tip
+        
+        Keyword arguments:
+        widget -- The widget to set the cursor for
+        """
         width, height = 4, 4
         
         s = cairo.ImageSurface(cairo.FORMAT_A1, width, height)
@@ -57,25 +77,42 @@ class PageWidget(Gtk.DrawingArea):
         cursor_pixbuf = Gdk.pixbuf_get_from_surface(s, 0, 0, width, height)
         cursor = Gdk.Cursor.new_from_pixbuf(Gdk.Display.get_default(),
                                             cursor_pixbuf, width/2, height/2)
-        self.get_window().set_cursor(cursor)
+        widget.get_window().set_cursor(cursor)
 
     def do_get_request_mode(self):
+        """Tell Gtk that we like to calculate our height given a width."""
         return Gtk.SizeRequestMode.HEIGHT_FOR_WIDTH
     
     def do_get_preferred_height_for_width(self, width):
-        #print("get_preferred_height_for_width(", width, ")")
+        """
+        Tell Gtk what height we would like to have occupy, if it gives us a width
+        
+        Positional arguments:
+        width -- width given by Gtk
+        """
         aspect_ratio = self.page.width / self.page.height
         return (width / aspect_ratio, width / aspect_ratio)
 
     def on_size_allocate(self, widget, alloc):
-        #print("size_allocate", alloc.width, alloc.height)
+        """
+        Called, when the widget was resized.
+        
+        Positional arguments:
+        widget -- The resized widget
+        alloc -- A Gtk.Allocation object
+        """
         self.set_allocation(alloc)
         self.widget_width = alloc.width
         self.widget_height = alloc.height
     
     def draw(self, widget, context):
-        #print("draw")
+        """
+        Draw the widget (the PDF, all strokes and the background). Called by Gtk.
         
+        Positional arguments:
+        widget -- The widget to redraw
+        context -- A Cairo context to draw on
+        """
         scaling = self.widget_width / self.page.width
         
         # Check if the page has already been rendered in the correct size
@@ -107,7 +144,13 @@ class PageWidget(Gtk.DrawingArea):
         context.paint()
         
     def press(self, widget, event):
-        #print("Press " + str((event.x,event.y)))
+        """
+        Mouse down event. Select a tool depending on the mouse button and call it.
+        
+        Positional arguments:
+        widget -- The widget, which triggered the event
+        event -- The Gdk.Event, which stores the location of the pointer
+        """
         if event.button == 1:
             self.active_tool = pen
         elif event.button == 3 or event.button == 2:
@@ -117,16 +160,32 @@ class PageWidget(Gtk.DrawingArea):
         self.active_tool.press(self, event)
     
     def motion(self, widget, event):
-        #print("\rMotion "+str((event.x,event.y))+"  ", end="")
+        """
+        Mouse motion event. Call currently active tool, if any.
+        
+        Positional arguments: see press()
+        """
         if self.active_tool is not None:
             self.active_tool.motion(self, event)
     
     def release(self, widget, event):
+        """
+        Mouse release event. Call currently active tool, if any.
+        
+        Positional arguments: see press()
+        """
         if self.active_tool is not None:
             self.active_tool.release(self, event)
             self.active_tool = None
     
     def draw_remote_stroke(self, stroke):
+        """
+        Draw a single stroke on the widget.
+        Meant do be called by networking code, when a remote user drew a stroke.
+        
+        Positional arguments:
+        stroke -- The Stroke object, which is to be drawn.
+        """
         if self.backbuffer:
             scaling = self.widget_width / self.page.width
             context = cairo.Context(self.backbuffer)
@@ -142,6 +201,13 @@ class PageWidget(Gtk.DrawingArea):
             self.get_window().invalidate_rect(update_rect, False)
     
     def delete_remote_stroke(self, stroke):
+        """
+        Rerender the part of the widget, where a stroke was deleted
+        Meant do be called by networking code, when a remote user deleted a stroke.
+        
+        Positional arguments:
+        stroke -- The Stroke object, which was deleted.
+        """
         if self.backbuffer:
             self.backbuffer_valid = False
             self.get_window().invalidate_rect(None, False)

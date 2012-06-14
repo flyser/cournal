@@ -19,11 +19,19 @@
 
 class Layer:
     """
-    Stores information about a Xournal Layer.
-    
-    A layer contains one or more strokes.
+    A layer on a page, having a number and multiple strokes.
     """
     def __init__(self, page, number, strokes=None):
+        """
+        Constructor
+        
+        Positional arguments:
+        page -- The Page object, which is the parent of this layer.
+        number -- Layer number
+        
+        Keyword arguments:
+        strokes -- List of Stroke objects (defaults to [])
+        """
         self.number = number
         self.page = page
         self.strokes = strokes

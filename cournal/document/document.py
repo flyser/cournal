@@ -26,7 +26,17 @@ import cairo
 from . import Page
 
 class Document:
+    """
+    A Cournal document, having multiple pages.
+    """
     def __init__(self, pdfname):
+        """
+        Constructor
+        
+        Positional arguments:
+        pdfname -- The filename of the PDF document, which will be annotated
+        """
+
         self.pdfname = abspath(pdfname)
         uri = GLib.filename_to_uri(self.pdfname, None)
         self.pdf = Poppler.Document.new_from_file(uri, None)
@@ -44,17 +54,28 @@ class Document:
         print("The document has {} pages".format(len(self.pages)))
         
     def is_empty(self):
+        """
+        Returns True, if no page of this document has a stroke on it.
+        Otherwise False
+        """
         for page in self.pages:
             if len(page.layers[0].strokes) != 0:
                 return False
         return True
 
     def clear_pages(self):
+        """Deletes all strokes on all pages of this document"""
         for page in self.pages:
             for stroke in page.layers[0].strokes[:]:
                 page.delete_stroke(stroke)
     
     def export_pdf(self, filename):
+        """
+        Save the whole document (PDF+annotations) as a PDF file.
+        
+        Positional arguments:
+        filename -- filename of the new PDF file.
+        """
         try:
             surface = cairo.PDFSurface(filename, 0, 0)
         except IOError as ex:
@@ -74,6 +95,12 @@ class Document:
             surface.show_page() # aka "next page"
 
     def save_xoj_file(self, filename):
+        """
+        Save the while document as a .xoj file.
+        
+        Positional arguments:
+        filename -- filename of the new .xoj file
+        """
         pagenum = 1
         try:
             f = open_xoj(filename, "wb")

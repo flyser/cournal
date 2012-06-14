@@ -23,7 +23,21 @@ from . import Layer, Stroke
 from .. import network
 
 class Page:
+    """
+    A page in a document, having a number and multiple layers.
+    """
     def __init__(self, document, pdf, number, layers=None):
+        """
+        Constructor
+        
+        Positional arguments:
+        document -- The Document object, which is the parent of this page.
+        pdf -- A PopplerPage object
+        number -- Page number
+        
+        Keyword arguments:
+        layer -- List of Layer objects (defaults to a list of one Layer)
+        """
         self.document = document
         self.pdf = pdf
         self.number = number
@@ -35,6 +49,17 @@ class Page:
         self.width, self.height = pdf.get_size()
     
     def new_stroke(self, stroke, send_to_network=False):
+        """
+        Add a new stroke to this page and possibly send it to the server, if
+        connected.
+        
+        Positional arguments:
+        stroke -- The Stroke object, that will be added to this page
+        
+        Keyword arguments:
+        send_to_network -- Set to True, to send the stroke the server
+                           (defaults to False)
+        """
         self.layers[0].strokes.append(stroke)
         stroke.layer = self.layers[0]
         if self.widget:
@@ -43,18 +68,50 @@ class Page:
             network.new_stroke(self.number, stroke)
         
     def new_unfinished_stroke(self, color, linewidth):
+        """
+        Add a new empty stroke, which is not sent to the server, till
+        finish_stroke() is called
+        
+        Positional arguments:
+        color -- tuple of four: (red, green, blue, opacity)
+        linewidth -- Line width in pt
+        """
         return Stroke(layer=self.layers[0], color=color, linewidth=linewidth, coords=[])
     
     def finish_stroke(self, stroke):
-        #TODO: rerender portion of screen.
+        """
+        Finish a stroke, that was created with new_unfinished_stroke() and
+        send it to the server, if connected.
+        
+        Positional arguments:
+        stroke -- The Stroke object, that was finished
+        """
+        #TODO: rerender that part of the screen.
         network.new_stroke(self.number, stroke)
 
     def delete_stroke_with_coords(self, coords):
+        """
+        Delete all strokes, which have exactly the same coordinates as given.
+        
+        Positional arguments
+        coords -- The list of coordinates
+        """
         for stroke in self.layers[0].strokes[:]:
             if stroke.coords == coords:
                 self.delete_stroke(stroke, send_to_network=False)
     
     def delete_stroke(self, stroke, send_to_network=False):
+        """
+        Delete a stroke on this page and possibly send this request to the server,
+        if connected.
+        
+        Positional arguments:
+        stroke -- The Stroke object, that will be deleted.
+        
+        Keyword arguments:
+        send_to_network -- Set to True, to send the request for deletion the server
+                           (defaults to False)
+        """
         self.layers[0].strokes.remove(stroke)
         if self.widget:
             self.widget.delete_remote_stroke(stroke)
@@ -62,6 +119,16 @@ class Page:
             network.delete_stroke_with_coords(self.number, stroke.coords)
     
     def get_strokes_near(self, x, y, radius):
+        """
+        Finds strokes near a given point
+        
+        Positional arguments:
+        x -- x coordinate of the given point
+        y -- y coordinate of the given point
+        radius -- Radius in pt, which influences the decision of what is considered "near"
+        
+        Return value: Generator for a list of all strokes, which are near that point
+        """
         for stroke in self.layers[0].strokes[:]:
             for coord in stroke.coords:
                 s_x = coord[0]

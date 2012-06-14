@@ -35,7 +35,16 @@ LINEWIDTH_NORMAL = 1.5
 LINEWIDTH_BIG = 8.0
 
 class MainWindow(Gtk.Window):
+    """
+    Cournals main window
+    """
     def __init__(self, **args):
+        """
+        Constructor.
+        
+        Keyword arguments:
+        **args -- Arguments passed to the Gtk.Window constructor
+        """
         Gtk.Window.__init__(self, title="Cournal", **args)
         
         self.document = None
@@ -111,6 +120,12 @@ class MainWindow(Gtk.Window):
         self.tool_pensize_big.connect("clicked", self.change_pen_size, LINEWIDTH_BIG)
     
     def _set_document(self, document):
+        """
+        Replace the current document (if any) with a new one.
+        
+        Positional arguments:
+        document -- The new Document object.
+        """
         self.document = document
         for child in self.scrolledwindow.get_children():
             self.scrolledwindow.remove(child)
@@ -135,6 +150,9 @@ class MainWindow(Gtk.Window):
         self.tool_pensize_big.set_sensitive(True)
     
     def run_open_pdf_dialog(self, menuitem):
+        """
+        Run an "Open PDF" dialog and create a new document with that PDF.
+        """
         dialog = Gtk.FileChooserDialog("Open File", self, Gtk.FileChooserAction.OPEN,
                                        (Gtk.STOCK_OPEN, Gtk.ResponseType.ACCEPT,
                                         Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL))
@@ -153,6 +171,9 @@ class MainWindow(Gtk.Window):
         dialog.destroy()
     
     def run_connection_dialog(self, menuitem):
+        """
+        Run a "Connect to Server" dialog.
+        """
         def destroyed(widget):
             self._connection_dialog = None
         # Need to hold a reference, so the object does not get garbage collected
@@ -161,6 +182,9 @@ class MainWindow(Gtk.Window):
         self._connection_dialog.run_nonblocking()
         
     def run_import_xoj_dialog(self, menuitem):
+        """
+        Run an "Import .xoj" dialog and import the strokes.
+        """
         dialog = Gtk.FileChooserDialog("Open File", self, Gtk.FileChooserAction.OPEN,
                                        (Gtk.STOCK_OPEN, Gtk.ResponseType.ACCEPT,
                                         Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL))
@@ -172,6 +196,9 @@ class MainWindow(Gtk.Window):
         dialog.destroy()
     
     def run_open_xoj_dialog(self, menuitem):
+        """
+        Run an "Open .xoj" dialog and create a new document from a .xoj file.
+        """
         dialog = Gtk.FileChooserDialog("Open File", self, Gtk.FileChooserAction.OPEN,
                                        (Gtk.STOCK_OPEN, Gtk.ResponseType.ACCEPT,
                                         Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL))
@@ -190,12 +217,21 @@ class MainWindow(Gtk.Window):
         dialog.destroy()
 
     def save(self, menuitem):
+        """
+        Save document to the last known filename or ask the user for a location.
+        
+        Positional arguments:
+        menuitem -- The menu item, that triggered this function
+        """
         if self.last_filename:
             self.document.save_xoj_file(self.last_filename)
         else:
             self.run_save_as_dialog(menuitem)
     
     def run_save_as_dialog(self, menuitem):
+        """
+        Run a "Save as" dialog and save the document to a .xoj file
+        """
         dialog = Gtk.FileChooserDialog("Save File As", self, Gtk.FileChooserAction.SAVE,
                                        (Gtk.STOCK_SAVE, Gtk.ResponseType.ACCEPT,
                                         Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL))
@@ -209,6 +245,9 @@ class MainWindow(Gtk.Window):
         dialog.destroy()
 
     def run_export_pdf_dialog(self, menuitem):
+        """
+        Run an "Export" dialog and save the document to a PDF file.
+        """
         dialog = Gtk.FileChooserDialog("Export PDF", self, Gtk.FileChooserAction.SAVE,
                                        (Gtk.STOCK_SAVE, Gtk.ResponseType.ACCEPT,
                                         Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL))
@@ -221,6 +260,9 @@ class MainWindow(Gtk.Window):
         dialog.destroy()
         
     def run_about_dialog(self, menuitem):
+        """
+        Run an "About" dialog.
+        """
         def destroyed(widget):
             self._about_dialog = None
         # Need to hold a reference, so the object does not get garbage collected
@@ -229,6 +271,13 @@ class MainWindow(Gtk.Window):
         self._about_dialog.run_nonblocking()
     
     def run_error_dialog(self, first, second):
+        """
+        Display an error dialog
+        
+        Positional arguments:
+        first -- Primary text of the message
+        second -- Secondary text of the message
+        """
         print("Unable to open PDF file:", second)
         message = Gtk.MessageDialog(self, (Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT), Gtk.MessageType.ERROR, Gtk.ButtonsType.OK, first)
         message.format_secondary_text(second)
@@ -236,8 +285,14 @@ class MainWindow(Gtk.Window):
         message.connect("response", lambda _,x: message.destroy())
         message.show()
         
-    def change_pen_color(self, menuitem):
-        color = menuitem.get_rgba()
+    def change_pen_color(self, colorbutton):
+        """
+        Change the pen to a user defined color.
+        
+        Positional arguments:
+        colorbutton -- The Gtk.ColorButton, that triggered this function
+        """
+        color = colorbutton.get_rgba()
         red = int(color.red*255)
         green = int(color.green*255)
         blue = int(color.blue*255)
@@ -246,13 +301,23 @@ class MainWindow(Gtk.Window):
         pen.color = red, green, blue, opacity        
     
     def change_pen_size(self, menuitem, linewidth):
+        """
+        Change the pen to a user defined line width.
+        
+        Positional arguments:
+        menuitem -- The menu item, that triggered this function
+        linewidth -- New line width of the pen
+        """
         pen.linewidth = linewidth
         
     def zoom_in(self, menuitem):
+        """Magnify document"""
         self.layout.set_zoomlevel(change=0.2)
     
     def zoom_out(self, menuitem):
+        """Zoom out"""
         self.layout.set_zoomlevel(change=-0.2)
     
     def zoom_100(self, menuitem):
+        """Reset Zoom"""
         self.layout.set_zoomlevel(1)

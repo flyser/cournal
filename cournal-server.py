@@ -41,83 +41,183 @@ USERNAME = "test"
 PASSWORD = "testpw"
 
 class Page:
+    """
+    A page in a document, having multiple strokes.
+    """
     def __init__(self):
         self.strokes = []
 
 class CournalServer:
+    """
+    The server object, that holds global state, which is shared between all users.
+    """
     def __init__(self):
-        # {documentname: Document()}
         self.documents = dict()
 
-    def joinDocument(self, documentname, user):
+    def get_document(self, documentname):
+        """
+        Returns a Document object given its name. If none with this name exists,
+        it will be created.
+        
+        Positional arguments:
+        documentname -- Name of the document you want to get
+        """
         if documentname not in self.documents:
             self.documents[documentname] = Document(documentname)
-        self.documents[documentname].addUser(user)
         return self.documents[documentname]
 
 @implementer(portal.IRealm)
 class CournalRealm:
+    """
+    The realm connects application-specific objects to the authentication system
+    
+    see: http://twistedmatrix.com/documents/current/api/twisted.cred.portal.IRealm.html
+    """
     def requestAvatar(self, avatarID, mind, *interfaces):
+        """
+        Return a User object for a user (identified by its username), who just logged in.
+        
+        Positional arguments:
+        avatarID -- string that identifies a user (in our case the username)
+        mind -- Reference to the remote pb.Referencable object.
+        *interfaces -- the interface(s) the returned avatar should implement
+                       (in our case pb.IPerspective)
+        """
         assert pb.IPerspective in interfaces
-        avatar = User(avatarID)
-        avatar.server = self.server
-        avatar.attached(mind)
-        return pb.IPerspective, avatar, lambda a=avatar:a.detached(mind)
+        user = User(avatarID, self.server)
+        user.attached(mind)
+        return pb.IPerspective, user, lambda a=user:a.detached(mind)
 
 class User(pb.Avatar):
-    def __init__(self, name):
+    """
+    A remote user.
+    """
+    def __init__(self, name, server):
+        """
+        Constructor
+        
+        Positional arguments:
+        name -- Name of the user
+        server -- A CournalServer object 
+        """
         debug(1, "New User connected:", name)
         self.name = name
-        self.documents = list()
+        self.server = server
+        self.remote = None
+        self.documents = []
         
     def __del__(self):
+        """Destructor. Called when the user disconnects."""
         debug(1, "User disconnected:", self.name)
         
     def attached(self, mind):
+        """
+        Called by twisted, when the corresponding User connects. In our case, the
+        user object does not exist without a connected user.
+        
+        Positional arguments:
+        mind -- Reference to the remote pb.Referencable object. used for .callRemote()
+        """
         self.remote = mind
        
     def detached(self, mind):
+        """
+        Called by twisted, when the corresponding User disconnects. This object
+        should be destroyed after this method terminated.
+        
+        Positional arguments:
+        mind -- Reference to the remote pb.Referencable object.
+        """
         self.remote = None
         for document in self.documents:
-            document.removeUser(self)
+            document.remove_user(self)
 
-    def perspective_joinDocument(self, documentname):
+    def perspective_join_document(self, documentname):
+        """
+        Called by the user to join a document session.
+        
+        Positional arguments:
+        documentname -- Name of the requested document session
+        """
         debug(2, "User", self.name, "started editing", documentname)
         
-        document = self.server.joinDocument(documentname, self)
+        document = self.server.get_document(documentname)
+        document.add_user(self)
         self.documents.append(document)
         return document
         
-    def send_stroke(self, method, pagenum, stroke):
-        self.remote.callRemote(method, pagenum, stroke)
+    def call_remote(self, method, *args):
+        """
+        Call a remote method of this user.
+        
+        Positional arguments:
+        method -- Name of the remote method
+        *args -- Arguments of the remote method
+        """
+
+        self.remote.callRemote(method, *args)
 
 class Document(pb.Viewable):
+    """
+    A Cournal document, having multiple pages.
+    """
     def __init__(self, documentname):
+        """
+        Constructor
+        
+        Positional arguments:
+        documentname -- Name of this document
+        """
         self.name = documentname
-        self.users = list()
+        self.users = []
         self.pages = []
-        #self.pages[0].strokes.append([1.01, 20.1, 2.0, 10.0])
-        #self.pages[0].strokes.append([2.01, 10.1, 3.0,  0.0])
 
-    def addUser(self, user):
+    def add_user(self, user):
+        """
+        Called, when a user starts editing this document. Send him all strokes
+        that are currently in the document.
+        
+        Positional arguments:
+        user -- The concerning User object.
+        """
         self.users.append(user)
         for pagenum in range(len(self.pages)):
             for stroke in self.pages[pagenum].strokes:
-                user.remote.callRemote("new_stroke", pagenum, stroke)
+                user.call_remote("new_stroke", pagenum, stroke)
     
-    def removeUser(self, user):
+    def remove_user(self, user):
+        """
+        Called, when a user stops editing this document. Remove him from list
+        
+        Positional arguments:
+        user -- The concerning User object.
+        """
         self.users.remove(user)
         
-    def broadcast(self, method, pagenum, stroke, except_user=None):
+    def broadcast(self, method, *args, except_user=None):
+        """
+        Broadcast a method call to all clients
+        
+        Positional arguments:
+        method -- Name of the remote method
+        *args -- Arguments of the remote method
+        
+        Keyword arguments:
+        except_user -- Don't broadcast to this user.
+        """
         for user in self.users:
             if user != except_user:
-                user.send_stroke(method, pagenum, stroke)
+                user.call_remote(method, *args)
     
     def view_new_stroke(self, from_user, pagenum, stroke):
         """
-        Broadcast the stroke received from one to all other clients
-
+        Broadcast the stroke received from one to all other clients.
         Called by clients to add a new stroke.
+        
+        Positional arguments:
+        from_user -- The User object of the initiiating user.
+        pagenum -- Page number the new stroke.
+        stroke -- The new stroke
         """
         while len(self.pages) <= pagenum:
             self.pages.append(Page())
@@ -127,6 +227,15 @@ class Document(pb.Viewable):
         self.broadcast("new_stroke", pagenum, stroke, except_user=from_user)
         
     def view_delete_stroke_with_coords(self, from_user, pagenum, coords):
+        """
+        Broadcast the delete stroke command from one to all other clients.
+        Called by Clients to delete a stroke.
+        
+        Positional arguments:
+        from_user -- The User object of the initiiating user.
+        pagenum -- Page number the deleted stroke
+        coords -- The list coordinates of the deleted stroke
+        """
         for stroke in self.pages[pagenum].strokes:
             if stroke.coords == coords:
                 self.pages[pagenum].strokes.remove(stroke)
@@ -134,35 +243,12 @@ class Document(pb.Viewable):
                 debug(3, "Deleted stroke on page", pagenum+1)
                 self.broadcast("delete_stroke_with_coords", pagenum, coords, except_user=from_user)
 
-def debug(level, *args):
-    if level <= DEBUGLEVEL:
-        print(*args)
-
-def main():
-    realm = CournalRealm()
-    realm.server = CournalServer()
-    checker = checkers.InMemoryUsernamePasswordDatabaseDontUse()
-    checker.addUser(USERNAME, PASSWORD)
-    p = portal.Portal(realm, [checker])
-    args = CmdlineParser().parse()
-    
-    port = args.port
-    
-    try:
-        reactor.listenTCP(port, pb.PBServerFactory(p))
-    except CannotListenError as err:
-        debug(0, "ERROR: Failed to listen on port", err.port)
-        return 1
-    
-    debug(2, "Listening on port", port)
-    reactor.run()
-
 class CmdlineParser():
     """
     Parse commandline options. Results are available as attributes of this class
     """
     def __init__(self):
-        """Constructor. All variables initialized here are public"""
+        """Constructor. All variables initialized here are public."""
         self.port = DEFAULT_PORT
         
     def parse(self):
@@ -179,6 +265,30 @@ class CmdlineParser():
         
         self.port = args.port[0]
         return self
+
+def main():
+    """Start a Cournal server"""
+    args = CmdlineParser().parse()
+    port = args.port
+
+    realm = CournalRealm()
+    realm.server = CournalServer()
+    checker = checkers.FilePasswordDB("passwddb")
+    p = portal.Portal(realm, [checker])
+
+    try:
+        reactor.listenTCP(port, pb.PBServerFactory(p))
+    except CannotListenError as err:
+        debug(0, "ERROR: Failed to listen on port", err.port)
+        return 1
+    
+    debug(2, "Listening on port", port)
+    reactor.run()
+
+def debug(level, *args):
+    """Helper function for debug output"""
+    if level <= DEBUGLEVEL:
+        print(*args)
 
 if __name__ == '__main__':
     sys.exit(main())

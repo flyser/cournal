@@ -28,23 +28,36 @@ from . import Document, Stroke
 """A simplified parser for Xournal files using the ElementTree API."""
 
 def new_document(filename, window):
+    """
+    Open a Xournal .xoj file
+    
+    Positional Arguments:
+    filename -- The filename of the Xournal document
+    window -- A Gtk.Window, which can be used as the parent of MessageDialogs or the like
+    
+    Return value: The new Document object
+    """
     with open_xoj(filename, "rb") as input:
         tree = ET.parse(input)
     pdfname = _get_background(tree)
     document = Document(pdfname)
 
-    
+    # We created an empty document with a PDF, now we will import the strokes:
     return import_into_document(document, filename, window)
 
 def import_into_document(document, filename, window):
     """
-    Parse a Xournal .xoj file (wrapper function of ElementTree.parse())
+    Parse a Xournal .xoj file and add all strokes to a given document.
     
-    Note that while .xoj files are gzip-compressed xml files, this function
-    expects decompressed input.
+    Note that this works on existing documents and will transfer the strokes
+    to the server, if connected.
     
     Positional Arguments:
-    input -- A file-like object or a string with Xournal XML content (NOT gziped)
+    document -- A Document object
+    filename -- The filename of the Xournal document
+    window -- A Gtk.Window, which can be used as the parent of MessageDialogs or the like
+    
+    Return value: The modified Document object, that was given as an argument.
     """
     with open_xoj(filename, "rb") as input:
         tree = ET.parse(input)
@@ -63,7 +76,15 @@ def import_into_document(document, filename, window):
     return document
 
 def _parse_stroke(stroke, layer):
-    """Parse 'stroke' element"""
+    """
+    Parse 'stroke' element
+    
+    Positional arguments:
+    stroke -- A ElementTree SubElement representing a stroke from a .xoj document
+    layer -- A Layer object. NOT from ElementTree
+    
+    Return value: A Stroke instance
+    """
     
     tool = stroke.attrib["tool"]
     if tool not in ["pen", "eraser", "highlighter"]:
@@ -96,19 +117,28 @@ def _parse_stroke(stroke, layer):
     return Stroke(layer, color=color, linewidth=nominalWidth, coords=coordinates)
 
 def _get_background(tree):
-    """Gets the background pdf file name of a xournal document"""
+    """
+    Returns the background pdf file name of a Xournal document
+    
+    Positional arguments:
+    tree -- An ElementTree representation of a .xoj XML tree
+    """
     for bg in tree.findall("page/background"):
         if "filename" in bg.attrib:
             return bg.attrib["filename"]
 
 def parse_color(code, default_opacity=255):
     """
-    Parse a xournal color name and return a tuple of four: (r, g, b, opacity)
+    Parse a xournal color name.
 
-    Keyword arguments:
+    Positional arguments:
     code -- The color string to parse (mandatory)
+    
+    Keyword arguments:
     default_opacity -- If 'code' does not contain opacity information, use this.
                        (default 255)
+    
+    Return value: tuple of four: (r, g, b, opacity)
     """
     opacity = default_opacity
     regex = re.compile(r"#([0-9a-fA-F]{2})([0-9a-fA-F]{2})"

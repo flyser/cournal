@@ -20,7 +20,17 @@
 from gi.repository import Gtk
 
 class AboutDialog(Gtk.AboutDialog):
+    """
+    The About Dialog of Cournal.
+    """
     def __init__(self, parent=None, **args):
+        """
+        Constructor.
+        
+        Keyword arguments:
+        parent -- Parent window of this dialog (defaults to no parent)
+        **args -- Arguments passed to the Gtk.AboutDialog constructor
+        """
         Gtk.AboutDialog.__init__(self, **args)
         
         self.set_modal(False)    
@@ -35,14 +45,9 @@ class AboutDialog(Gtk.AboutDialog):
         self.set_authors(["Fabian Henze", "Simon Vetter"])
         self.set_artists(["Simon Vetter"])
         
-    def response_cb(self, widget, response_id):
-        self.destroy()
-
-        if response_id == Gtk.ResponseType.ACCEPT:
-            print("OK clicked")
-
     def run_nonblocking(self):
-        self.connect('response', self.response_cb)
+        """Run the dialog asynchronously, reusing the mainloop of the parent."""
+        self.connect('response', lambda a,b: self.destroy())
         self.show()
 
 # For testing purposes:
