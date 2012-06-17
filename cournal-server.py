@@ -18,7 +18,11 @@
 # along with Cournal.  If not, see <http://www.gnu.org/licenses/>.
 
 import sys
+import os
+import atexit
+from tempfile import NamedTemporaryFile
 import argparse
+import pickle
 
 from zope.interface import implementer
 
@@ -36,6 +40,8 @@ from cournal.document.stroke import Stroke
 DEBUGLEVEL = 3
 
 VERSION = "0.2pre"
+DEFAULT_AUTOSAVE_DIRECTORY = os.path.expanduser("~/.cournal")
+DEFAULT_AUTOSAVE_INTERVAL = 60
 DEFAULT_PORT = 6524
 USERNAME = "test"
 PASSWORD = "testpw"
@@ -51,8 +57,71 @@ class CournalServer:
     """
     The server object, that holds global state, which is shared between all users.
     """
-    def __init__(self):
+    def __init__(self, autosave_directory, autosave_interval):
+        """
+        Constructor.
+        
+        Test, if the autosave directory is writable and load saved data.
+        
+        Positional arguments:
+        autosave_directory -- The directory within which to store the documents
+        autosave_interval -- Interval in seconds within which to save the documents
+        """
         self.documents = dict()
+        self.autosave_directory = os.path.abspath(autosave_directory)
+        self.autosave_interval = autosave_interval
+        
+        # Don't create the autosave directory, if autosaving is disabled
+        if self.autosave_interval == 0:
+            return
+        
+        if not os.path.isdir(self.autosave_directory):
+            # Only create the autosave directory, if it wasn't changed by the user
+            if self.autosave_directory != DEFAULT_AUTOSAVE_DIRECTORY:
+                print("Autosave directory '{}' does not exist.", file=sys.stderr)
+                raise Exception()
+            else:
+                try:
+                    os.mkdir(self.autosave_directory)
+                except Exception as ex:
+                    print("Could not create autosave directory: {}".format(self.autosave_directory, ex), file=sys.stderr)
+                    raise ex
+        os.chdir(self.autosave_directory)
+        
+        # Try to create a file in the autosave directory to make sure, that we
+        # have write access:
+        try:
+            NamedTemporaryFile(prefix="cournal-", suffix=".tmp", dir=self.autosave_directory).close()
+        except Exception as ex:
+            print("Could not create file in autosave directory: {}".format(ex), file=sys.stderr)
+            raise ex
+        
+        # Load saved data
+        for name in [s[:-5] for s in os.listdir() if s.endswith(".save")]:
+            with open(name + ".save", "rb") as file:
+                self.documents[name] = Document(name)
+                self.documents[name].pages = pickle.load(file)
+        
+        reactor.callLater(self.autosave_interval, self.save_documents)
+                
+    def save_documents(self):
+        """
+        Save all documents to files named "autosave_directory/documentname.save".
+        
+        The on-disk format is a pickled list of pages.
+        """
+        debug(3, "Saving all documents.")
+        for name, document in self.documents.items():
+            # We write to a tmpfile and move it to the actual location to ensure
+            # atomic writing of the file, meaning: In case of a crash, either the
+            # old or the new version of that file is on the disk
+            tmpfile = NamedTemporaryFile(prefix=name+'-', suffix='.delete-me', dir=".", mode='wb', delete=False)
+            filename = self.autosave_directory + "/" + name + ".save"
+            pickle.dump(document.pages, tmpfile, protocol=3)
+            tmpfile.close()
+            os.rename(tmpfile.name, filename)
+        
+        reactor.callLater(self.autosave_interval, self.save_documents)
 
     def get_document(self, documentname):
         """
@@ -250,6 +319,8 @@ class CmdlineParser():
     def __init__(self):
         """Constructor. All variables initialized here are public."""
         self.port = DEFAULT_PORT
+        self.autosave_directory = DEFAULT_AUTOSAVE_DIRECTORY
+        self.autosave_interval = DEFAULT_AUTOSAVE_INTERVAL
         
     def parse(self):
         """
@@ -257,13 +328,19 @@ class CmdlineParser():
         """
         parser = argparse.ArgumentParser(description="Server for Cournal.",
                                          epilog="e.g.: %(prog)s -p port")
-        parser.add_argument("-p", "--port", nargs=1, type=int, default=[DEFAULT_PORT],
+        parser.add_argument("-p", "--port", nargs=1, type=int, default=[self.port],
                             help="Port to listen on")
+        parser.add_argument("-s", "--autosave-directory", nargs=1, default=[self.autosave_directory],
+                            help="The directory within which to store the documents on the server.")
+        parser.add_argument("-i", "--autosave-interval", nargs=1, type=int, default=[self.autosave_interval],
+                            help="Interval in seconds within which to save modified documents to permanent storage. Set to 0 to disable autosave.")
         parser.add_argument("-v", "--version", action="version",
                             version="%(prog)s " + VERSION)
         args = parser.parse_args()
         
         self.port = args.port[0]
+        self.autosave_directory = args.autosave_directory[0]
+        self.autosave_interval = args.autosave_interval[0]
         return self
 
 def main():
@@ -272,7 +349,7 @@ def main():
     port = args.port
     
     realm = CournalRealm()
-    realm.server = CournalServer()
+    realm.server = CournalServer(args.autosave_directory, args.autosave_interval)
     checker = checkers.InMemoryUsernamePasswordDatabaseDontUse()
     checker.addUser(USERNAME, PASSWORD)
     p = portal.Portal(realm, [checker])
@@ -284,6 +361,10 @@ def main():
         return 1
     
     debug(2, "Listening on port", port)
+    
+    # Save on exit, if the user enabled autosave
+    if realm.server.autosave_interval > 0:
+        atexit.register(realm.server.save_documents)
     reactor.run()
 
 def debug(level, *args):
