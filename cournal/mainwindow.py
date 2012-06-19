@@ -17,12 +17,13 @@
 # You should have received a copy of the GNU General Public License
 # along with Cournal.  If not, see <http://www.gnu.org/licenses/>.
 
-from gi.repository import Gtk
+from gi.repository import Gtk, Gdk
 from gi.repository.GLib import GError
 
 from .viewer import Layout
 from .viewer.tools import pen
 from .document import Document, xojparser
+from . import network
 from . import ConnectionDialog, AboutDialog
 
 pdf_filter = Gtk.FileFilter()
@@ -46,6 +47,7 @@ class MainWindow(Gtk.Window):
         **args -- Arguments passed to the Gtk.Window constructor
         """
         Gtk.Window.__init__(self, title="Cournal", **args)
+        network.set_window(self)
         
         self.document = None
         self.last_filename = None
@@ -61,6 +63,15 @@ class MainWindow(Gtk.Window):
         # Initialize the main journal layout
         self.layout = None
         self.scrolledwindow = builder.get_object("scrolledwindow")
+        
+        # Reparent the scrolledwindow to a GtkOverlay, which is not supported by glade?
+        self.overlay = Gtk.Overlay()
+        sw_parent = self.scrolledwindow.get_parent()
+        packing = sw_parent.query_child_packing(self.scrolledwindow)
+        sw_parent.remove(self.scrolledwindow)
+        self.overlay.add(self.scrolledwindow)
+        sw_parent.add(self.overlay)
+        sw_parent.set_child_packing(self.overlay, *packing)
         
         # Menu Bar:
         self.menu_open_xoj = builder.get_object("imagemenuitem_open_xoj")
@@ -118,6 +129,19 @@ class MainWindow(Gtk.Window):
         self.tool_pensize_small.connect("clicked", self.change_pen_size, LINEWIDTH_SMALL)
         self.tool_pensize_normal.connect("clicked", self.change_pen_size, LINEWIDTH_NORMAL)
         self.tool_pensize_big.connect("clicked", self.change_pen_size, LINEWIDTH_BIG)
+    
+    def disconnect_event(self):
+        """
+        Called by the networking code, when we get disconnected from the server
+        """
+        self.overlaybox = OverlayDialog("Disconnect and continue locally", "No response from the server.")
+        self.overlay.add_overlay(self.overlaybox)
+        self.overlaybox.button.connect("clicked", self.disconnect_clicked)
+        
+    def disconnect_clicked(self, widget):
+        """Disconnect from the server and close the OverlayDialog."""
+        network.disconnect()
+        self.overlaybox.destroy()
     
     def _set_document(self, document):
         """
@@ -321,3 +345,55 @@ class MainWindow(Gtk.Window):
     def zoom_100(self, menuitem):
         """Reset Zoom"""
         self.layout.set_zoomlevel(1)
+
+class OverlayDialog(Gtk.EventBox):
+    """
+    Display a MessageDialog-like widget, while greying out the underlying widget
+    """
+    def __init__(self, button_text="", label_text="", icon=Gtk.STOCK_DIALOG_WARNING):
+        """
+        Constructor
+        
+        Keyword arguments:
+        botton_text -- Label of the button.
+        label_text -- Message to display next to the icon.
+        icon -- A Gtk.STOCK_* icon id, which is displayed in the dialog.
+        """
+        Gtk.EventBox.__init__(self)
+        self.set_valign(Gtk.Align.FILL)
+        self.set_halign(Gtk.Align.FILL)
+        self.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0,0,0,0.4))
+        
+        main = Gtk.Grid()
+        eventbox = Gtk.EventBox()
+        whitebox = Gtk.Frame()
+        grid = Gtk.Grid()
+        self.button = Gtk.Button()
+        self.label = Gtk.Label()
+        self.icon = Gtk.Image()
+
+        main.set_row_homogeneous(True)
+        main.set_column_homogeneous(True)
+        eventbox.set_valign(Gtk.Align.CENTER)
+        eventbox.set_halign(Gtk.Align.CENTER)
+        eventbox.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(1,1,1,1))
+        whitebox.set_shadow_type(Gtk.ShadowType.OUT)
+        grid.set_border_width(5)
+        grid.set_column_spacing(5)
+        grid.set_row_spacing(5)
+        self.button.set_label(button_text)
+        self.button.set_valign(Gtk.Align.END)
+        self.button.set_halign(Gtk.Align.END)
+        self.label.set_text(label_text)
+        self.label.set_line_wrap(True)
+        self.icon.set_from_stock(icon, Gtk.IconSize.DIALOG)
+        
+        grid.attach(self.icon, left=0, top=0, width=1, height=2)
+        grid.attach(self.label, left=1, top=0, width=1, height=1)
+        grid.attach(self.button, left=1, top=1, width=1, height=1)
+        whitebox.add(grid)
+        eventbox.add(whitebox)
+        main.attach(eventbox, left=1, top=1, width=1, height=1)
+        self.add(main)
+
+        self.show_all()

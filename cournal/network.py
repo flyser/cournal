@@ -27,6 +27,9 @@ from twisted.cred import credentials
 # 3 - maximal
 DEBUGLEVEL = 3
 
+PING_INTERVAL = 5
+PING_TIMEOUT = 5
+
 USERNAME = "test"
 PASSWORD = "testpw"
 
@@ -42,17 +45,27 @@ class _Network(pb.Referenceable):
         """Constructor"""
         pb.Referenceable.__init__(self)
         self.document = None
+        self.window = None
         self.is_connected = False
     
     def set_document(self, document):
         """
-        Associate this object with a document
+        Associate this object with a document.
         
         Positional arguments:
         document -- The Document object
         """
         self.document = document
         
+    def set_window(self, window):
+        """
+        Associate this object with a Gtk window.
+        
+        Positional arguments:
+        window -- The window object
+        """
+        self.window = window
+
     def connect(self, hostname, port):
         """
         Connect to a server
@@ -84,6 +97,8 @@ class _Network(pb.Referenceable):
         # and the server will think we logged out.
         self.is_connected = True
         self.perspective = perspective
+        self.perspective.notifyOnDisconnect(self.disconnect_event)
+        self.ping()
         d = perspective.callRemote("join_document", "document1")
         d.addCallbacks(self.got_server_document, callbackArgs=["document1"])
         
@@ -100,6 +115,19 @@ class _Network(pb.Referenceable):
         self.is_connected = False
         
         return reason
+    
+    def disconnect(self, _=None):
+        """
+        Disconnect from the server. Note that this will cancel ongoing operations.
+        """
+        if self.is_connected:
+            self.perspective.broker.transport.loseConnection()
+    
+    def disconnect_event(self, event):
+        """Called, when the client gets disconnected from the server."""
+        self.is_connected = False
+        if self.window:
+            self.window.disconnect_event()
         
     def got_server_document(self, server_document, name):
         """
@@ -152,11 +180,31 @@ class _Network(pb.Referenceable):
         Positional arguments:
         pagenum -- On which page the stroke was deleted
         coords -- The list of coordinates identifying the stroke
-        
         """
         if self.is_connected:
             self.server_document.callRemote("delete_stroke_with_coords", pagenum, coords)
-
+    
+    def ping(self):
+        """
+        Ping the server to verify, that we are still connected.
+        
+        A watchdog is set up, which gets called, if it times out before we get a
+        ping response from the server.
+        """
+        if self.is_connected:
+            self.watchdog = reactor.callLater(PING_TIMEOUT, self.disconnect)
+            d = self.perspective.callRemote("ping")
+            d.addCallbacks(self.ping_successful, self.disconnect)
+        
+    def ping_successful(self, r):
+        """
+        Called, when we receive a ping response from the server.
+        
+        Stop the watchdog and schedule the next ping.
+        """
+        self.watchdog.cancel()
+        reactor.callLater(PING_INTERVAL, self.ping)
+    
 # This is, what will be exported and included by other modules:
 network = _Network()
         

@@ -214,6 +214,10 @@ class User(pb.Avatar):
         document.add_user(self)
         self.documents.append(document)
         return document
+    
+    def perspective_ping(self):
+        """Called by clients to verify, that the connection is still up."""
+        return True
         
     def call_remote(self, method, *args):
         """

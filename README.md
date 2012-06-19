@@ -54,7 +54,7 @@ Patches to support system-wide installation are very welcome.
 
 ##### Server ######
 
-    cournal-server.py [portnumber]
+    cournal-server.py -p [portnumber]
 
 ##### Client ######
     
