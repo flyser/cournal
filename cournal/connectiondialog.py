@@ -91,6 +91,10 @@ class ConnectionDialog(Gtk.Dialog):
         self.new_connection(server, port)
             
     def confirm_clear_document(self):
+        """
+        Ask the user, if he wishes to loose all changes he made to the current
+        document, when he connects to a server.
+        """
         message = Gtk.MessageDialog(self, (Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT), Gtk.MessageType.WARNING, Gtk.ButtonsType.YES_NO, "Close current document?" )
         message.format_secondary_text("You will loose all changes to your current document, if you connect to a server. Continue without saving?")
         message.set_title("Warning")
