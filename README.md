@@ -16,8 +16,8 @@ to Xournal, but with networking support.
 There has been numerous discussions over many years on the Xournal mailing list
 and Xournal++ even had experimental networking support, but it didn't work out.
 So I started Cournal, which got networking support just after PDF viewing and
-simple drawing was done and was therefore designed with
-networking in mind from the ground up.
+simple drawing was done. Therefore it is designed with networking in mind from 
+scratch.
 
 ## Does it work yet ##
 
@@ -63,5 +63,5 @@ Start Cournal, select "Annotate PDF" and then "Connect to Server".
 ## File Format ##
 
 The file format is compatible to Xournals .xoj files, but Cournal might not be
-able to open some .xoj files created by Xournal, because the it doesn't support
+able to open some .xoj files created by Xournal, because it doesn't support
 all features of the file format. The other way around should work though.
