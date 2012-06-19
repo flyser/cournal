@@ -67,7 +67,7 @@ class Document:
         """Deletes all strokes on all pages of this document"""
         for page in self.pages:
             for stroke in page.layers[0].strokes[:]:
-                page.delete_stroke(stroke)
+                page.delete_stroke(stroke, send_to_network=False)
     
     def export_pdf(self, filename):
         """
