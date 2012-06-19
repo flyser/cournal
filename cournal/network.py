@@ -101,6 +101,7 @@ class _Network(pb.Referenceable):
         self.ping()
         d = perspective.callRemote("join_document", "document1")
         d.addCallbacks(self.got_server_document, callbackArgs=["document1"])
+        self.window.connect_event()
         
         return d
 
