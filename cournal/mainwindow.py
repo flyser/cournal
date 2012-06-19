@@ -83,6 +83,7 @@ class MainWindow(Gtk.Window):
         self.menu_import_xoj = builder.get_object("imagemenuitem_import_xoj")
         self.menu_quit = builder.get_object("imagemenuitem_quit")
         self.menu_about = builder.get_object("imagemenuitem_about")
+        
         # Toolbar:
         self.tool_open_pdf = builder.get_object("tool_open_pdf")
         self.tool_save = builder.get_object("tool_save")
@@ -130,6 +131,9 @@ class MainWindow(Gtk.Window):
         self.tool_pensize_normal.connect("clicked", self.change_pen_size, LINEWIDTH_NORMAL)
         self.tool_pensize_big.connect("clicked", self.change_pen_size, LINEWIDTH_BIG)
     
+        # Statusbar:
+        self.statusbar_icon = builder.get_object("image_statusbar")
+
     def disconnect_event(self):
         """
         Called by the networking code, when we get disconnected from the server
@@ -137,6 +141,11 @@ class MainWindow(Gtk.Window):
         self.overlaybox = OverlayDialog("Disconnect and continue locally", "No response from the server.")
         self.overlay.add_overlay(self.overlaybox)
         self.overlaybox.button.connect("clicked", self.disconnect_clicked)
+        self.statusbar_icon.set_from_stock(Gtk.STOCK_CONNECT, Gtk.IconSize.SMALL_TOOLBAR)
+    
+    def connect_event(self):
+        self.statusbar_icon.set_from_stock(Gtk.STOCK_CONNECT, Gtk.IconSize.SMALL_TOOLBAR)
+
         
     def disconnect_clicked(self, widget):
         """Disconnect from the server and close the OverlayDialog."""
