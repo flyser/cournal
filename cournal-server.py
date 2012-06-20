@@ -17,8 +17,7 @@
 # You should have received a copy of the GNU General Public License
 # along with Cournal.  If not, see <http://www.gnu.org/licenses/>.
 
-import sys
-import os
+import os, sys
 import atexit
 from tempfile import NamedTemporaryFile
 import argparse
@@ -87,14 +86,8 @@ class CournalServer:
                     print("Could not create autosave directory: {}".format(self.autosave_directory, ex), file=sys.stderr)
                     raise ex
         os.chdir(self.autosave_directory)
-        
-        # Try to create a file in the autosave directory to make sure, that we
-        # have write access:
-        try:
-            NamedTemporaryFile(prefix="cournal-", suffix=".tmp", dir=self.autosave_directory).close()
-        except Exception as ex:
-            print("Could not create file in autosave directory: {}".format(ex), file=sys.stderr)
-            raise ex
+
+        self.obtain_lockfile()
         
         # Load saved data
         for name in [s[:-5] for s in os.listdir() if s.endswith(".save")]:
@@ -102,8 +95,66 @@ class CournalServer:
                 self.documents[name] = Document(name)
                 self.documents[name].pages = pickle.load(file)
         
+        debug(1, "Loaded {} documents".format(len(self.documents)))
+        
         reactor.callLater(self.autosave_interval, self.save_documents)
-                
+    
+    def obtain_lockfile(self):
+        """
+        Try to obtain a lock file for the autosave directory to make sure,
+        that we are the only ones writing there.
+        """
+        lockfile = self.autosave_directory + "/lock"
+        if os.path.exists(lockfile):
+            with open(lockfile, "rb") as f:
+                pid = int(f.read())
+            if self.is_pid_dead(pid):
+                print("The autosave directory was locked by another instance of cournal-server,", file=sys.stderr)
+                print("that is not running anymore. This happens, when cournal-server crashed.", file=sys.stderr)
+                print("Make sure that no server is using the autosave directory '{}',".format(self.autosave_directory), file=sys.stderr)
+                print("delete '{}' and try again.".format(lockfile), file=sys.stderr)
+            else:
+                print("The autosave directory is locked by another instance of cournal-server.", file=sys.stderr)
+                print("To run multiple instances concurrently, you need to set a different autosave directory and port.", file=sys.stderr)
+            sys.exit(-1)
+        else:
+            try:
+                open(lockfile, 'w').write(str(os.getpid()))
+            except Exception as ex:
+                print("Could not create file in autosave directory: {}".format(ex), file=sys.stderr)
+                raise ex
+        self.lockfile = lockfile
+    
+    def release_lockfile(self):
+        """Delete the lockfile created with obtain_lockfile()."""
+        if self.lockfile:
+            os.remove(self.lockfile)
+    
+    def is_pid_dead(self, pid):
+        """Returns True, if no running program has the given PID."""
+        try:
+            # Signal 0 is no-op
+            return os.kill(pid, 0)
+        except OSError as e:
+            #process is dead
+            if e.errno == 3:
+                return True
+            #no permissions
+            elif e.errno == 1:
+                return False
+            else:
+                raise
+
+    def exit(self):
+        """
+        The program is about to terminate. Save documents and release lockfile
+        """
+        if self.autosave_interval > 0:
+            # Save on exit, if the user enabled autosave
+            self.save_documents()
+            # and release the directory lock
+            self.release_lockfile()
+    
     def save_documents(self):
         """
         Save all documents to files named "autosave_directory/documentname.save".
@@ -352,6 +403,8 @@ def main():
     args = CmdlineParser().parse()
     port = args.port
     
+    atexit.register(realm.server.exit)
+
     realm = CournalRealm()
     realm.server = CournalServer(args.autosave_directory, args.autosave_interval)
     checker = checkers.InMemoryUsernamePasswordDatabaseDontUse()
@@ -363,12 +416,8 @@ def main():
     except CannotListenError as err:
         debug(0, "ERROR: Failed to listen on port", err.port)
         return 1
-    
     debug(2, "Listening on port", port)
-    
-    # Save on exit, if the user enabled autosave
-    if realm.server.autosave_interval > 0:
-        atexit.register(realm.server.save_documents)
+
     reactor.run()
 
 def debug(level, *args):
