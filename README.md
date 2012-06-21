@@ -38,7 +38,7 @@ but don't know what needs work.
  * Poppler 0.18 or newer
  * GObject Introspection
  * ZopeInterface 3.6.0 or newer
- * GTK+ 3.x
+ * GTK+ 3.2 or newer (GTK 3.4 is strongly recommended)
  * Twisted for python3 (download script: download-twisted.sh)
 
 ## Installation ##
