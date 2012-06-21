@@ -403,10 +403,9 @@ def main():
     args = CmdlineParser().parse()
     port = args.port
     
-    atexit.register(realm.server.exit)
-
     realm = CournalRealm()
     realm.server = CournalServer(args.autosave_directory, args.autosave_interval)
+    atexit.register(realm.server.exit)
     checker = checkers.InMemoryUsernamePasswordDatabaseDontUse()
     checker.addUser(USERNAME, PASSWORD)
     p = portal.Portal(realm, [checker])

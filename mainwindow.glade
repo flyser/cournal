@@ -417,13 +417,18 @@
       </packing>
     </child>
     <child>
-      <object class="GtkScrolledWindow" id="scrolledwindow">
+      <object class="GtkOverlay" id="overlay">
         <property name="visible">True</property>
-        <property name="can_focus">True</property>
-        <property name="vscrollbar_policy">always</property>
-        <property name="shadow_type">in</property>
         <child>
-          <placeholder/>
+          <object class="GtkScrolledWindow" id="scrolledwindow">
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="vscrollbar_policy">always</property>
+            <property name="shadow_type">in</property>
+            <child>
+              <placeholder/>
+            </child>
+          </object>
         </child>
       </object>
       <packing>

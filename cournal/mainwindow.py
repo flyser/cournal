@@ -62,16 +62,8 @@ class MainWindow(Gtk.Window):
         
         # Initialize the main journal layout
         self.layout = None
+        self.overlay = builder.get_object("overlay")
         self.scrolledwindow = builder.get_object("scrolledwindow")
-        
-        # Reparent the scrolledwindow to a GtkOverlay, which is not supported by glade?
-        self.overlay = Gtk.Overlay()
-        sw_parent = self.scrolledwindow.get_parent()
-        packing = sw_parent.query_child_packing(self.scrolledwindow)
-        sw_parent.remove(self.scrolledwindow)
-        self.overlay.add(self.scrolledwindow)
-        sw_parent.add(self.overlay)
-        sw_parent.set_child_packing(self.overlay, *packing)
         
         # Menu Bar:
         self.menu_open_xoj = builder.get_object("imagemenuitem_open_xoj")
@@ -139,18 +131,33 @@ class MainWindow(Gtk.Window):
         Called by the networking code, when we get disconnected from the server
         """
         self.overlaybox = OverlayDialog("Disconnect and continue locally", "No response from the server.")
-        self.overlay.add_overlay(self.overlaybox)
+        # GtkOverlay is broken in Gtk 3.2, so we apply a workaround:
+        if Gtk.check_version(3,4,0) == None:
+            # Gtk 3.4+
+            self.overlay.add_overlay(self.overlaybox)
+        else:
+            # Gtk 3.2
+            self.overlay.remove(self.scrolledwindow)
+            self.overlay.add(self.overlaybox)
         self.overlaybox.button.connect("clicked", self.disconnect_clicked)
         self.statusbar_icon.set_from_stock(Gtk.STOCK_CONNECT, Gtk.IconSize.SMALL_TOOLBAR)
     
     def connect_event(self):
+        """
+        Called by the networking layer when a connection is established.
+        Set the statusbar icon accordingly.
+        """
         self.statusbar_icon.set_from_stock(Gtk.STOCK_CONNECT, Gtk.IconSize.SMALL_TOOLBAR)
 
-        
     def disconnect_clicked(self, widget):
         """Disconnect from the server and close the OverlayDialog."""
         network.disconnect()
         self.overlaybox.destroy()
+        del self.overlaybox
+        
+        if Gtk.check_version(3,4,0) != None:
+            # We run on Gtk 3.2
+            self.overlay.add(self.scrolledwindow)
     
     def _set_document(self, document):
         """
