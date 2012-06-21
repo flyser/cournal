@@ -90,15 +90,15 @@ class _Network(pb.Referenceable):
 
     def connected(self, perspective):
         """
-        Called, when the connection succeeded. Join a document now
+        Called, when the connection succeeded. Join a document.
         
         Positional arguments:
         perspective -- a reference to our user object
         """
         debug(1, "Connected")
-        # This perspective is a reference to our User object.  Save a reference
-        # to it here, otherwise it will get garbage collected after this call,
-        # and the server will think we logged out.
+        # This perspective is a remote reference to our User object. Save it
+        # here, otherwise it will get garbage collected at the end of this
+        # function and the server will think we logged out.
         self.data_received()
         self.is_connected = True
         self.perspective = perspective
