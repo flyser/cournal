@@ -17,6 +17,8 @@
 # You should have received a copy of the GNU General Public License
 # along with Cournal.  If not, see <http://www.gnu.org/licenses/>.
 
+import time
+
 from twisted.spread import pb
 from twisted.internet import reactor
 from twisted.cred import credentials
@@ -47,6 +49,8 @@ class _Network(pb.Referenceable):
         self.document = None
         self.window = None
         self.is_connected = False
+        self.last_data_received = 0
+        self.watchdog = None
     
     def set_document(self, document):
         """
@@ -95,6 +99,7 @@ class _Network(pb.Referenceable):
         # This perspective is a reference to our User object.  Save a reference
         # to it here, otherwise it will get garbage collected after this call,
         # and the server will think we logged out.
+        self.data_received()
         self.is_connected = True
         self.perspective = perspective
         self.perspective.notifyOnDisconnect(self.disconnect_event)
@@ -138,6 +143,7 @@ class _Network(pb.Referenceable):
         server_document -- remote reference to the document we are editing 
         name -- Name of the document
         """
+        self.data_received()
         debug(2, "Started editing", name)
         self.server_document = server_document
 
@@ -149,6 +155,7 @@ class _Network(pb.Referenceable):
         pagenum -- On which page shall we add the stroke
         stroke -- The received Stroke object
         """
+        self.data_received()
         if self.document and pagenum < len(self.document.pages):
             self.document.pages[pagenum].new_stroke(stroke)
     
@@ -161,7 +168,8 @@ class _Network(pb.Referenceable):
         stroke -- The Stroke object to send
         """
         if self.is_connected:
-            self.server_document.callRemote("new_stroke", pagenum, stroke)
+            d = self.server_document.callRemote("new_stroke", pagenum, stroke)
+            d.addCallbacks(lambda x: self.data_received(), self.disconnect)
 
     def remote_delete_stroke_with_coords(self, pagenum, coords):
         """
@@ -171,6 +179,7 @@ class _Network(pb.Referenceable):
         pagenum -- On which page the stroke was deleted
         coords -- The list of coordinates identifying a stroke
         """
+        self.data_received()
         if self.document and pagenum < len(self.document.pages):
             self.document.pages[pagenum].delete_stroke_with_coords(coords)
     
@@ -183,28 +192,38 @@ class _Network(pb.Referenceable):
         coords -- The list of coordinates identifying the stroke
         """
         if self.is_connected:
-            self.server_document.callRemote("delete_stroke_with_coords", pagenum, coords)
+            d = self.server_document.callRemote("delete_stroke_with_coords", pagenum, coords)
+            d.addCallback(lambda x,y: self.data_received(), self.disconnect)
     
     def ping(self):
         """
         Ping the server to verify, that we are still connected.
-        
-        A watchdog is set up, which gets called, if it times out before we get a
-        ping response from the server.
         """
         if self.is_connected:
-            self.watchdog = reactor.callLater(PING_TIMEOUT, self.disconnect)
             d = self.perspective.callRemote("ping")
             d.addCallbacks(self.ping_successful, self.disconnect)
         
     def ping_successful(self, r):
         """
         Called, when we receive a ping response from the server.
-        
-        Stop the watchdog and schedule the next ping.
         """
-        self.watchdog.cancel()
+        self.data_received()
         reactor.callLater(PING_INTERVAL, self.ping)
+    
+    def data_received(self):
+        """
+        Call this, when any kind of data is received from the server
+        to get disconnect detection.
+        
+        A watchdog is set up, which triggers a disconnect, if we don't get
+        a response from the server for some time.
+        """
+        epoch = time.time()
+        if epoch - 1 > self.last_data_received or epoch < self.last_data_received:
+            self.last_data_received = time.time()
+            if self.watchdog:
+                self.watchdog.cancel()
+            self.watchdog = reactor.callLater(PING_INTERVAL + PING_TIMEOUT, self.disconnect)
     
 # This is, what will be exported and included by other modules:
 network = _Network()
