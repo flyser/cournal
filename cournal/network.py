@@ -17,7 +17,7 @@
 # You should have received a copy of the GNU General Public License
 # along with Cournal.  If not, see <http://www.gnu.org/licenses/>.
 
-import time
+from time import time
 
 from twisted.spread import pb
 from twisted.internet import reactor
@@ -49,6 +49,7 @@ class _Network(pb.Referenceable):
         self.document = None
         self.window = None
         self.is_connected = False
+        self.is_stalled = True
         self.last_data_received = 0
         self.watchdog = None
     
@@ -100,6 +101,7 @@ class _Network(pb.Referenceable):
         # here, otherwise it will get garbage collected at the end of this
         # function and the server will think we logged out.
         self.data_received()
+        self.is_stalled = False
         self.is_connected = True
         self.perspective = perspective
         self.perspective.notifyOnDisconnect(self.disconnect_event)
@@ -132,8 +134,18 @@ class _Network(pb.Referenceable):
     def disconnect_event(self, event):
         """Called, when the client gets disconnected from the server."""
         self.is_connected = False
+        self.connection_problems()
+        
+    def connection_problems(self):
+        """
+        Called when the server has not responded for some time or is disconnected.
+        Inform the user, so he can decide, whether he wishes to disconnect or wait.
+        """
+        self.is_stalled = True
         if self.window:
-            self.window.disconnect_event()
+            self.window.connection_problems()
+        else:
+            self.disconnect()
         
     def got_server_document(self, server_document, name):
         """
@@ -218,12 +230,13 @@ class _Network(pb.Referenceable):
         A watchdog is set up, which triggers a disconnect, if we don't get
         a response from the server for some time.
         """
-        epoch = time.time()
-        if epoch - 1 > self.last_data_received or epoch < self.last_data_received:
-            self.last_data_received = time.time()
-            if self.watchdog:
+        self.is_stalled = False
+        current_time = time()
+        if current_time > 1 + self.last_data_received or current_time < self.last_data_received:
+            self.last_data_received = current_time
+            if self.watchdog and not self.watchdog.called:
                 self.watchdog.cancel()
-            self.watchdog = reactor.callLater(PING_INTERVAL + PING_TIMEOUT, self.disconnect)
+            self.watchdog = reactor.callLater(PING_INTERVAL + PING_TIMEOUT, self.connection_problems)
     
 # This is, what will be exported and included by other modules:
 network = _Network()

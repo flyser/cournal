@@ -17,7 +17,9 @@
 # You should have received a copy of the GNU General Public License
 # along with Cournal.  If not, see <http://www.gnu.org/licenses/>.
 
-from gi.repository import Gtk, Gdk
+from time import time
+
+from gi.repository import Gtk, Gdk, GObject
 from gi.repository.GLib import GError
 
 from .viewer import Layout
@@ -49,6 +51,7 @@ class MainWindow(Gtk.Window):
         Gtk.Window.__init__(self, title="Cournal", **args)
         network.set_window(self)
         
+        self.overlaybox = None
         self.document = None
         self.last_filename = None
         
@@ -126,11 +129,27 @@ class MainWindow(Gtk.Window):
         # Statusbar:
         self.statusbar_icon = builder.get_object("image_statusbar")
 
-    def disconnect_event(self):
+    def connect_event(self):
         """
-        Called by the networking code, when we get disconnected from the server
+        Called by the networking layer when a connection is established.
+        Set the statusbar icon accordingly.
         """
-        self.overlaybox = OverlayDialog("Disconnect and continue locally", "No response from the server.")
+        self.statusbar_icon.set_from_stock(Gtk.STOCK_CONNECT, Gtk.IconSize.SMALL_TOOLBAR)
+
+    def connection_problems(self):
+        """
+        Called by the networking code, when the server did not respond for
+        some time or when we are disconnected.
+        """
+        def destroyed(widget):
+            self.overlaybox = None
+            # Do we run on Gtk 3.2?
+            if Gtk.check_version(3,4,0) != None: self.overlay.add(self.scrolledwindow)
+
+        if self.overlaybox is not None:
+            return
+        
+        self.overlaybox = OverlayDialog()
         # GtkOverlay is broken in Gtk 3.2, so we apply a workaround:
         if Gtk.check_version(3,4,0) == None:
             # Gtk 3.4+
@@ -140,24 +159,14 @@ class MainWindow(Gtk.Window):
             self.overlay.remove(self.scrolledwindow)
             self.overlay.add(self.overlaybox)
         self.overlaybox.button.connect("clicked", self.disconnect_clicked)
+        self.overlaybox.connect("destroy", destroyed)
         self.statusbar_icon.set_from_stock(Gtk.STOCK_CONNECT, Gtk.IconSize.SMALL_TOOLBAR)
     
-    def connect_event(self):
-        """
-        Called by the networking layer when a connection is established.
-        Set the statusbar icon accordingly.
-        """
-        self.statusbar_icon.set_from_stock(Gtk.STOCK_CONNECT, Gtk.IconSize.SMALL_TOOLBAR)
-
     def disconnect_clicked(self, widget):
         """Disconnect from the server and close the OverlayDialog."""
         network.disconnect()
-        self.overlaybox.destroy()
-        del self.overlaybox
-        
-        if Gtk.check_version(3,4,0) != None:
-            # We run on Gtk 3.2
-            self.overlay.add(self.scrolledwindow)
+        # Call this via a timeout to let the disconnect_event in network.py fire
+        GObject.timeout_add(0, self.overlaybox.destroy)
     
     def _set_document(self, document):
         """
@@ -188,6 +197,10 @@ class MainWindow(Gtk.Window):
         self.tool_pensize_small.set_sensitive(True)
         self.tool_pensize_normal.set_sensitive(True)
         self.tool_pensize_big.set_sensitive(True)
+        
+        # Hide the disconnection overlay dialog when the user opens a new doc
+        if self.overlaybox:
+            self.overlaybox.destroy()
     
     def run_open_pdf_dialog(self, menuitem):
         """
@@ -366,16 +379,15 @@ class OverlayDialog(Gtk.EventBox):
     """
     Display a MessageDialog-like widget, while greying out the underlying widget
     """
-    def __init__(self, button_text="", label_text="", icon=Gtk.STOCK_DIALOG_WARNING):
-        """
-        Constructor
-        
-        Keyword arguments:
-        botton_text -- Label of the button.
-        label_text -- Message to display next to the icon.
-        icon -- A Gtk.STOCK_* icon id, which is displayed in the dialog.
-        """
+    def __init__(self):
+        """Constructor"""
         Gtk.EventBox.__init__(self)
+        self.last_no_data_seconds = 0
+        self.timeout_button_text = "Disconnect and continue locally"
+        self.timeout_label_text = "No response from the server for the last {} seconds."
+        self.disconnect_button_text = "Continue locally"
+        self.disconnect_label_text = "The connection to the server has been terminated."
+        
         self.set_valign(Gtk.Align.FILL)
         self.set_halign(Gtk.Align.FILL)
         self.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0,0,0,0.4))
@@ -397,12 +409,10 @@ class OverlayDialog(Gtk.EventBox):
         grid.set_border_width(5)
         grid.set_column_spacing(5)
         grid.set_row_spacing(5)
-        self.button.set_label(button_text)
         self.button.set_valign(Gtk.Align.END)
         self.button.set_halign(Gtk.Align.END)
-        self.label.set_text(label_text)
         self.label.set_line_wrap(True)
-        self.icon.set_from_stock(icon, Gtk.IconSize.DIALOG)
+        self.icon.set_from_stock(Gtk.STOCK_DIALOG_WARNING, Gtk.IconSize.DIALOG)
         
         grid.attach(self.icon, left=0, top=0, width=1, height=2)
         grid.attach(self.label, left=1, top=0, width=1, height=1)
@@ -411,5 +421,24 @@ class OverlayDialog(Gtk.EventBox):
         eventbox.add(whitebox)
         main.attach(eventbox, left=1, top=1, width=1, height=1)
         self.add(main)
-
+        
+        self.update()
         self.show_all()
+        
+    def update(self):
+        if network.is_connected:
+            no_data_seconds = int(time() - network.last_data_received + 0.5)
+            if not network.is_stalled:
+                # The connection problems were solved automatically
+                self.destroy()
+                return
+            
+            self.last_no_data_seconds = no_data_seconds
+            self.label.set_text(self.timeout_label_text.format(no_data_seconds))
+            self.button.set_label(self.timeout_button_text)
+        else:
+            self.label.set_text(self.disconnect_label_text)
+            self.button.set_label(self.disconnect_button_text)
+        GObject.timeout_add(1, self.update)
+
+        
