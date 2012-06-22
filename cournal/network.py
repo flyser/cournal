@@ -135,6 +135,8 @@ class _Network(pb.Referenceable):
         """Called, when the client gets disconnected from the server."""
         self.is_connected = False
         self.connection_problems()
+        if self.window:
+            self.window.disconnect_event()
         
     def connection_problems(self):
         """

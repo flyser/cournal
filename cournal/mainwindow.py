@@ -136,6 +136,12 @@ class MainWindow(Gtk.Window):
         """
         self.statusbar_icon.set_from_stock(Gtk.STOCK_CONNECT, Gtk.IconSize.SMALL_TOOLBAR)
 
+    def disconnect_event(self):
+        """
+        Called by the networking code, when we get disconnected from the server.
+        """
+        self.statusbar_icon.set_from_stock(Gtk.STOCK_DISCONNECT, Gtk.IconSize.SMALL_TOOLBAR)
+    
     def connection_problems(self):
         """
         Called by the networking code, when the server did not respond for
@@ -158,15 +164,7 @@ class MainWindow(Gtk.Window):
             # Gtk 3.2
             self.overlay.remove(self.scrolledwindow)
             self.overlay.add(self.overlaybox)
-        self.overlaybox.button.connect("clicked", self.disconnect_clicked)
         self.overlaybox.connect("destroy", destroyed)
-        self.statusbar_icon.set_from_stock(Gtk.STOCK_CONNECT, Gtk.IconSize.SMALL_TOOLBAR)
-    
-    def disconnect_clicked(self, widget):
-        """Disconnect from the server and close the OverlayDialog."""
-        network.disconnect()
-        # Call this via a timeout to let the disconnect_event in network.py fire
-        GObject.timeout_add(0, self.overlaybox.destroy)
     
     def _set_document(self, document):
         """
@@ -425,6 +423,14 @@ class OverlayDialog(Gtk.EventBox):
         self.update()
         self.show_all()
         
+        self.button.connect("clicked", self.disconnect_clicked)
+        
+    def disconnect_clicked(self, widget):
+        """Disconnect from the server and close the OverlayDialog."""
+        network.disconnect()
+        # Call this via a timeout to let the disconnect_event in network.py fire
+        GObject.timeout_add(0, self.destroy)
+
     def update(self):
         if network.is_connected:
             no_data_seconds = int(time() - network.last_data_received + 0.5)
