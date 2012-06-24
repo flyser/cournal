@@ -217,6 +217,8 @@ class MainWindow(Gtk.Window):
         Positional Arguments:
         curr_vadjustemnt - current vertical adjustment of the scrollbar
         """
+        biggest_intersection = [0,0]
+ 
         for page in self.document.pages:
             rectangle = Gdk.Rectangle()
             intersection = Gdk.Rectangle()
@@ -230,6 +232,11 @@ class MainWindow(Gtk.Window):
             if intersect and (intersection.height > page.widget.get_allocated_height() * 0.6):
                 self.statusbar_pagenum.set_text("{} of {}".format(page.number + 1, self.document.num_of_pages))
                 return
+            if intersection.height > biggest_intersection[0]:
+                biggest_intersection[0] = intersection.height
+                biggest_intersection[1] = page.number + 1
+        # fallback if no page has a overall visibility of more than 60%. In this case the page with the highest visibility is choosen
+        self.statusbar_pagenum.set_text("{} of {}".format(biggest_intersection[1], self.document.num_of_pages))
 
     def run_open_pdf_dialog(self, menuitem):
         """
