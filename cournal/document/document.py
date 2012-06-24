@@ -50,8 +50,9 @@ class Document:
             
             self.width = max(self.width, page.width)
             self.height += page.height
+            self.num_of_pages = len(self.pages)
         
-        print("The document has {} pages".format(len(self.pages)))
+        print("The document has {} pages".format(self.num_of_pages))
         
     def is_empty(self):
         """
