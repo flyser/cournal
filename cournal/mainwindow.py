@@ -128,6 +128,10 @@ class MainWindow(Gtk.Window):
     
         # Statusbar:
         self.statusbar_icon = builder.get_object("image_statusbar")
+        self.statusbar_pagenum = builder.get_object("label_statusbar_center")
+        self.vadjustment = self.scrolledwindow.get_vadjustment()
+        self.vadjustment.connect("value_changed", self.show_page_numbers)
+        #self.hadjustment = self.scrolledwindow.get_hadjustment()
 
     def connect_event(self):
         """
@@ -196,10 +200,44 @@ class MainWindow(Gtk.Window):
         self.tool_pensize_normal.set_sensitive(True)
         self.tool_pensize_big.set_sensitive(True)
         
+        # at this point we always start at page 1. If the feature to resume last page is included
+        # remove this and start the method show_page_numbers() with adjustment
+        self.statusbar_pagenum.set_text("1 of {}".format(self.document.num_of_pages))
+        
         # Hide the disconnection overlay dialog when the user opens a new doc
         if self.overlaybox:
             self.overlaybox.destroy()
     
+    def show_page_numbers(self, curr_vadjustment):
+        """
+        Show current and absolute Page number in the center of the Statusbar.
+        To achive that the current visible window and page size are compared if there is a intersection.
+        If so and more than 60% of the new page are shown the current shown page number is updatet.
+
+        Positional Arguments:
+        curr_vadjustemnt - current vertical adjustment of the scrollbar
+        """
+        biggest_intersection = [0,0]
+ 
+        for page in self.document.pages:
+            rectangle = Gdk.Rectangle()
+            intersection = Gdk.Rectangle()
+            # horizontal adjustment is always 0, because the horizontal adjustment does not matter
+            rectangle.x = 0
+            rectangle.y = curr_vadjustment.get_value() 
+            rectangle.height = self.layout.get_allocation().height 
+            rectangle.width = self.layout.get_allocation().width
+            # calculation should work in most cases (visible pages <= 3)
+            intersect = page.widget.intersect(rectangle, intersection)
+            if intersect and (intersection.height > page.widget.get_allocated_height() * 0.6):
+                self.statusbar_pagenum.set_text("{} of {}".format(page.number + 1, self.document.num_of_pages))
+                return
+            if intersection.height > biggest_intersection[0]:
+                biggest_intersection[0] = intersection.height
+                biggest_intersection[1] = page.number + 1
+        # fallback if no page has a overall visibility of more than 60%. In this case the page with the highest visibility is choosen
+        self.statusbar_pagenum.set_text("{} of {}".format(biggest_intersection[1], self.document.num_of_pages))
+
     def run_open_pdf_dialog(self, menuitem):
         """
         Run an "Open PDF" dialog and create a new document with that PDF.
