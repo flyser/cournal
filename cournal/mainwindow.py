@@ -166,7 +166,8 @@ class MainWindow(Gtk.Window):
             self.overlay.add_overlay(self.overlaybox)
         else:
             # Gtk 3.2
-            self.overlay.remove(self.scrolledwindow)
+            if self.overlay.get_child() == self.scrolledwindow:
+                self.overlay.remove(self.scrolledwindow)
             self.overlay.add(self.overlaybox)
         self.overlaybox.connect("destroy", destroyed)
     
