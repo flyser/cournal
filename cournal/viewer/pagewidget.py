@@ -117,8 +117,8 @@ class PageWidget(Gtk.DrawingArea):
         
         # Check if the page has already been rendered in the correct size
         if not self.backbuffer or self.backbuffer.get_width() != self.widget_width or self.backbuffer_valid is False:
-            self.backbuffer = widget.get_window().create_similar_surface(
-                    cairo.CONTENT_COLOR_ALPHA, self.widget_width, self.widget_height)
+            self.backbuffer = cairo.ImageSurface(
+                 cairo.FORMAT_ARGB32, self.widget_width, self.widget_height)
             self.backbuffer_valid = True
             bb_ctx = cairo.Context(self.backbuffer)
             
