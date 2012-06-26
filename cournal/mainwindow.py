@@ -485,5 +485,3 @@ class OverlayDialog(Gtk.EventBox):
             self.label.set_text(self.disconnect_label_text)
             self.button.set_label(self.disconnect_button_text)
         GObject.timeout_add(1, self.update)
-
-        
