@@ -1,10 +1,14 @@
 Version 0.2 (not yet released)
-  * Support colored strokes and line width
-  * Can now open .xoj files (though it does not support all features of files created by Xournal)
-  * Zoom page support
+  * Support colored strokes and strokes with different line width
+  * Can now save, open and import .xoj files (though it does not support all features of files created by Xournal)
+  * Zoom page support (Simon Vetter)
+  * Support multiple documents on the server (Simon Vetter)
+  * Display page number in the statusbar (Martin Grohmann)
   * Huge amount of cleanups
-  * Minor bugfixes
+  * Bugfixes
   * Improved usability
+  * The server will now preserve documents between restarts
+  * Reliably detect connection problems and warn about that
   * Broke network compatibility to 0.1
 
 Version 0.1 -- 2012-06-03
