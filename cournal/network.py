@@ -91,7 +91,8 @@ class _Network(pb.Referenceable):
 
     def connected(self, perspective):
         """
-        Called, when the connection succeeded. Join a document.
+        Called, when the connection succeeded. Initiate ping-pong timeout
+        detection.
         
         Positional arguments:
         perspective -- a reference to our user object
@@ -100,18 +101,14 @@ class _Network(pb.Referenceable):
         # This perspective is a remote reference to our User object. Save it
         # here, otherwise it will get garbage collected at the end of this
         # function and the server will think we logged out.
-        self.data_received()
         self.is_stalled = False
         self.is_connected = True
         self.perspective = perspective
         self.perspective.notifyOnDisconnect(self.disconnect_event)
+        self.data_received()
         self.ping()
-        d = perspective.callRemote("join_document", "document1")
-        d.addCallbacks(self.got_server_document, callbackArgs=["document1"])
         self.window.connect_event()
-        
-        return d
-
+    
     def connection_failed(self, reason):
         """
         Called, when the connection could not be established.
@@ -148,7 +145,31 @@ class _Network(pb.Referenceable):
             self.window.connection_problems()
         else:
             self.disconnect()
+            
+    def get_document_list(self):
+        """
+        Get a list of all documents the server knows about.
         
+        Return value: A deferred, which fires when we got the list
+        """
+        d = self.perspective.callRemote("list_documents")
+        d.addErrback(self.disconnect)
+        return d
+    
+    def join_document_session(self, documentname):
+        """
+        Joins a "document editing session". This means, that we will automatically
+        receive all strokes in this document (both preexisting and new ones).
+        
+        Positional arguments:
+        documentname -- Name of the document you want to join
+        
+        Return value: A deferred, which fires when we got a reference to the document
+        """
+        d = self.perspective.callRemote("join_document", documentname)
+        d.addCallbacks(self.got_server_document, self.disconnect, callbackArgs=[documentname])
+        return d
+    
     def got_server_document(self, server_document, name):
         """
         Called, when the server sent a reference to the remote document we requested

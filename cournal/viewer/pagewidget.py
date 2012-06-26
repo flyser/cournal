@@ -198,7 +198,8 @@ class PageWidget(Gtk.DrawingArea):
             update_rect.y = y-2
             update_rect.width = x2-x+4
             update_rect.height = y2-y+4
-            self.get_window().invalidate_rect(update_rect, False)
+            if self.get_window():
+                self.get_window().invalidate_rect(update_rect, False)
     
     def delete_remote_stroke(self, stroke):
         """
@@ -210,4 +211,5 @@ class PageWidget(Gtk.DrawingArea):
         """
         if self.backbuffer:
             self.backbuffer_valid = False
-            self.get_window().invalidate_rect(None, False)
+            if self.get_window():
+                self.get_window().invalidate_rect(None, False)

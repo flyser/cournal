@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <!-- interface-requires gtk+ 3.0 -->
+  <object class="GtkBox" id="main_grid">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="border_width">5</property>
+    <property name="orientation">vertical</property>
+    <property name="spacing">9</property>
+    <child>
+      <object class="GtkLabel" id="label1">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="halign">start</property>
+        <property name="label" translatable="yes">Which document do you want to edit?</property>
+      </object>
+      <packing>
+        <property name="expand">False</property>
+        <property name="fill">True</property>
+        <property name="position">0</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkScrolledWindow" id="scrolledwindow2">
+        <property name="height_request">175</property>
+        <property name="visible">True</property>
+        <property name="can_focus">True</property>
+        <property name="hexpand">True</property>
+        <property name="vexpand">True</property>
+        <property name="shadow_type">in</property>
+        <child>
+          <object class="GtkTreeView" id="tree_view_documents">
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="model">tree_store_documents</property>
+            <property name="headers_visible">False</property>
+            <child internal-child="selection">
+              <object class="GtkTreeSelection" id="tree_selection_documents"/>
+            </child>
+            <child>
+              <object class="GtkTreeViewColumn" id="tree_view_column_documents">
+                <property name="sizing">fixed</property>
+                <property name="fixed_width">30</property>
+                <property name="title" translatable="yes">Documents</property>
+                <property name="sort_column_id">0</property>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+      <packing>
+        <property name="expand">False</property>
+        <property name="fill">True</property>
+        <property name="position">1</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkEntry" id="entry_document_name">
+        <property name="visible">True</property>
+        <property name="can_focus">True</property>
+        <property name="invisible_char">â</property>
+      </object>
+      <packing>
+        <property name="expand">False</property>
+        <property name="fill">True</property>
+        <property name="pack_type">end</property>
+        <property name="position">2</property>
+      </packing>
+    </child>
+  </object>
+  <object class="GtkTreeStore" id="tree_store_documents">
+    <columns>
+      <!-- column-name gchararray1 -->
+      <column type="gchararray"/>
+    </columns>
+  </object>
+</interface>
