@@ -129,9 +129,15 @@ class MainWindow(Gtk.Window):
         # Statusbar:
         self.statusbar_icon = builder.get_object("image_statusbar")
         self.statusbar_pagenum = builder.get_object("label_statusbar_center")
+        self.statusbar_pagenum_entry = builder.get_object("entry_statusbar_page_num")
+        self.button_prev_page = builder.get_object("btn_prev_page")
+        self.button_next_page = builder.get_object("btn_next_page")
         self.vadjustment = self.scrolledwindow.get_vadjustment()
         self.vadjustment.connect("value_changed", self.show_page_numbers)
-        #self.hadjustment = self.scrolledwindow.get_hadjustment()
+        self.statusbar_pagenum_entry.connect("insert-text", self.jump_to_page_control)
+        self.statusbar_pagenum_entry.connect("activate", self.jump_to_page)
+        self.button_prev_page.connect("clicked", self.jump_to_prev_page)
+        self.button_next_page.connect("clicked", self.jump_to_next_page)
 
     def connect_event(self):
         """
@@ -200,11 +206,18 @@ class MainWindow(Gtk.Window):
         self.tool_pensize_small.set_sensitive(True)
         self.tool_pensize_normal.set_sensitive(True)
         self.tool_pensize_big.set_sensitive(True)
+        self.statusbar_pagenum.set_sensitive(True)
+        self.statusbar_pagenum_entry.set_sensitive(True)
+        
+        if self.document.num_of_pages > 1:
+            self.button_next_page.set_sensitive(True)
         
         # at this point we always start at page 1. If the feature to resume last page is included
         # remove this and start the method show_page_numbers() with adjustment
-        self.statusbar_pagenum.set_text("1 of {}".format(self.document.num_of_pages))
-        
+        self.statusbar_pagenum.set_text(" of {:3}".format(self.document.num_of_pages))
+        self.curr_page = 1
+        self.statusbar_pagenum_entry.set_text(str(self.curr_page))
+
         # Hide the disconnection overlay dialog when the user opens a new doc
         if self.overlaybox:
             self.overlaybox.destroy()
@@ -231,14 +244,81 @@ class MainWindow(Gtk.Window):
             # calculation should work in most cases (visible pages <= 3)
             intersect = page.widget.intersect(rectangle, intersection)
             if intersect and (intersection.height > page.widget.get_allocated_height() * 0.6):
-                self.statusbar_pagenum.set_text("{} of {}".format(page.number + 1, self.document.num_of_pages))
+                self.curr_page = page.number + 1
+                self.statusbar_pagenum_entry.set_text(str(self.curr_page))
+                self.update_button_sensitivity()
                 return
             if intersection.height > biggest_intersection[0]:
                 biggest_intersection[0] = intersection.height
                 biggest_intersection[1] = page.number + 1
         # fallback if no page has a overall visibility of more than 60%. In this case the page with the highest visibility is choosen
-        self.statusbar_pagenum.set_text("{} of {}".format(biggest_intersection[1], self.document.num_of_pages))
+        self.curr_page = biggest_intersection[1]
+        self.statusbar_pagenum_entry.set_text(str(self.curr_page))
+        self.update_button_sensitivity()
 
+    def update_button_sensitivity(self):
+        """
+        Sensitivity of buttons is set / unset if a specific page is reached.
+        """
+        if self.curr_page == 1:
+            self.button_prev_page.set_sensitive(False)
+        else:
+            self.button_prev_page.set_sensitive(True)
+        
+        if self.curr_page == self.document.num_of_pages:
+            self.button_next_page.set_sensitive(False)
+        else:
+            self.button_next_page.set_sensitive(True)
+
+    def jump_to_page_control(self, page_num, text, length, position):
+        """
+        Checks if only valid data is inserted.
+        Called each time the user changes the page number entry.
+
+        Positional arguments: (see GtkEditable "insert-text" documentation)
+        widget -- The widget that was updated.
+        text -- The text to append.
+        length -- The length of the text in bytes, or -1.
+        position -- Location of the position text will be inserted at as gpointer.
+        """
+        position = page_num.get_position()
+        old_text = page_num.get_text()
+        try:
+            insert_num = int(old_text[:position] + text + old_text[position:])
+        except:
+            page_num.emit_stop_by_name("insert_text")
+        if not text.isdigit() or insert_num > self.document.num_of_pages or insert_num == 0:
+            page_num.emit_stop_by_name("insert_text")
+        
+    def jump_to_page(self, page_num_widget):
+        """
+        Sets the vertical adjustment of the scrollbar to the page the user wishes to jump to.
+        Called each time the page number entry is updated.
+
+        Positional arguments:
+        page_num_widget: The Entry widget that was updated.
+        """
+        for page in self.document.pages:
+            if page.number + 1 == int(page_num_widget.get_text()):
+                self.vadjustment.set_value(page.widget.get_allocation().y)
+                return
+    
+    def jump_to_next_page(self, menuitem):
+        """
+        Jump to the next page
+        called each time the button_next_page is pressed
+        """
+        self.statusbar_pagenum_entry.set_text(str(self.curr_page + 1)) 
+        self.statusbar_pagenum_entry.activate()
+
+    def jump_to_prev_page(self, menuitem):
+        """
+        Jump to the previous page
+        called each time the button_prev_page is pressed
+        """
+        self.statusbar_pagenum_entry.set_text(str(self.curr_page - 1)) 
+        self.statusbar_pagenum_entry.activate()
+    
     def run_open_pdf_dialog(self, menuitem):
         """
         Run an "Open PDF" dialog and create a new document with that PDF.
