@@ -251,7 +251,15 @@ class User(pb.Avatar):
         self.remote = None
         for document in self.documents:
             document.remove_user(self)
-
+    
+    def perspective_list_documents(self):
+        """
+        Return a list of all our documents.
+        """
+        debug(2, "User", self.name, "requested document list")
+        
+        return list(self.server.documents.keys())
+    
     def perspective_join_document(self, documentname):
         """
         Called by the user to join a document session.
