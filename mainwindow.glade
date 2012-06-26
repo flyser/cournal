@@ -371,12 +371,13 @@
           </packing>
         </child>
         <child>
-          <object class="GtkToolButton" id="tool_pensize_small">
+          <object class="GtkRadioToolButton" id="tool_pensize_small">
             <property name="use_action_appearance">False</property>
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="use_action_appearance">False</property>
             <property name="label" translatable="yes">0.7</property>
+            <property name="active">True</property>
           </object>
           <packing>
             <property name="expand">False</property>
@@ -384,12 +385,14 @@
           </packing>
         </child>
         <child>
-          <object class="GtkToolButton" id="tool_pensize_normal">
+          <object class="GtkRadioToolButton" id="tool_pensize_normal">
             <property name="use_action_appearance">False</property>
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="use_action_appearance">False</property>
             <property name="label" translatable="yes">1.5</property>
+            <property name="active">True</property>
+            <property name="group">tool_pensize_small</property>
           </object>
           <packing>
             <property name="expand">False</property>
@@ -397,12 +400,14 @@
           </packing>
         </child>
         <child>
-          <object class="GtkToolButton" id="tool_pensize_big">
+          <object class="GtkRadioToolButton" id="tool_pensize_big">
             <property name="use_action_appearance">False</property>
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="use_action_appearance">False</property>
             <property name="label" translatable="yes">8.0</property>
+            <property name="active">True</property>
+            <property name="group">tool_pensize_small</property>
           </object>
           <packing>
             <property name="expand">False</property>
@@ -488,5 +493,13 @@
         <property name="position">3</property>
       </packing>
     </child>
+  </object>
+  <object class="GtkRadioToolButton" id="radiotoolbutton1">
+    <property name="use_action_appearance">False</property>
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="use_action_appearance">False</property>
+    <property name="label" translatable="yes">toolbutton</property>
+    <property name="active">True</property>
   </object>
 </interface>
