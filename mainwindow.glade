@@ -20,6 +20,20 @@
     <property name="visible">True</property>
     <property name="can_focus">False</property>
   </object>
+  <object class="GtkImage" id="image_btn_next">
+    <property name="visible">True</property>
+    <property name="sensitive">False</property>
+    <property name="can_focus">False</property>
+    <property name="stock">gtk-go-forward</property>
+    <property name="icon-size">2</property>
+  </object>
+  <object class="GtkImage" id="image_btn_prev">
+    <property name="visible">True</property>
+    <property name="sensitive">False</property>
+    <property name="can_focus">False</property>
+    <property name="stock">gtk-go-back</property>
+    <property name="icon-size">2</property>
+  </object>
   <object class="GtkBox" id="outer_box">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
@@ -441,12 +455,12 @@
       <object class="GtkBox" id="statusbar">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
+        <property name="spacing">3</property>
         <property name="homogeneous">True</property>
         <child>
           <object class="GtkLabel" id="label_statusbar_left">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
-            <property name="halign">start</property>
           </object>
           <packing>
             <property name="expand">False</property>
@@ -455,9 +469,77 @@
           </packing>
         </child>
         <child>
-          <object class="GtkLabel" id="label_statusbar_center">
+          <object class="GtkBox" id="box_statusbar_center">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
+            <property name="spacing">1</property>
+            <child>
+              <object class="GtkButton" id="btn_prev_page">
+                <property name="use_action_appearance">False</property>
+                <property name="visible">True</property>
+                <property name="sensitive">False</property>
+                <property name="can_focus">False</property>
+                <property name="receives_default">True</property>
+                <property name="use_action_appearance">False</property>
+                <property name="image">image_btn_prev</property>
+                <property name="relief">none</property>
+                <property name="focus_on_click">False</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">False</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkEntry" id="entry_statusbar_page_num">
+                <property name="visible">True</property>
+                <property name="sensitive">False</property>
+                <property name="can_focus">True</property>
+                <property name="invisible_char">●</property>
+                <property name="width_chars">3</property>
+                <property name="invisible_char_set">True</property>
+                <property name="primary_icon_activatable">False</property>
+                <property name="primary_icon_sensitive">False</property>
+                <property name="placeholder_text">0</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">False</property>
+                <property name="position">1</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel" id="label_statusbar_center">
+                <property name="visible">True</property>
+                <property name="sensitive">False</property>
+                <property name="can_focus">False</property>
+                <property name="label" translatable="yes"> of 0  </property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">2</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkButton" id="btn_next_page">
+                <property name="use_action_appearance">False</property>
+                <property name="visible">True</property>
+                <property name="sensitive">False</property>
+                <property name="can_focus">False</property>
+                <property name="receives_default">True</property>
+                <property name="use_action_appearance">False</property>
+                <property name="image">image_btn_next</property>
+                <property name="relief">none</property>
+                <property name="focus_on_click">False</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">False</property>
+                <property name="position">3</property>
+              </packing>
+            </child>
           </object>
           <packing>
             <property name="expand">False</property>
@@ -477,13 +559,14 @@
           <packing>
             <property name="expand">False</property>
             <property name="fill">True</property>
-            <property name="position">2</property>
+            <property name="pack_type">end</property>
+            <property name="position">5</property>
           </packing>
         </child>
       </object>
       <packing>
         <property name="expand">False</property>
-        <property name="fill">True</property>
+        <property name="fill">False</property>
         <property name="pack_type">end</property>
         <property name="position">3</property>
       </packing>
