@@ -391,7 +391,7 @@
             <property name="can_focus">False</property>
             <property name="use_action_appearance">False</property>
             <property name="label" translatable="yes">0.7</property>
-            <property name="active">True</property>
+            <property name="group">tool_pensize_normal</property>
           </object>
           <packing>
             <property name="expand">False</property>
@@ -406,7 +406,6 @@
             <property name="use_action_appearance">False</property>
             <property name="label" translatable="yes">1.5</property>
             <property name="active">True</property>
-            <property name="group">tool_pensize_small</property>
           </object>
           <packing>
             <property name="expand">False</property>
@@ -420,8 +419,7 @@
             <property name="can_focus">False</property>
             <property name="use_action_appearance">False</property>
             <property name="label" translatable="yes">8.0</property>
-            <property name="active">True</property>
-            <property name="group">tool_pensize_small</property>
+            <property name="group">tool_pensize_normal</property>
           </object>
           <packing>
             <property name="expand">False</property>
