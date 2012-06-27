@@ -1,0 +1,18 @@
+This is a TODO List with (hopefully) future Cournal Features!
+(The order is no representation of a ranking of any kind)
+
+* PDF Search
+* Keymapping (Ctrl+s for saving, Ctrl+o for opening a file, etc)
+* Remember the last Server connected to
+* Commandlineinterface (CLI)
+* Chat with both keyboard and handwriting compatibility
+* Authentication (Username+Password or "Tablet-optimized" Password)
+* Userlist
+* A Tool to highlight text in the PDF
+* Selection-Tool
+* Freehand-Tool for scrolling
+* Insert / Delete Pages
+* Presentation modus
+* Support to open more than one PDF Document
+* Android Port
+* Show position of other users in scrollbar
