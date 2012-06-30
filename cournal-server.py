@@ -18,6 +18,8 @@
 # along with Cournal.  If not, see <http://www.gnu.org/licenses/>.
 
 import os, sys
+from io import StringIO
+import string
 import atexit
 from tempfile import NamedTemporaryFile
 import argparse
@@ -29,6 +31,7 @@ from twisted.cred import portal, checkers
 from twisted.spread import pb
 from twisted.internet import reactor
 from twisted.internet.error import *
+from twisted.python.failure import Failure
 
 from cournal.document.stroke import Stroke
 
@@ -44,6 +47,9 @@ DEFAULT_AUTOSAVE_INTERVAL = 60
 DEFAULT_PORT = 6524
 USERNAME = "test"
 PASSWORD = "testpw"
+
+# List of all characters that are allowed in filenames. Must not contain ; and :
+valid_characters = string.ascii_letters + string.digits + ' _()+,.-=^~'
 
 class Page:
     """
@@ -90,8 +96,9 @@ class CournalServer:
         self.obtain_lockfile()
         
         # Load saved data
-        for name in [s[:-5] for s in os.listdir() if s.endswith(".save")]:
-            with open(name + ".save", "rb") as file:
+        for filename in [s for s in os.listdir() if s.endswith(".save") and s.startswith("cnl-")]:
+            name = filename_to_docname(filename)
+            with open(filename, "rb") as file:
                 self.documents[name] = Document(name)
                 self.documents[name].pages = pickle.load(file)
         
@@ -144,7 +151,7 @@ class CournalServer:
                 return False
             else:
                 raise
-
+    
     def exit(self):
         """
         The program is about to terminate. Save documents and release lockfile
@@ -163,17 +170,20 @@ class CournalServer:
         """
         debug(3, "Saving all documents.")
         for name, document in self.documents.items():
+            if not document.has_unsaved_changes:
+                continue
             # We write to a tmpfile and move it to the actual location to ensure
             # atomic writing of the file, meaning: In case of a crash, either the
             # old or the new version of that file is on the disk
-            tmpfile = NamedTemporaryFile(prefix=name+'-', suffix='.delete-me', dir=".", mode='wb', delete=False)
-            filename = self.autosave_directory + "/" + name + ".save"
+            filename = docname_to_filename(name)
+            tmpfile = NamedTemporaryFile(prefix=filename[:-5]+'-', suffix='.delete-me', dir=self.autosave_directory, mode='wb', delete=False)
             pickle.dump(document.pages, tmpfile, protocol=3)
             tmpfile.close()
-            os.rename(tmpfile.name, filename)
+            os.rename(tmpfile.name, self.autosave_directory + "/" + filename)
+            document.has_unsaved_changes = False
         
         reactor.callLater(self.autosave_interval, self.save_documents)
-
+        
     def get_document(self, documentname):
         """
         Returns a Document object given its name. If none with this name exists,
@@ -183,7 +193,17 @@ class CournalServer:
         documentname -- Name of the document you want to get
         """
         if documentname not in self.documents:
+            if self.autosave_interval > 0:
+                # Try to create a savefile, if it fails deny the document creation
+                filename = docname_to_filename(documentname)
+                try:
+                    file = open(self.autosave_directory + "/" + filename, mode="wb")
+                    pickle.dump([], file, protocol=3)
+                    file.close()
+                except Exception as ex:
+                    return Failure(str(ex))
             self.documents[documentname] = Document(documentname)
+            self.documents[documentname].has_unsaved_changes = True
         return self.documents[documentname]
 
 @implementer(portal.IRealm)
@@ -270,6 +290,8 @@ class User(pb.Avatar):
         debug(2, "User", self.name, "started editing", documentname)
         
         document = self.server.get_document(documentname)
+        if isinstance(document, Failure):
+            return document
         document.add_user(self)
         self.documents.append(document)
         return document
@@ -303,7 +325,8 @@ class Document(pb.Viewable):
         self.name = documentname
         self.users = []
         self.pages = []
-
+        self.has_unsaved_changes = False
+    
     def add_user(self, user):
         """
         Called, when a user starts editing this document. Send him all strokes
@@ -351,6 +374,8 @@ class Document(pb.Viewable):
         pagenum -- Page number the new stroke.
         stroke -- The new stroke
         """
+        self.has_unsaved_changes = True
+        
         while len(self.pages) <= pagenum:
             self.pages.append(Page())
         self.pages[pagenum].strokes.append(stroke)
@@ -368,6 +393,8 @@ class Document(pb.Viewable):
         pagenum -- Page number the deleted stroke
         coords -- The list coordinates of the deleted stroke
         """
+        self.has_unsaved_changes = True
+        
         for stroke in self.pages[pagenum].strokes:
             if stroke.coords == coords:
                 self.pages[pagenum].strokes.remove(stroke)
@@ -405,6 +432,54 @@ class CmdlineParser():
         self.autosave_directory = args.autosave_directory[0]
         self.autosave_interval = args.autosave_interval[0]
         return self
+
+def filename_to_docname(filename):
+    """
+    Convert the filename of a saved document to a documentname. Filenames have the
+    form "cnl-[documentname].save" where [documentname] is the name of the
+    document with escaped special characters
+    
+    Positional arguments:
+    filename -- Name of the file with escaped special characters
+    
+    Return value: Name of the document without escaped special characters.
+    """
+    result = ""
+    input = StringIO(filename[4:-5])
+    
+    while True:
+        char = input.read(1)
+        if char == "":
+            break
+        elif char == ':':
+            charcode = ""
+            while len(charcode) == 0 or charcode[-1] != ';':
+                charcode += input.read(1)
+            char = chr(int(charcode[:-1], 16))
+        result += char
+    
+    return result
+
+def docname_to_filename(name):
+    """
+    Convert the name of a document to a valid filename. Filenames have the
+    form "cnl-[documentname].save" where [documentname] is the name of the
+    document with escaped special characters.
+    
+    Positional arguments:
+    name -- Name of the document without escaped special characters.
+    
+    Return value: Name of the file with escaped special characters
+    """
+    result = ""
+
+    for char in name:
+        if char in valid_characters:
+            result += char
+        else:
+            result += ":" + hex(ord(char))[2:] + ";"
+
+    return "cnl-" + result + ".save"
 
 def main():
     """Start a Cournal server"""
