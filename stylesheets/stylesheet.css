@@ -124,6 +124,15 @@ aside#sidebar p.repo-owner a {
   font-weight: bold;
 }
 
+aside#sidebar h3 {
+  font-family: 'Architects Daughter', 'Helvetica Neue', Helvetica, Arial, serif; 
+  font-size: 18px;
+  font-weight: bold;
+  margin-top: 24px;
+  margin-bottom: 8px;
+  color: #474747;
+}
+
 #downloads {
   margin-bottom: 40px;
 }
@@ -198,6 +207,26 @@ hr {
   padding-bottom: 1em;
   border: none;
   background: transparent url('../images/hr.png') 0 0 no-repeat;
+}
+
+hr#linksep {
+  height: 1px;
+  line-height: 1px;
+  margin-top: 0em;
+  padding-bottom: 0em;
+  border: 0;
+  background: #000;
+  background: -webkit-gradient(linear, left top, right top, color-stop(0%,hsla(0,0%,0%,0)), color-stop(50%,hsla(0,0%,60%,.75)), color-stop(100%,hsla(0,0%,0%,0)));
+  background: -webkit-linear-gradient(left, hsla(0,0%,0%,0) 0%, hsla(0,0%,60%,.75) 50%, hsla(0,0%,0%,0) 100%);
+  background:    -moz-linear-gradient(left, hsla(0,0%,0%,0) 0%, hsla(0,0%,60%,.75) 50%, hsla(0,0%,0%,0) 100%);
+  background:     -ms-linear-gradient(left, hsla(0,0%,0%,0) 0%, hsla(0,0%,60%,.75) 50%, hsla(0,0%,0%,0) 100%);
+  background:      -o-linear-gradient(left, hsla(0,0%,0%,0) 0%, hsla(0,0%,60%,.75) 50%, hsla(0,0%,0%,0) 100%);
+  background:         linear-gradient(left, hsla(0,0%,0%,0) 0%, hsla(0,0%,60%,.75) 50%, hsla(0,0%,0%,0) 100%);
+}
+
+ul#linklist li {
+  list-style: disc inside;
+  padding-left: 10px;
 }
 
 table {
