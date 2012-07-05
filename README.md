@@ -43,10 +43,16 @@ but don't know what needs work.
 
 ## Installation ##
 
-A proper installation is unsupported at the moment. To download twisted for
-python3, run
-    ./download-twisted.sh
-in Cournals base directory
+A proper installation is unsupported at the moment. To use Cournal run the following:
+<pre><code>
+git clone https://github.com/sanitoeter/cournal/
+cd cournal
+./download-twisted.sh
+</code></pre>
+
+Instead of cloning the project with git you can 
+[download](https://github.com/downloads/Flyser/cournal/cournal-0.2.tar.gz) the source and 
+extract the archive.
 
 Patches to support system-wide installation are very welcome.
 
