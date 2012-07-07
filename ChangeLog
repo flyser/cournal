@@ -1,4 +1,7 @@
-Version 0.2 (not yet released)
+Version 0.3 (not yet released)
+  * to do
+
+Version 0.2 -- 2012-06-30
   * Support colored strokes and strokes with different line width
   * Can now save, open and import .xoj files (though it does not support all features of files created by Xournal)
   * Zoom page support (Simon Vetter)
