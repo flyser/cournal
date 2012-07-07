@@ -44,6 +44,7 @@ A proper installation is unsupported at the moment.
 
 To use Cournal download the latest tarball from
 <https://github.com/flyser/cournal/downloads> and run:
+
     tar xvf cournal-x.y.tar.xz
     cd cournal-x.y
     ./download-twisted.sh
