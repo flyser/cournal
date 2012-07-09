@@ -19,6 +19,7 @@
 
 from gi.repository import Gtk
 
+import cournal
 from . import ServerDetails, ConnectingPage, DocumentChooser
 
 class ConnectionDialog(Gtk.Dialog):
@@ -36,7 +37,7 @@ class ConnectionDialog(Gtk.Dialog):
         self.parent = parent
         
         builder = Gtk.Builder()
-        builder.add_from_file("connection_dialog.glade")
+        builder.add_from_file(cournal.__path__[0] + "/connection_dialog.glade")
         grid = builder.get_object("grid_main")
         
         self.multipage = builder.get_object("multipage")

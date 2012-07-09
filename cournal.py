@@ -19,22 +19,7 @@
 
 import sys
 
-from twisted.internet import gtk3reactor
-gtk3reactor.install()
-from twisted.internet import reactor
-from gi.repository import Gtk
-
-from cournal import MainWindow
-
-def main():
-    """Start Cournal"""
-    Gtk.IconTheme.get_default().prepend_search_path("./icons")
-    
-    window = MainWindow()
-    window.connect("destroy", lambda _: reactor.stop())
-    window.show_all()
-
-    reactor.run() # aka Gtk.main()
+from cournal.run import run
 
 if __name__ == "__main__":
-    sys.exit(main())
+    sys.exit(run())

@@ -4,7 +4,9 @@
  
 cd $(dirname "$0")
 
-ln -sf t3k/twisted twisted
+cd cournal
+ln -sf ../t3k/twisted twisted
+cd -
 
 if [ -e "./t3k" ]; then
   if cd "./t3k" && hg update ; then

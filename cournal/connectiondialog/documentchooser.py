@@ -18,6 +18,7 @@
 # You should have received a copy of the GNU General Public License
 # along with Cournal.  If not, see <http://www.gnu.org/licenses/>.
 
+import cournal
 from gi.repository import Gtk, GObject
 from .. import network
 
@@ -44,7 +45,7 @@ class DocumentChooser(Gtk.Box):
         self.dialog = dialog
         
         builder = Gtk.Builder()
-        builder.add_from_file("document_chooser.glade")
+        builder.add_from_file(cournal.__path__[0] + "/document_chooser.glade")
         self.main_grid = builder.get_object("main_grid")
         
         self.doc_tree = builder.get_object("tree_view_documents")

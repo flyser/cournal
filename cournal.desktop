@@ -1,0 +1,16 @@
+[Desktop Entry]
+Type=Application
+
+Name=Cournal
+Comment=Collaborative note taking and journal application
+Name[de]=Cournal
+Comment[de]=Kollaboratives Notizprogramm
+
+Icon=cournal
+Exec=cournal
+# http://standards.freedesktop.org/desktop-entry-spec/desktop-entry-spec-latest.html#exec-variables
+Terminal=false
+StartupNotify=true
+#MimeType=application/x-xoj;application/pdf;
+Categories=Office;VectorGraphics;Viewer;GTK;
+Keywords=collaborative;pdf;annotation;xoj;stylus;notes;notetaking;

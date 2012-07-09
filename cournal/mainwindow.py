@@ -22,6 +22,7 @@ from time import time
 from gi.repository import Gtk, Gdk, GObject
 from gi.repository.GLib import GError
 
+import cournal
 from .viewer import Layout
 from .viewer.tools import pen
 from .document import Document, xojparser
@@ -60,7 +61,7 @@ class MainWindow(Gtk.Window):
         
         # Bob the builder
         builder = Gtk.Builder()
-        builder.add_from_file("mainwindow.glade")
+        builder.add_from_file(cournal.__path__[0] + "/mainwindow.glade")
         self.add(builder.get_object("outer_box"))
         
         # Initialize the main journal layout
