@@ -1,3 +1,6 @@
 include *.md
 include ChangeLog
 include THANKS
+include LICENSE
+include TODO
+include MANIFEST.in

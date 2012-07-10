@@ -20,7 +20,9 @@
 from gi.repository import Gtk
 
 import cournal
-from . import ServerDetails, ConnectingPage, DocumentChooser
+from cournal.connectiondialog.serverdetails import ServerDetails
+from cournal.connectiondialog.connectingpage import ConnectingPage
+from cournal.connectiondialog.documentchooser import DocumentChooser
 
 class ConnectionDialog(Gtk.Dialog):
     """

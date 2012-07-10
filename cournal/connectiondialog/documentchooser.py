@@ -18,9 +18,10 @@
 # You should have received a copy of the GNU General Public License
 # along with Cournal.  If not, see <http://www.gnu.org/licenses/>.
 
-import cournal
 from gi.repository import Gtk, GObject
-from .. import network
+
+import cournal
+from cournal.network import network
 
 class DocumentChooser(Gtk.Box):
     """

@@ -17,10 +17,13 @@
 # You should have received a copy of the GNU General Public License
 # along with Cournal.  If not, see <http://www.gnu.org/licenses/>.
 
+from twisted.internet import gtk3reactor
+gtk3reactor.install()
+ 
 from twisted.internet import reactor
 from gi.repository import Gtk
 
-from . import MainWindow
+from cournal.mainwindow import MainWindow
 
 def run():
     """Start Cournal"""

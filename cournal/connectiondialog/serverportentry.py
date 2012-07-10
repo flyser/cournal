@@ -19,7 +19,6 @@
 
 from gi.repository import Gtk, Gdk
 
-
 class ServerPortEntry(Gtk.EventBox):
     """
     A Gtk.Entry-like widget with one field for a hostname and one for a port.

@@ -20,7 +20,7 @@
 from gi.repository import Gtk, Gdk
 import cairo
 
-from .tools import pen, eraser
+from cournal.viewer.tools import pen, eraser
 
 class PageWidget(Gtk.DrawingArea):
     """

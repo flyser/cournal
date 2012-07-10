@@ -19,9 +19,9 @@
 
 from gi.repository import Gtk, GObject
 from twisted.internet.defer import Deferred
-from . import ServerPortEntry
-from .. import network
 
+from cournal.connectiondialog.serverportentry import ServerPortEntry
+from cournal.network import network
 
 class ServerDetails(Gtk.Box):
     """

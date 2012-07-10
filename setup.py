@@ -28,7 +28,7 @@ class my_install(distutils.command.install_scripts.install_scripts):
                 shutil.move(script, script[:-3])
 
 setup(
-    name = 'cournal',
+    name = "cournal",
     version = cournal_version,
     url = "http://cournal-project.org/",
     download_url = "https://github.com/Flyser/cournal/downloads",
@@ -43,17 +43,17 @@ The goal of this project is a full featured note taking application (like Xourna
 For more information see http://cournal-project.org/""",
     
     packages = packages,
-    scripts = ['cournal.py', 'cournal-server.py'],
-    package_data = {'cournal': ['mainwindow.glade', 'connection_dialog.glade', 'document_chooser.glade']},
+    scripts = ["cournal.py", "cournal-server.py"],
+    package_data = {"cournal": ["mainwindow.glade", "connection_dialog.glade", "document_chooser.glade"]},
     data_files = [
-        ('/usr/share/icons/hicolor/16x16/apps/', ['icons/hicolor/16x16/apps/cournal.png']),
-        ('/usr/share/icons/hicolor/24x24/apps/', ['icons/hicolor/24x24/apps/cournal.png']),
-        ('/usr/share/icons/hicolor/32x32/apps/', ['icons/hicolor/32x32/apps/cournal.png']),
-        ('/usr/share/icons/hicolor/64x64/apps/', ['icons/hicolor/64x64/apps/cournal.png']),
-        ('/usr/share/icons/hicolor/128x128/apps/', ['icons/hicolor/128x128/apps/cournal.png']),
-        ('/usr/share/icons/hicolor/256x256/apps/', ['icons/hicolor/256x256/apps/cournal.png']),
-        ('/usr/share/icons/hicolor/scalable/apps/', ['icons/hicolor/scalable/apps/cournal.svg']),
-        ('/usr/share/applications/', ['cournal.desktop'])
+        ("/usr/share/icons/hicolor/16x16/apps/", ["icons/hicolor/16x16/apps/cournal.png"]),
+        ("/usr/share/icons/hicolor/24x24/apps/", ["icons/hicolor/24x24/apps/cournal.png"]),
+        ("/usr/share/icons/hicolor/32x32/apps/", ["icons/hicolor/32x32/apps/cournal.png"]),
+        ("/usr/share/icons/hicolor/64x64/apps/", ["icons/hicolor/64x64/apps/cournal.png"]),
+        ("/usr/share/icons/hicolor/128x128/apps/", ["icons/hicolor/128x128/apps/cournal.png"]),
+        ("/usr/share/icons/hicolor/256x256/apps/", ["icons/hicolor/256x256/apps/cournal.png"]),
+        ("/usr/share/icons/hicolor/scalable/apps/", ["icons/hicolor/scalable/apps/cournal.svg"]),
+        ("/usr/share/applications/", ["cournal.desktop"])
     ],
     classifiers = [
         "Development Status :: 4 - Beta",

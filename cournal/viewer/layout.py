@@ -19,7 +19,7 @@
 
 from gi.repository import Gtk, Gdk
 
-from . import PageWidget
+from cournal.viewer.pagewidget import PageWidget
 
 PAGE_SEPARATOR = 10 # px
 

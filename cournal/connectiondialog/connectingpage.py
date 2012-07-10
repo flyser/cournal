@@ -19,7 +19,7 @@
 
 from gi.repository import Gtk
 
-from .. import network
+from cournal.network import network
 
 class ConnectingPage(Gtk.Box):
     """

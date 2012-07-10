@@ -19,8 +19,9 @@
 
 from math import sqrt
 
-from . import Layer, Stroke
-from .. import network
+from cournal.document.layer import Layer
+from cournal.document.stroke import Stroke
+from cournal.network import network
 
 class Page:
     """

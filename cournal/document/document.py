@@ -23,7 +23,7 @@ from gzip import open as open_xoj
 from gi.repository import Poppler, GLib
 import cairo
 
-from . import Page
+from cournal.document.page import Page
 
 class Document:
     """

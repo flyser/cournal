@@ -23,7 +23,8 @@ from gzip import open as open_xoj
 
 import xml.etree.cElementTree as ET
 
-from . import Document, Stroke
+from cournal.document.document import Document
+from cournal.document.stroke import Stroke
 
 """A simplified parser for Xournal files using the ElementTree API."""
 

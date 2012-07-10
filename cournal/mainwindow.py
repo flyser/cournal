@@ -23,11 +23,13 @@ from gi.repository import Gtk, Gdk, GObject
 from gi.repository.GLib import GError
 
 import cournal
-from .viewer import Layout
-from .viewer.tools import pen
-from .document import Document, xojparser
-from . import network
-from . import ConnectionDialog, AboutDialog
+from cournal.viewer.layout import Layout
+from cournal.viewer.tools import pen
+from cournal.document.document import Document
+from cournal.document import xojparser
+from cournal.network import network
+from cournal.connectiondialog.connectiondialog import ConnectionDialog
+from cournal.aboutdialog import AboutDialog
 
 pdf_filter = Gtk.FileFilter()
 pdf_filter.add_mime_type("application/pdf")
