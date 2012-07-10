@@ -5,7 +5,7 @@ Cournal is a collaborative note taking and journal application using a stylus.
 Cournal allows multiple users to annotate PDF files in real-time.
 
 The goal of this project is a full featured note taking application (like
-[Xournal](http://xournal.sf.net/)) or Windows Journal), which allows multiple
+[Xournal](http://xournal.sf.net/) or Windows Journal), which allows multiple
 people to collaborate (like [Gobby](http://gobby.0x539.de/)).
 
 ### Why not extend Xournal? ###
@@ -18,7 +18,7 @@ scratch.
 
 ## Does it work yet? ##
 
-Yes, but you might miss some features (to change that, see next section ;-)). 
+Yes, but you might miss some features (to change that, see next section ;-)).
 
 ## How to help ##
 

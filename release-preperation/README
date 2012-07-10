@@ -1,0 +1,22 @@
+This is my personal to-do-list for every release:
+
+ 1. Check README.md for changes
+ 2. Update Changelog
+ 3. Update version in cournal/__init__.py
+ 4. git commit
+ 5. git tag v0.x
+ 6. git push --tags
+ 7. ./setup.py sdist
+ 8. Update ebuild
+ 9. Update PKGBUILD
+10. Test!!!
+11. Upload release tarball
+12. Upload new ebuild and AUR
+13. Update gtk-apps.org
+14. Update website?
+15. Update sourceforge
+16. Send ML announcement
+17. Close github milestone
+
+18. Bump version in cournal/__init__.py to prerelease
+19. Update ChangeLog for next release
