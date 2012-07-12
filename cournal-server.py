@@ -19,7 +19,12 @@
 
 import sys
 
+import cournal
 from cournal.server import server
 
+class Page(server.Page):
+    pass
+
 if __name__ == "__main__":
+    print(sys.path)
     sys.exit(server.main())

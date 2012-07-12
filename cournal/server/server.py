@@ -36,6 +36,7 @@ from twisted.python.failure import Failure
 from cournal import __versionstring__ as cournal_version
 from cournal.document.stroke import Stroke
 
+
 # 0 - none
 # 1 - minimal
 # 2 - medium
