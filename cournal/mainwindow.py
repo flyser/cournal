@@ -543,6 +543,7 @@ class OverlayDialog(Gtk.EventBox):
         self.add(main)
         
         self.update()
+        GObject.timeout_add_seconds(1, self.update)
         self.show_all()
         
         self.button.connect("clicked", self.disconnect_clicked)
@@ -559,7 +560,7 @@ class OverlayDialog(Gtk.EventBox):
             if not network.is_stalled:
                 # The connection problems were solved automatically
                 self.destroy()
-                return
+                return False
             
             self.last_no_data_seconds = no_data_seconds
             self.label.set_text(self.timeout_label_text.format(no_data_seconds))
@@ -567,4 +568,4 @@ class OverlayDialog(Gtk.EventBox):
         else:
             self.label.set_text(self.disconnect_label_text)
             self.button.set_label(self.disconnect_button_text)
-        GObject.timeout_add(1, self.update)
+        return True
