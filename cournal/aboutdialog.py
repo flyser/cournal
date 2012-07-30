@@ -41,7 +41,7 @@ class AboutDialog(Gtk.AboutDialog):
         self.set_copyright("© Fabian Henze")
         self.set_comments("A collaborative note taking and journal application using a stylus.")
         self.set_license_type(Gtk.License.GPL_3_0)
-        self.set_website("https://github.com/flyser/cournal")
+        self.set_website("http://cournal-project.org")
         self.set_authors(["Fabian Henze", "Simon Vetter", "Martin Grohmann"])
         self.set_artists(["Simon Vetter"])
         
