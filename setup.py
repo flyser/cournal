@@ -31,7 +31,7 @@ setup(
     name = "cournal",
     version = cournal_version,
     url = "http://cournal-project.org/",
-    download_url = "https://github.com/Flyser/cournal/downloads",
+    download_url = "https://github.com/flyser/cournal/downloads",
     license = "GPLv3+",
     author = "Fabian Henze",
     author_email = "flyser42@gmx.de",
