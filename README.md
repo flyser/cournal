@@ -33,24 +33,25 @@ but don't know how to get started.
 
  * Python 3.x
  * Poppler 0.18 or newer
+ * Cairo
  * GObject Introspection
- * ZopeInterface 3.6.0 or newer
  * GTK+ 3.2 or newer (GTK 3.4 is strongly recommended)
+ * Python bindings for all above this line
+ * ZopeInterface 3.6.0 or newer
  * Twisted for python3 (download script: download-twisted.sh)
 
 ## Installation ##
 
-A proper installation is unsupported at the moment.
+There are packages for [Gentoo](https://github.com/flyser/cournal-gentoo)
+and [Arch Linux](https://aur.archlinux.org/packages.php?ID=61201).
+Users of other distributions will have to adapt the following *Ubuntu* guide:
 
-To use Cournal download the latest tarball from
-<https://github.com/flyser/cournal/downloads> and run:
-
-    tar xvf cournal-x.y.tar.xz
-    cd cournal-x.y
-    ./download-twisted.sh
-    ./cournal.py
-
-Patches to support system-wide installation are very welcome.
+1. [Download the latest Cournal release](https://github.com/flyser/cournal/downloads)
+2. `tar xvf cournal-?.?.?.tar.xz`
+3. `cd cournal-?.?.?`
+4. `sudo apt-get install python3 python3-zope.interface python3-gi python3-cairo gir1.2-poppler python3-gi-cairo`
+5. `sudo python3 setup.py install`
+6. `cournal`
 
 ## Usage ##
 
