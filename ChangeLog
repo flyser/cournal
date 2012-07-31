@@ -1,9 +1,13 @@
-Version 0.3 (not yet released)
-  * to do
+Version 0.2.1 -- 2012-07-31
+  * Support for system-wide installation via setup.py
+  * Fix a bug, which caused cournal to consume too much CPU if the connection
+    to the server is stalled
+  * Update website to http://cournal-project.org
 
 Version 0.2 -- 2012-06-30
   * Support colored strokes and strokes with different line width
-  * Can now save, open and import .xoj files (though it does not support all features of files created by Xournal)
+  * Can now save, open and import .xoj files (though it does not support all
+    features of files created by Xournal)
   * Zoom page support (Simon Vetter)
   * Support multiple documents on the server (Simon Vetter)
   * Display page number in the statusbar (Martin Grohmann)

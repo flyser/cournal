@@ -3,7 +3,7 @@ This is my personal to-do-list for every release:
  1. Check README.md for changes
  2. Update Changelog
  3. Update version in cournal/__init__.py
- 4. git commit
+ 4. git commit -a
  5. git tag v0.x
  6. git push --tags
  7. ./setup.py sdist
