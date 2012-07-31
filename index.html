@@ -2,7 +2,9 @@
 <html>
   <head>
     <meta charset='utf-8'>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="description" content="Cournal allows multiple users to annotate PDF files in real-time. It aims to be a full featured note taking application (like Xournal or Windows Journal)">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <link href='https://fonts.googleapis.com/css?family=Architects+Daughter' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen" />
@@ -34,7 +36,7 @@
         
 <p>The goal of this project is a full featured note taking application (like
 <a href="http://xournal.sf.net/">Xournal</a> or Windows Journal), which allows
-multiple people to collaborate in real-time (like
+multiple people to collaborate (like
 <a href="http://gobby.0x539.de/">Gobby</a>).</p>
 
 <h4>Why not extend Xournal?</h4>
@@ -63,22 +65,26 @@ but don't know how to get started.</p>
 <ul>
 <li>Python 3.x</li>
 <li>Poppler 0.18 or newer</li>
+<li>Cairo</li>
 <li>GObject Introspection</li>
-<li>ZopeInterface 3.6.0 or newer</li>
 <li>GTK+ 3.2 or newer (GTK 3.4 is strongly recommended)</li>
-<li>Twisted for python3 (download script: download-twisted.sh)</li>
+<li>Python bindings for all above this line</li>
+<li>ZopeInterface 3.6.0 or newer</li>
+<li>Twisted for python3 (included)</li>
 </ul><h2>Installation</h2>
 
-<p>A proper installation is unsupported at the moment.</p>
+<p>There are packages for <a href="https://github.com/flyser/cournal-gentoo">Gentoo</a>
+and <a href="https://aur.archlinux.org/packages.php?ID=61201">Arch Linux</a>.
+Users of other distributions will have to adapt the following <em>Ubuntu</em> guide:</p>
 
-<p>To use Cournal download the latest tarball from <a href="https://github.com/flyser/cournal/downloads">https://github.com/flyser/cournal/downloads</a> and run:</p>
-<pre><code>tar xvf cournal-x.y.tar.xz
-cd cournal-x.y
-./download-twisted.sh
-./cournal.py
-</code></pre>
-
-<p>Patches to support system-wide installation are very welcome.</p>
+<ol>
+<li><a href="https://github.com/flyser/cournal/downloads">Download the latest Cournal release</a></li>
+<li><code>tar xvf cournal-?.?.?.tar.xz</code></li>
+<li><code>cd cournal-?.?.?</code></li>
+<li><code>sudo apt-get install python3 python3-zope.interface python3-gi python3-cairo gir1.2-poppler python3-gi-cairo</code></li>
+<li><code>sudo python3 setup.py install</code></li>
+<li><code>cournal</code></li>
+</ol>
 
 <h2>Usage</h2>
 
