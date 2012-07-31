@@ -38,7 +38,7 @@ but don't know how to get started.
  * GTK+ 3.2 or newer (GTK 3.4 is strongly recommended)
  * Python bindings for all above this line
  * ZopeInterface 3.6.0 or newer
- * Twisted for python3 (download script: download-twisted.sh)
+ * Twisted for python3 (*included*)
 
 ## Installation ##
 

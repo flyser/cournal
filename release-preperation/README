@@ -7,10 +7,10 @@ This is my personal to-do-list for every release:
  5. git tag v0.x
  6. git push --tags
  7. ./setup.py sdist
- 8. Update ebuild
- 9. Update PKGBUILD
-10. Test!!!
-11. Upload release tarball
+ 8. Upload release tarball
+ 9. Update ebuild
+10. Update PKGBUILD
+11. Test!!!
 12. Upload new ebuild and AUR
 13. Update gtk-apps.org
 14. Update website?
