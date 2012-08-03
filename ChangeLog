@@ -1,3 +1,6 @@
+Version 0.3 -- not yet released
+  * to do
+
 Version 0.2.1 -- 2012-07-31
   * Support for system-wide installation via setup.py
   * Fix a bug, which caused cournal to consume too much CPU if the connection
@@ -15,7 +18,7 @@ Version 0.2 -- 2012-06-30
   * Bugfixes
   * Improved usability
   * The server will now preserve documents between restarts
-  * Reliably detect connection problems and warn about that
+  * Reliably detect connection problems and warn about them
   * Broke network compatibility to 0.1
 
 Version 0.1 -- 2012-06-03
