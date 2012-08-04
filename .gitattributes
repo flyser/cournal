@@ -1,0 +1,2 @@
+*.py diff=python
+.git* export-ignore
