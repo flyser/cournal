@@ -16,16 +16,19 @@ BUGTRACKER="https://github.com/flyser/cournal/issues"
 for file in cournal/*.glade ; do
   intltool-extract --type=gettext/glade "$file"
 done
+for file in *.desktop.in ; do
+  intltool-extract --type=gettext/ini "$file"
+done
 
 # Create .pot file
 xgettext --output="$OUTPUT" --language=Python --package-name="$PACKAGE" \
          --copyright-holder="$AUTHOR" --package-version="$VERSION" \
          --msgid-bugs-address="$BUGTRACKER" --from-code=UTF-8 \
-         --keyword=N_ --keyword=_ *.py cournal/*.py cournal/!(twisted)/**/*.py cournal/*.h
+         --keyword=N_ --keyword=_ *.py cournal/*.py cournal/!(twisted)/**/*.py cournal/*.h *.h
 sed -i -e "2s/YEAR/$(date +%Y)/" "$OUTPUT"
 
 # Clean up
-for file in cournal/*.glade.h ; do
+for file in cournal/*.glade.h *.desktop.in.h ; do
   rm "$file"
 done
 

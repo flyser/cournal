@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Cournal 0.3.0-git\n"
 "Report-Msgid-Bugs-To: https://github.com/flyser/cournal/issues\n"
-"POT-Creation-Date: 2012-08-04 02:10+0200\n"
+"POT-Creation-Date: 2012-08-04 14:40+0200\n"
 "PO-Revision-Date: 2012-08-04 02:12+0200\n"
 "Last-Translator: Fabian Henze <flyser42@gmx.de>\n"
 "Language-Team: German\n"
@@ -18,10 +18,22 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
+#: cournal/aboutdialog.py:39 cournal/mainwindow.py:54 cournal.desktop.in.h:1
+msgid "Cournal"
+msgstr "Cournal"
+
+#: cournal/aboutdialog.py:41
+msgid "©"
+msgstr "©"
+
 #: cournal/aboutdialog.py:42
 msgid "A collaborative note taking and journal application using a stylus."
 msgstr ""
 "Ein kollaboratives Notizprogramm zur Verwendung mit einem Eingabestift."
+
+#: cournal/aboutdialog.py:47
+msgid "translator-credits"
+msgstr "Fabian Henze"
 
 #: cournal/mainwindow.py:221
 msgid " of {:3}"
@@ -289,3 +301,7 @@ msgstr ""
 #: cournal/mainwindow.glade.h:13
 msgid " of 0  "
 msgstr " von 0  "
+
+#: cournal.desktop.in.h:2
+msgid "Collaborative note taking and journal application"
+msgstr "Kollaboratives Notizprogramm"

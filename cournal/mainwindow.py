@@ -51,7 +51,7 @@ class MainWindow(Gtk.Window):
         Keyword arguments:
         **args -- Arguments passed to the Gtk.Window constructor
         """
-        Gtk.Window.__init__(self, title="Cournal", **args)
+        Gtk.Window.__init__(self, title=_("Cournal"), **args)
         network.set_window(self)
         
         self.overlaybox = None

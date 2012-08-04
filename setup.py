@@ -51,6 +51,7 @@ class build_trans(distutils.cmd.Command):
                             continue
                     print('Compiling %s' % src)
                     subprocess.call(["msgfmt", "--output-file=" + dest, src])
+        subprocess.call(["intltool-merge", "--desktop-style", "i18n/", "cournal.desktop.in", "cournal.desktop"])
 
 class build(distutils.command.build.build):
     sub_commands = [('build_trans', None)] + distutils.command.build.build.sub_commands
