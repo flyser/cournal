@@ -37,9 +37,9 @@ but don't know how to get started.
  * GObject Introspection
  * GTK+ 3.2 or newer (GTK 3.4 is strongly recommended)
  * Python bindings for all above this line
- * Gettext
  * ZopeInterface 3.6.0 or newer
  * Twisted for python3 (*included*)
+ * Build-time: Gettext, Intltool
 
 ## Installation ##
 
