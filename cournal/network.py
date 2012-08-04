@@ -97,7 +97,7 @@ class _Network(pb.Referenceable):
         Positional arguments:
         perspective -- a reference to our user object
         """
-        debug(1, "Connected")
+        debug(1, _("Connected"))
         # This perspective is a remote reference to our User object. Save it
         # here, otherwise it will get garbage collected at the end of this
         # function and the server will think we logged out.
@@ -116,7 +116,7 @@ class _Network(pb.Referenceable):
         Positional arguments:
         reason -- A twisted Failure object with the reason the connection failed
         """
-        debug(0, "Connection failed due to:", reason.getErrorMessage())
+        debug(0, _("Connection failed due to: {}").format(reason.getErrorMessage()))
         self.is_connected = False
         
         return reason
@@ -179,7 +179,7 @@ class _Network(pb.Referenceable):
         name -- Name of the document
         """
         self.data_received()
-        debug(2, "Started editing", name)
+        debug(2, _("Started editing {}").format(name))
         self.server_document = server_document
 
     def remote_new_stroke(self, pagenum, stroke):

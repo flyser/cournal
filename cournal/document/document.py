@@ -52,7 +52,7 @@ class Document:
             self.height += page.height
             self.num_of_pages = len(self.pages)
         
-        print("The document has {} pages".format(self.num_of_pages))
+        print(_("The document has {} pages").format(self.num_of_pages))
         
     def is_empty(self):
         """
@@ -80,7 +80,7 @@ class Document:
         try:
             surface = cairo.PDFSurface(filename, 0, 0)
         except IOError as ex:
-            print("Error saving document:", ex)
+            print(_("Error saving document: {}").format(ex))
             #FIXME: Move error handler to mainwindow.py and show error message
             return
         
@@ -106,7 +106,7 @@ class Document:
         try:
             f = open_xoj(filename, "wb")
         except IOError as ex:
-            print("Error saving document:", ex)
+            print(_("Error saving document: {}").format(ex))
             #FIXME: Move error handler to mainwindow.py and show error message
             return
         

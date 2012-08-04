@@ -17,9 +17,11 @@
 # You should have received a copy of the GNU General Public License
 # along with Cournal.  If not, see <http://www.gnu.org/licenses/>.
 
+import os, sys
+import gettext
+
 from twisted.internet import gtk3reactor
 gtk3reactor.install()
- 
 from twisted.internet import reactor
 from gi.repository import Gtk
 
@@ -27,6 +29,10 @@ from cournal.mainwindow import MainWindow
 
 def run():
     """Start Cournal"""
+    locale_dir = os.path.join(sys.prefix, "local",  "share", "locale")
+    #locale_dir = os.path.realpath(os.path.dirname(sys.argv[0]))
+    gettext.install("cournal") #, locale_dir)
+    
     Gtk.IconTheme.get_default().prepend_search_path("./icons")
     
     window = MainWindow()

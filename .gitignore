@@ -1,16 +1,28 @@
+# Editors
 *~
 *.bak
 *.kate-swp
+*.swp
+
+# Python
 __pycache__
 *.pyc
 *.pyo
+
+# Documents
 *.xoj
 *.pdf
-*.swp
 
+# Translation:
+*.h
+*.mo
+*.pot
+
+# Twisted
 cournal/twisted
 t3k
 
+# Packaging
 build
 dist
 MANIFEST

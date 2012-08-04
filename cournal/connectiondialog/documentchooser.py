@@ -46,6 +46,7 @@ class DocumentChooser(Gtk.Box):
         self.dialog = dialog
         
         builder = Gtk.Builder()
+        builder.set_translation_domain("cournal")
         builder.add_from_file(cournal.__path__[0] + "/document_chooser.glade")
         self.main_grid = builder.get_object("main_grid")
         
@@ -116,7 +117,7 @@ class DocumentChooser(Gtk.Box):
         if len(documents) > 0:
             self.doc_name.set_text(documents[0])
         else:
-            self.doc_name.set_text("New document")
+            self.doc_name.set_text(_("New document"))
         
         self.emit("got_document_list")
 

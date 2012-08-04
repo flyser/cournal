@@ -39,6 +39,7 @@ class ConnectionDialog(Gtk.Dialog):
         self.parent = parent
         
         builder = Gtk.Builder()
+        builder.set_translation_domain("cournal")
         builder.add_from_file(cournal.__path__[0] + "/connection_dialog.glade")
         grid = builder.get_object("grid_main")
         
@@ -56,7 +57,7 @@ class ConnectionDialog(Gtk.Dialog):
         self.set_modal(False)
         self.set_has_resize_grip(False)
         self.set_resizable(False)
-        self.set_title("Connect to Server")
+        self.set_title(_("Connect to Server"))
         self.set_transient_for(parent)
         self.add_button(Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL)
         self.add_button(Gtk.STOCK_CONNECT, Gtk.ResponseType.ACCEPT)
@@ -82,7 +83,7 @@ class ConnectionDialog(Gtk.Dialog):
         port -- Port number on the server
         """
         self.set_page(1)
-        self.connecting_page.message = "Connecting to {} ...".format(server)
+        self.connecting_page.message = _("Connecting to {} ...").format(server)
         self.connecting_page.deferred = widget.deferred
         
     def show_joining_document_page(self, widget, documentname):
@@ -94,7 +95,7 @@ class ConnectionDialog(Gtk.Dialog):
         documentname -- The name of the document we are opening
         """
         self.set_page(1)
-        self.connecting_page.message = "Opening {} ...".format(documentname)
+        self.connecting_page.message = _("Opening {} ...").format(documentname)
         self.connecting_page.deferred = widget.deferred
     
     def set_page(self, page):

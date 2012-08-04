@@ -1,0 +1,291 @@
+# German translations for Cournal package
+# German messages for Cournal.
+# Copyright (C) 2012 Fabian Henze
+# This file is distributed under the same license as the Cournal package.
+# Fabian Henze <flyser42@gmx.de>, 2012.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Cournal 0.3.0-git\n"
+"Report-Msgid-Bugs-To: https://github.com/flyser/cournal/issues\n"
+"POT-Creation-Date: 2012-08-04 02:10+0200\n"
+"PO-Revision-Date: 2012-08-04 02:12+0200\n"
+"Last-Translator: Fabian Henze <flyser42@gmx.de>\n"
+"Language-Team: German\n"
+"Language: de\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: cournal/aboutdialog.py:42
+msgid "A collaborative note taking and journal application using a stylus."
+msgstr ""
+"Ein kollaboratives Notizprogramm zur Verwendung mit einem Eingabestift."
+
+#: cournal/mainwindow.py:221
+msgid " of {:3}"
+msgstr " von {:3}"
+
+#: cournal/mainwindow.py:330 cournal/mainwindow.py:362
+#: cournal/mainwindow.py:376
+msgid "Open File"
+msgstr "Datei öffnen"
+
+#: cournal/mainwindow.py:341
+msgid "Unable to open PDF"
+msgstr "Konnte das PDF nicht öffnen"
+
+#: cournal/mainwindow.py:409
+msgid "Save File As"
+msgstr "Datei speichern unter"
+
+#: cournal/mainwindow.py:425 cournal/mainwindow.glade.h:4
+msgid "Export PDF"
+msgstr "PDF exportieren"
+
+#: cournal/mainwindow.py:455
+msgid "Unable to open PDF file: {}"
+msgstr "Konnte die PDF Datei nicht öffnen: {}"
+
+#: cournal/mainwindow.py:507
+msgid "Disconnect and continue locally"
+msgstr "Verbindung trennen und lokal weiterarbeiten"
+
+#: cournal/mainwindow.py:508
+msgid "No response from the server for the last {} seconds."
+msgstr "Seit {} Sekunden keine Antwort mehr vom Server."
+
+#: cournal/mainwindow.py:509
+msgid "Continue locally"
+msgstr "Lokal weiterarbeiten"
+
+#: cournal/mainwindow.py:510
+msgid "The connection to the server has been terminated."
+msgstr "Die Verbindung zum Server wurde getrennt."
+
+#: cournal/network.py:100
+msgid "Connected"
+msgstr "Verbunden"
+
+#: cournal/network.py:119
+msgid "Connection failed due to: {}"
+msgstr "Verbindung fehlgeschlagen, weil: {}"
+
+#: cournal/network.py:182
+msgid "Started editing {}"
+msgstr "Bearbeite nun {}"
+
+#: cournal/connectiondialog/connectiondialog.py:60
+#: cournal/mainwindow.glade.h:3
+msgid "Connect to Server"
+msgstr "Verbinde zum Server"
+
+#: cournal/connectiondialog/connectiondialog.py:86
+msgid "Connecting to {} ..."
+msgstr "Verbinde zu {} .."
+
+#: cournal/connectiondialog/connectiondialog.py:98
+msgid "Opening {} ..."
+msgstr "Öffne {} ..."
+
+#: cournal/connectiondialog/documentchooser.py:120
+msgid "New document"
+msgstr "Neues Dokument"
+
+#: cournal/connectiondialog/serverdetails.py:77
+msgid "The port must be below 65535"
+msgstr "Der Port muss unter 65535 liegen"
+
+#: cournal/connectiondialog/serverdetails.py:92
+msgid "Close current document?"
+msgstr "Aktuelles Dokument schließen?"
+
+#: cournal/connectiondialog/serverdetails.py:93
+msgid ""
+"You will loose all changes to your current document, if you connect to a "
+"server. Continue without saving?"
+msgstr ""
+"Wenn sie zu einem Server verbinden, werden sie alle Änderungen am aktuellen "
+"Dokument verlieren. Weiter ohne zu speichern?"
+
+#: cournal/connectiondialog/serverdetails.py:94
+msgid "Warning"
+msgstr "Warnung"
+
+#: cournal/document/document.py:55
+msgid "The document has {} pages"
+msgstr "Das Dokument hat {} Seiten"
+
+#: cournal/document/document.py:83 cournal/document/document.py:109
+msgid "Error saving document: {}"
+msgstr "Fehler beim Speichern des Dokuments: {}"
+
+#: cournal/server/server.py:87
+msgid "Autosave directory '{}' does not exist."
+msgstr "Verzeichnis zur automatischen Speicherung '{}' existiert nicht."
+
+#: cournal/server/server.py:93
+msgid "Could not create autosave directory: {}"
+msgstr ""
+"Konnte das Verzeichnis zur automatischen Speicherung nicht erstellen: {}"
+
+#: cournal/server/server.py:106
+msgid "Loaded {} documents"
+msgstr "{} Dokumente geladen"
+
+#: cournal/server/server.py:120
+msgid ""
+"The autosave directory was locked by another instance of cournal-server,\n"
+"that is not running anymore. This happens, when cournal-server crashed.\n"
+"Make sure that no server is using the autosave directory '{}',\n"
+"delete '{}' and try again."
+msgstr ""
+"Das Verzeichnis zur automatischen Speicherung ist von einer anderen Cournal\n"
+"Server, der nicht mehr läuft, gesperrt. Dies kann auftreten, wenn der "
+"Cournal\n"
+"Server abstürzt. Stellen sie sicher, dass kein Server das Verzeichnis '{}'\n"
+"nutzt, löschen sie '{}' und versuchen sie es erneut."
+
+#: cournal/server/server.py:126
+msgid ""
+"The autosave directory is locked by another instance of cournal-server.\n"
+"To run multiple instances concurrently, you need to set a different autosave "
+"directory and port."
+msgstr ""
+"Das Verzeichnis zur automatischen Speicherung ist von einem anderen Cournal\n"
+"Server gesperrt. Um mehrere Instanzen gleichzeitig zu starten müssen sie\n"
+"jeweils unterschiedliche Verzeichnisse und Portnummern festlegen."
+
+#: cournal/server/server.py:134
+msgid "Could not create file in autosave directory: {}"
+msgstr ""
+"Konnte keine Datei im Verzeichnis zur automatischen Speicherung erstellen: {}"
+
+#: cournal/server/server.py:174
+msgid "Saving all documents."
+msgstr "Speichere alle Dokumente."
+
+#: cournal/server/server.py:246
+msgid "New User connected: {}"
+msgstr "Ein neuer Benutzer hat sich verbunden: {}"
+
+#: cournal/server/server.py:254
+msgid "User disconnected: {}"
+msgstr "Ein Benutzer hat sich getrennt: {}"
+
+#: cournal/server/server.py:282
+msgid "User {} requested document list"
+msgstr "Benutzer {} hat die Dokumentenliste angefordert"
+
+#: cournal/server/server.py:293
+msgid "User {} started editing {}"
+msgstr "Benutzer {} hat angefangen {} zu editieren"
+
+#: cournal/server/server.py:386
+msgid "New stroke on page {}"
+msgstr "Neuer Strich auf Seite {}"
+
+#: cournal/server/server.py:405
+msgid "Deleted stroke on page {}"
+msgstr "Strich auf Seite {} gelöscht"
+
+#: cournal/server/server.py:422
+msgid "Server for Cournal."
+msgstr "Server für Cournal."
+
+#: cournal/server/server.py:423
+#, python-format
+msgid "e.g.: %(prog)s -p port"
+msgstr "z.B.: %(prog)s -p port"
+
+#: cournal/server/server.py:425
+msgid "Port to listen on"
+msgstr "Port für eingehende Verbindungen"
+
+#: cournal/server/server.py:427
+msgid "The directory within which to store the documents on the server."
+msgstr ""
+"Das Verzeichnis, in dem alle Dokumente des Servers gespeichert werden sollen"
+
+#: cournal/server/server.py:429
+msgid ""
+"Interval in seconds within which to save modified documents to permanent "
+"storage. Set to 0 to disable autosave."
+msgstr ""
+"Intervall in Sekunden, der angibt wie oft die Dokumente gespeichert werden "
+"sollen. Der Wert 0 deaktiviert die automatische Speicherung."
+
+#: cournal/server/server.py:502
+msgid "ERROR: Failed to listen on port {}"
+msgstr "FEHLER: Konnte nicht auf eingehende Verbindungen auf Port {} warten"
+
+#: cournal/server/server.py:504
+msgid "Listening on port {}"
+msgstr "Warte auf eingehende Verbindungen auf Port {}"
+
+#: cournal/connection_dialog.glade.h:1
+msgid "Connecting ..."
+msgstr "Verbinde ..."
+
+#: cournal/connection_dialog.glade.h:2
+msgid "Please enter the name and port of the server you want to connect to."
+msgstr ""
+"Bitte geben sie den Hostnamen und Port des Servers ein zu dem sie verbinden "
+"möchten."
+
+#: cournal/connection_dialog.glade.h:3
+msgid "Server name:"
+msgstr "Hostname:"
+
+#: cournal/document_chooser.glade.h:1
+msgid "Which document do you want to edit?"
+msgstr "Welches Dokument möchten sie bearbeiten?"
+
+#: cournal/document_chooser.glade.h:2
+msgid "Documents"
+msgstr "Dokumente"
+
+#: cournal/mainwindow.glade.h:1
+msgid "_File"
+msgstr "_Datei"
+
+#: cournal/mainwindow.glade.h:2
+msgid "Annotate PDF"
+msgstr "PDF annotieren"
+
+#: cournal/mainwindow.glade.h:5
+msgid "Import"
+msgstr "Importieren"
+
+#: cournal/mainwindow.glade.h:6
+msgid "_Help"
+msgstr "_Hilfe"
+
+#: cournal/mainwindow.glade.h:7
+msgid "Connect to server"
+msgstr "Verbinde zu Server"
+
+#: cournal/mainwindow.glade.h:8
+msgid "Save current document"
+msgstr "Speichere aktuelles Dokument"
+
+#: cournal/mainwindow.glade.h:9
+msgid "Pen Color"
+msgstr "Stift Farbe"
+
+#: cournal/mainwindow.glade.h:10
+msgid "0.7"
+msgstr ""
+
+#: cournal/mainwindow.glade.h:11
+msgid "1.5"
+msgstr ""
+
+#: cournal/mainwindow.glade.h:12
+msgid "8.0"
+msgstr ""
+
+#: cournal/mainwindow.glade.h:13
+msgid " of 0  "
+msgstr " von 0  "

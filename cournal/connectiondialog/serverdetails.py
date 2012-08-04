@@ -74,7 +74,7 @@ class ServerDetails(Gtk.Box):
         port = self._server_entry.port
         
         if port > 65535 or port < 0:
-            self.dialog.error = "The port must be below 65535"
+            self.dialog.error = _("The port must be below 65535")
             return
         
         if not self.dialog.parent.document.is_empty():
@@ -89,9 +89,9 @@ class ServerDetails(Gtk.Box):
         Ask the user, if he wishes to loose all changes he made to the current
         document, when he connects to a server.
         """
-        message = Gtk.MessageDialog(self.dialog, (Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT), Gtk.MessageType.WARNING, Gtk.ButtonsType.YES_NO, "Close current document?" )
-        message.format_secondary_text("You will loose all changes to your current document, if you connect to a server. Continue without saving?")
-        message.set_title("Warning")
+        message = Gtk.MessageDialog(self.dialog, (Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT), Gtk.MessageType.WARNING, Gtk.ButtonsType.YES_NO, _("Close current document?"))
+        message.format_secondary_text(_("You will loose all changes to your current document, if you connect to a server. Continue without saving?"))
+        message.set_title(_("Warning"))
         if message.run() != Gtk.ResponseType.YES:
             message.destroy()
             return False

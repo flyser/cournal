@@ -63,6 +63,7 @@ class MainWindow(Gtk.Window):
         
         # Bob the builder
         builder = Gtk.Builder()
+        builder.set_translation_domain("cournal")
         builder.add_from_file(cournal.__path__[0] + "/mainwindow.glade")
         self.add(builder.get_object("outer_box"))
         
@@ -217,7 +218,7 @@ class MainWindow(Gtk.Window):
         
         # at this point we always start at page 1. If the feature to resume last page is included
         # remove this and start the method show_page_numbers() with adjustment
-        self.statusbar_pagenum.set_text(" of {:3}".format(self.document.num_of_pages))
+        self.statusbar_pagenum.set_text(_(" of {:3}").format(self.document.num_of_pages))
         self.curr_page = 1
         self.statusbar_pagenum_entry.set_text(str(self.curr_page))
 
@@ -326,7 +327,7 @@ class MainWindow(Gtk.Window):
         """
         Run an "Open PDF" dialog and create a new document with that PDF.
         """
-        dialog = Gtk.FileChooserDialog("Open File", self, Gtk.FileChooserAction.OPEN,
+        dialog = Gtk.FileChooserDialog(_("Open File"), self, Gtk.FileChooserAction.OPEN,
                                        (Gtk.STOCK_OPEN, Gtk.ResponseType.ACCEPT,
                                         Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL))
         dialog.set_filter(pdf_filter)
@@ -337,7 +338,7 @@ class MainWindow(Gtk.Window):
             try:
                 document = Document(filename)
             except GError as ex:
-                self.run_error_dialog("Unable to open PDF", ex)
+                self.run_error_dialog(_("Unable to open PDF"), ex)
                 dialog.destroy()
                 return
             self._set_document(document)
@@ -358,7 +359,7 @@ class MainWindow(Gtk.Window):
         """
         Run an "Import .xoj" dialog and import the strokes.
         """
-        dialog = Gtk.FileChooserDialog("Open File", self, Gtk.FileChooserAction.OPEN,
+        dialog = Gtk.FileChooserDialog(_("Open File"), self, Gtk.FileChooserAction.OPEN,
                                        (Gtk.STOCK_OPEN, Gtk.ResponseType.ACCEPT,
                                         Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL))
         dialog.set_filter(xoj_filter)
@@ -372,7 +373,7 @@ class MainWindow(Gtk.Window):
         """
         Run an "Open .xoj" dialog and create a new document from a .xoj file.
         """
-        dialog = Gtk.FileChooserDialog("Open File", self, Gtk.FileChooserAction.OPEN,
+        dialog = Gtk.FileChooserDialog(_("Open File"), self, Gtk.FileChooserAction.OPEN,
                                        (Gtk.STOCK_OPEN, Gtk.ResponseType.ACCEPT,
                                         Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL))
         dialog.set_filter(xoj_filter)
@@ -405,7 +406,7 @@ class MainWindow(Gtk.Window):
         """
         Run a "Save as" dialog and save the document to a .xoj file
         """
-        dialog = Gtk.FileChooserDialog("Save File As", self, Gtk.FileChooserAction.SAVE,
+        dialog = Gtk.FileChooserDialog(_("Save File As"), self, Gtk.FileChooserAction.SAVE,
                                        (Gtk.STOCK_SAVE, Gtk.ResponseType.ACCEPT,
                                         Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL))
         dialog.set_filter(xoj_filter)
@@ -421,7 +422,7 @@ class MainWindow(Gtk.Window):
         """
         Run an "Export" dialog and save the document to a PDF file.
         """
-        dialog = Gtk.FileChooserDialog("Export PDF", self, Gtk.FileChooserAction.SAVE,
+        dialog = Gtk.FileChooserDialog(_("Export PDF"), self, Gtk.FileChooserAction.SAVE,
                                        (Gtk.STOCK_SAVE, Gtk.ResponseType.ACCEPT,
                                         Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL))
         dialog.set_filter(pdf_filter)
@@ -451,7 +452,7 @@ class MainWindow(Gtk.Window):
         first -- Primary text of the message
         second -- Secondary text of the message
         """
-        print("Unable to open PDF file:", second)
+        print(_("Unable to open PDF file: {}").format(second))
         message = Gtk.MessageDialog(self, (Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT), Gtk.MessageType.ERROR, Gtk.ButtonsType.OK, first)
         message.format_secondary_text(second)
         message.set_title("Error")
@@ -503,10 +504,10 @@ class OverlayDialog(Gtk.EventBox):
         """Constructor"""
         Gtk.EventBox.__init__(self)
         self.last_no_data_seconds = 0
-        self.timeout_button_text = "Disconnect and continue locally"
-        self.timeout_label_text = "No response from the server for the last {} seconds."
-        self.disconnect_button_text = "Continue locally"
-        self.disconnect_label_text = "The connection to the server has been terminated."
+        self.timeout_button_text = _("Disconnect and continue locally")
+        self.timeout_label_text = _("No response from the server for the last {} seconds.")
+        self.disconnect_button_text = _("Continue locally")
+        self.disconnect_label_text = _("The connection to the server has been terminated.")
         
         self.set_valign(Gtk.Align.FILL)
         self.set_halign(Gtk.Align.FILL)
