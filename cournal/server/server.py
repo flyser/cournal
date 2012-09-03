@@ -18,6 +18,7 @@
 # along with Cournal.  If not, see <http://www.gnu.org/licenses/>.
 
 import os, sys
+import gettext
 from io import StringIO
 import string
 import atexit
@@ -486,6 +487,10 @@ def docname_to_filename(name):
 
 def main():
     """Start a Cournal server"""
+    locale_dir = os.path.join(sys.prefix, "local",  "share", "locale")
+    #locale_dir = os.path.realpath(os.path.dirname(sys.argv[0]))
+    gettext.install("cournal") #, locale_dir)
+
     args = CmdlineParser().parse()
     port = args.port
     
