@@ -20,7 +20,7 @@
 from gi.repository import Gtk, Gdk
 import cairo
 
-from cournal.viewer.tools import pen, eraser
+from cournal.viewer.tools import pen, eraser, navigation
 
 class PageWidget(Gtk.DrawingArea):
     """
@@ -153,7 +153,9 @@ class PageWidget(Gtk.DrawingArea):
         """
         if event.button == 1:
             self.active_tool = pen
-        elif event.button == 3 or event.button == 2:
+        elif event.button == 2:
+            self.active_tool = navigation
+        elif event.button == 3:
             self.active_tool = eraser
         else:
             return

@@ -50,7 +50,6 @@ class Layout(Gtk.Layout):
             self.children.append(PageWidget(page))
             self.put(self.children[-1], 0, 0)
     
-    
     def do_size_allocate(self, allocation):
         """
         Called, when the Layout is about to be resized. Resizes all children.
