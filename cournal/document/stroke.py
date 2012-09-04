@@ -48,29 +48,29 @@ class Stroke(pb.Copyable, pb.RemoteCopy):
         if self.coords is None:
             self.coords = []
     
-    def inBounds(self, x, y):
+    def in_bounds(self, x, y):
         """
-        Test if point is in bounds of the stroke.
+        Test if point is in bounding box of the stroke.
         
         Positional arguments:
         x, y -- point
         
         Returns:
-        true, if point is in bounds
+        true, if point is in bounding box
         """
         try:
-            if (x > self.bound_min[0]) and (x < self.bound_max[0]) and (y > self.bound_min[1]) and (y < self.bound_max[1]):
+            if x > self.bound_min[0] and x < self.bound_max[0] and y > self.bound_min[1] and y < self.bound_max[1]:
                 return True
             else:
                 return False
         except:
-            self.calculateBoundingBox()
-            if (x > self.bound_min[0]) and (x < self.bound_max[0]) and (y > self.bound_min[1]) and (y < self.bound_max[1]):
+            self.calculate_bounding_box()
+            if x > self.bound_min[0] and x < self.bound_max[0] and y > self.bound_min[1] and y < self.bound_max[1]:
                 return True
             else:
                 return False
 
-    def calculateBoundingBox(self, radius=5):
+    def calculate_bounding_box(self, radius=5):
         """
         Calculate the bounding box of the stroke
         
@@ -82,12 +82,11 @@ class Stroke(pb.Copyable, pb.RemoteCopy):
         bb_max_x = self.coords[0][0]
         bb_min_y = self.coords[0][1]
         bb_max_y = self.coords[0][1]
-        if len(self.coords) > 1:
-            for coord in self.coords[1:]:
-                bb_min_x = min(bb_min_x, coord[0])
-                bb_min_y = min(bb_min_y, coord[1])
-                bb_max_x = max(bb_max_x, coord[0])
-                bb_max_y = max(bb_max_y, coord[1])
+        for coord in self.coords[1:]:
+            bb_min_x = min(bb_min_x, coord[0])
+            bb_min_y = min(bb_min_y, coord[1])
+            bb_max_x = max(bb_max_x, coord[0])
+            bb_max_y = max(bb_max_y, coord[1])
         self.bound_min = [bb_min_x-radius, bb_min_y-radius]
         self.bound_max = [bb_max_x+radius, bb_max_y+radius]
 

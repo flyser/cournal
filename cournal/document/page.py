@@ -62,7 +62,7 @@ class Page:
                            (defaults to False)
         """
         self.layers[0].strokes.append(stroke)
-        stroke.calculateBoundingBox()
+        stroke.calculate_bounding_box()
         stroke.layer = self.layers[0]
         if self.widget:
             self.widget.draw_remote_stroke(stroke)
@@ -89,7 +89,7 @@ class Page:
         stroke -- The Stroke object, that was finished
         """
         #TODO: rerender that part of the screen.
-        stroke.calculateBoundingBox()
+        stroke.calculate_bounding_box()
         network.new_stroke(self.number, stroke)
 
     def delete_stroke_with_coords(self, coords):
@@ -133,7 +133,7 @@ class Page:
         Return value: Generator for a list of all strokes, which are near that point
         """
         for stroke in self.layers[0].strokes[:]:
-            if stroke.inBounds(x, y):
+            if stroke.in_bounds(x, y):
                 for coord in stroke.coords:
                     s_x = coord[0]
                     s_y = coord[1]
