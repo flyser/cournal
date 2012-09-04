@@ -45,9 +45,51 @@ class Stroke(pb.Copyable, pb.RemoteCopy):
         self.color = color
         self.linewidth = linewidth
         self.coords = coords
+        self.bound_min = [0,0]
+        self.bound_max = [100,100]
         if self.coords is None:
             self.coords = []
     
+    def inBounds(self, x, y):
+        """
+        Test if point is in bounds of the stroke.
+        
+        Positional arguments:
+        x, y -- point
+        
+        Returns:
+        true, if point is in bounds
+        """
+        try:
+            if (x > self.bound_min[0]) and (x < self.bound_max[0]) and (y > self.bound_min[1]) and (y < self.bound_max[1]):
+                return True
+            else:
+                return False
+        except:
+            self.calculateBoundingBox()
+            return True #TODO: Calculate Bounds
+
+    def calculateBoundingBox(self, radius=5):
+        """
+        Calculate the bounding box of the stroke
+        
+        Keyword arguments:
+        radius -- tolerance radius
+        """
+        
+        bb_min_x = self.coords[0][0]
+        bb_max_x = self.coords[0][0]
+        bb_min_y = self.coords[0][1]
+        bb_max_y = self.coords[0][1]
+        if len(self.coords) > 1:
+            for coord in self.coords[1:]:
+                bb_min_x = min(bb_min_x, coord[0])
+                bb_min_y = min(bb_min_y, coord[1])
+                bb_max_x = max(bb_max_x, coord[0])
+                bb_max_y = max(bb_max_y, coord[1])
+        self.bound_min = [bb_min_x-radius, bb_min_y-radius]
+        self.bound_max = [bb_max_x+radius, bb_max_y+radius]
+
     def getStateToCopy(self):
         """Gather state to send when I am serialized for a peer."""
         
