@@ -27,7 +27,7 @@ class PageWidget(Gtk.DrawingArea):
     A widget displaying a PDF page and its annotations
     """
 
-    def __init__(self, page, **args):
+    def __init__(self, page, parent, **args):
         """
         Constructor
         
@@ -41,6 +41,7 @@ class PageWidget(Gtk.DrawingArea):
         Gtk.DrawingArea.__init__(self, **args)
         
         self.page = page
+        self.parent = parent
         page.widget = self        
         self.widget_width = 1
         self.widget_height = 1

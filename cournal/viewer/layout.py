@@ -47,7 +47,7 @@ class Layout(Gtk.Layout):
         self.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(79/255, 78/255, 77/255, 1))
         
         for page in self.document.pages:
-            self.children.append(PageWidget(page))
+            self.children.append(PageWidget(page, self))
             self.put(self.children[-1], 0, 0)
     
     def do_size_allocate(self, allocation):

@@ -51,7 +51,6 @@ def motion(widget, event):
     global _vertical, _horizontal, _startpoint
 
     current = (event.x, event.y)
-    print(_startpoint[0]-current[0], _startpoint[1]-current[1])
     _vertical.set_value(_vertical.get_value() + _startpoint[1] - current[1])
 
 def release(widget, event):
