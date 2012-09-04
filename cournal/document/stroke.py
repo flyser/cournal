@@ -65,7 +65,10 @@ class Stroke(pb.Copyable, pb.RemoteCopy):
                 return False
         except:
             self.calculateBoundingBox()
-            return True #TODO: Calculate Bounds
+            if (x > self.bound_min[0]) and (x < self.bound_max[0]) and (y > self.bound_min[1]) and (y < self.bound_max[1]):
+                return True
+            else:
+                return False
 
     def calculateBoundingBox(self, radius=5):
         """
