@@ -45,8 +45,6 @@ class Stroke(pb.Copyable, pb.RemoteCopy):
         self.color = color
         self.linewidth = linewidth
         self.coords = coords
-        self.bound_min = [0,0]
-        self.bound_max = [100,100]
         if self.coords is None:
             self.coords = []
     
