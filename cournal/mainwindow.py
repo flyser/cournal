@@ -30,7 +30,7 @@ from cournal.document import xojparser
 from cournal.network import network
 from cournal.connectiondialog.connectiondialog import ConnectionDialog
 from cournal.aboutdialog import AboutDialog
-from cournal.document.history import History
+from cournal.document import history
 
 pdf_filter = Gtk.FileFilter()
 pdf_filter.add_mime_type("application/pdf")
@@ -119,7 +119,7 @@ class MainWindow(Gtk.Window):
         self.tool_pensize_normal.set_sensitive(False)
         self.tool_pensize_big.set_sensitive(False)
 
-        self.history = History(self.menu_undo, self.menu_redo, self.tool_undo, self.tool_redo)
+        history.init(self.menu_undo, self.menu_redo, self.tool_undo, self.tool_redo)
         
         self.menu_open_xoj.connect("activate", self.run_open_xoj_dialog)
         self.menu_open_pdf.connect("activate", self.run_open_pdf_dialog)
@@ -130,10 +130,10 @@ class MainWindow(Gtk.Window):
         self.menu_import_xoj.connect("activate", self.run_import_xoj_dialog)
         self.menu_quit.connect("activate", lambda _: self.destroy())
         self.menu_about.connect("activate", self.run_about_dialog)
-        self.menu_undo.connect("activate", self.history.undo)
-        self.menu_redo.connect("activate", self.history.redo)
-        self.tool_undo.connect("clicked", self.history.undo)
-        self.tool_redo.connect("clicked", self.history.redo)
+        self.menu_undo.connect("activate", history.undo)
+        self.menu_redo.connect("activate", history.redo)
+        self.tool_undo.connect("clicked", history.undo)
+        self.tool_redo.connect("clicked", history.redo)
         self.tool_open_pdf.connect("clicked", self.run_open_pdf_dialog)
         self.tool_save.connect("clicked", self.save)
         self.tool_connect.connect("clicked", self.run_connection_dialog)
@@ -351,7 +351,7 @@ class MainWindow(Gtk.Window):
             filename = dialog.get_filename()
             
             try:
-                document = Document(filename, history=self.history)
+                document = Document(filename)
             except GError as ex:
                 self.run_error_dialog(_("Unable to open PDF"), ex)
                 dialog.destroy()

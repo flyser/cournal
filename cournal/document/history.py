@@ -19,65 +19,65 @@
 
 from cournal.network import network
 
-class History:
-    def __init__(self, menu_undo, menu_redo, tool_undo, tool_redo):
-        self.menu_undo = menu_undo
-        self.menu_redo = menu_redo
-        self.tool_undo = tool_undo
-        self.tool_redo = tool_redo
-        self.undo_list=[]
-        self.redo_list=[]
-        
-    def undo(self, menuitem):
-        action = self.undo_list.pop()
-        self.add_redo_action(action)
-        action.undo()
-        if len(self.undo_list) == 0:
-            self.deactivate_undo()
+def init(menu_undo, menu_redo, tool_undo, tool_redo):
+    global _menu_undo, _menu_redo, _tool_redo, _tool_undo, _undo_list, _redo_list
+    _menu_undo = menu_undo
+    _menu_redo = menu_redo
+    _tool_undo = tool_undo
+    _tool_redo = tool_redo
+    _undo_list=[]
+    _redo_list=[]
+    
+def undo(menuitem):
+    action = _undo_list.pop()
+    add_redo_action(action)
+    action.undo()
+    if len(_undo_list) == 0:
+        deactivate_undo()
 
-    def redo(self, menuitem):
-        action = self.redo_list.pop()
-        self.add_undo_action(action, clear_redo=False)
-        action.redo()
-        if len(self.redo_list) == 0:
-            self.deactivate_redo()
+def redo(menuitem):
+    action = _redo_list.pop()
+    add_undo_action(action, clear_redo=False)
+    action.redo()
+    if len(_redo_list) == 0:
+        deactivate_redo()
 
-    def register_draw_stroke(self, stroke, page):
-        self.add_undo_action(Action_draw_stroke(stroke, page))
+def register_draw_stroke(stroke, page):
+    add_undo_action(Action_draw_stroke(stroke, page))
 
-    def register_delete_stroke(self, stroke, page):
-        self.add_undo_action(Action_delete_stroke(stroke, page))
+def register_delete_stroke(stroke, page):
+    add_undo_action(Action_delete_stroke(stroke, page))
 
-    def add_undo_action(self, action, clear_redo=True):
-        self.undo_list.append(action)
-        if len(self.undo_list) > 20:
-            self.undo_list.pop(0)
-        if len(self.undo_list) == 1:
-            self.activate_undo()
-        if clear_redo:
-            self.deactivate_redo()
-            self.redo_list = []
+def add_undo_action(action, clear_redo=True):
+    _undo_list.append(action)
+    if len(_undo_list) > 20:
+        _undo_list.pop(0)
+    if len(_undo_list) == 1:
+        activate_undo()
+    if clear_redo:
+        deactivate_redo()
+        _redo_list = []
 
-    def add_redo_action(self, action):
-        self.redo_list.append(action)
-        if len(self.redo_list) == 1:
-            self.activate_redo()
+def add_redo_action(action):
+    _redo_list.append(action)
+    if len(_redo_list) == 1:
+        activate_redo()
 
-    def deactivate_undo(self):
-        self.menu_undo.set_sensitive(False)
-        self.tool_undo.set_sensitive(False)
+def deactivate_undo():
+    _menu_undo.set_sensitive(False)
+    _tool_undo.set_sensitive(False)
 
-    def deactivate_redo(self):
-        self.menu_redo.set_sensitive(False)
-        self.tool_redo.set_sensitive(False)
+def deactivate_redo():
+    _menu_redo.set_sensitive(False)
+    _tool_redo.set_sensitive(False)
 
-    def activate_undo(self):
-        self.menu_undo.set_sensitive(True)
-        self.tool_undo.set_sensitive(True)
+def activate_undo():
+    _menu_undo.set_sensitive(True)
+    _tool_undo.set_sensitive(True)
 
-    def activate_redo(self):
-        self.menu_redo.set_sensitive(True)
-        self.tool_redo.set_sensitive(True)
+def activate_redo():
+    _menu_redo.set_sensitive(True)
+    _tool_redo.set_sensitive(True)
 
 class Action_draw_stroke:
     def __init__(self, stroke, page):

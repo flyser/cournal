@@ -20,12 +20,13 @@
 from cournal.document.layer import Layer
 from cournal.document.stroke import Stroke
 from cournal.network import network
+from cournal.document import history
 
 class Page:
     """
     A page in a document, having a number and multiple layers.
     """
-    def __init__(self, document, pdf, number, layers=None, history=None):
+    def __init__(self, document, pdf, number, layers=None):
         """
         Constructor
         
@@ -45,7 +46,6 @@ class Page:
             self.layers = [Layer(self, 0)]
         
         self.widget = None
-        self.history = history
         self.width, self.height = pdf.get_size()
     
     def new_stroke(self, stroke, send_to_network=False):
@@ -88,7 +88,7 @@ class Page:
         stroke -- The Stroke object, that was finished
         """
         #TODO: rerender that part of the screen.
-        self.history.register_draw_stroke(stroke, self)
+        history.register_draw_stroke(stroke, self)
         stroke.calculate_bounding_box()
         network.new_stroke(self.number, stroke)
 
@@ -121,7 +121,7 @@ class Page:
         if send_to_network:
             network.delete_stroke_with_coords(self.number, stroke.coords)
             if register:
-                self.history.register_delete_stroke(stroke, self)
+                history.register_delete_stroke(stroke, self)
     
     def get_strokes_near(self, x, y, radius):
         """
