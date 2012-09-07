@@ -103,7 +103,7 @@ class Page:
             if stroke.coords == coords:
                 self.delete_stroke(stroke, send_to_network=False)
     
-    def delete_stroke(self, stroke, send_to_network=False, register=True):
+    def delete_stroke(self, stroke, send_to_network=False, register_in_history=True):
         """
         Delete a stroke on this page and possibly send this request to the server,
         if connected.
@@ -114,13 +114,14 @@ class Page:
         Keyword arguments:
         send_to_network -- Set to True, to send the request for deletion the server
                            (defaults to False)
+        register_in_history -- Make this action undoable
         """
         self.layers[0].strokes.remove(stroke)
         if self.widget:
             self.widget.delete_remote_stroke(stroke)
         if send_to_network:
             network.delete_stroke_with_coords(self.number, stroke.coords)
-            if register:
+            if register_in_history:
                 history.register_delete_stroke(stroke, self)
     
     def get_strokes_near(self, x, y, radius):
