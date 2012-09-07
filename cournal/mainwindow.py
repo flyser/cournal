@@ -30,6 +30,7 @@ from cournal.document import xojparser
 from cournal.network import network
 from cournal.connectiondialog.connectiondialog import ConnectionDialog
 from cournal.aboutdialog import AboutDialog
+from cournal.document.history import History
 
 pdf_filter = Gtk.FileFilter()
 pdf_filter.add_mime_type("application/pdf")
@@ -82,6 +83,8 @@ class MainWindow(Gtk.Window):
         self.menu_import_xoj = builder.get_object("imagemenuitem_import_xoj")
         self.menu_quit = builder.get_object("imagemenuitem_quit")
         self.menu_about = builder.get_object("imagemenuitem_about")
+        self.menu_undo = builder.get_object("imagemenuitem_undo")
+        self.menu_redo = builder.get_object("imagemenuitem_redo")
         
         # Toolbar:
         self.tool_open_pdf = builder.get_object("tool_open_pdf")
@@ -90,6 +93,8 @@ class MainWindow(Gtk.Window):
         self.tool_zoom_in = builder.get_object("tool_zoom_in")
         self.tool_zoom_out = builder.get_object("tool_zoom_out")
         self.tool_zoom_100 = builder.get_object("tool_zoom_100")
+        self.tool_undo = builder.get_object("tool_undo")
+        self.tool_redo = builder.get_object("tool_redo")
         self.tool_pen_color = builder.get_object("tool_pen_color")
         self.tool_pensize_small = builder.get_object("tool_pensize_small")
         self.tool_pensize_normal = builder.get_object("tool_pensize_normal")
@@ -100,8 +105,12 @@ class MainWindow(Gtk.Window):
         self.menu_save_as.set_sensitive(False)
         self.menu_export_pdf.set_sensitive(False)
         self.menu_import_xoj.set_sensitive(False)
+        self.menu_undo.set_sensitive(False)
+        self.menu_redo.set_sensitive(False)
         self.tool_save.set_sensitive(False)
         self.tool_connect.set_sensitive(False)
+        self.tool_undo.set_sensitive(False)
+        self.tool_redo.set_sensitive(False)
         self.tool_zoom_in.set_sensitive(False)
         self.tool_zoom_out.set_sensitive(False)
         self.tool_zoom_100.set_sensitive(False)
@@ -109,6 +118,8 @@ class MainWindow(Gtk.Window):
         self.tool_pensize_small.set_sensitive(False)
         self.tool_pensize_normal.set_sensitive(False)
         self.tool_pensize_big.set_sensitive(False)
+
+        self.history = History(self.menu_undo, self.menu_redo, self.tool_undo, self.tool_redo)
         
         self.menu_open_xoj.connect("activate", self.run_open_xoj_dialog)
         self.menu_open_pdf.connect("activate", self.run_open_pdf_dialog)
@@ -119,6 +130,10 @@ class MainWindow(Gtk.Window):
         self.menu_import_xoj.connect("activate", self.run_import_xoj_dialog)
         self.menu_quit.connect("activate", lambda _: self.destroy())
         self.menu_about.connect("activate", self.run_about_dialog)
+        self.menu_undo.connect("activate", self.history.undo)
+        self.menu_redo.connect("activate", self.history.redo)
+        self.tool_undo.connect("clicked", self.history.undo)
+        self.tool_redo.connect("clicked", self.history.redo)
         self.tool_open_pdf.connect("clicked", self.run_open_pdf_dialog)
         self.tool_save.connect("clicked", self.save)
         self.tool_connect.connect("clicked", self.run_connection_dialog)
@@ -336,7 +351,7 @@ class MainWindow(Gtk.Window):
             filename = dialog.get_filename()
             
             try:
-                document = Document(filename)
+                document = Document(filename, history=self.history)
             except GError as ex:
                 self.run_error_dialog(_("Unable to open PDF"), ex)
                 dialog.destroy()

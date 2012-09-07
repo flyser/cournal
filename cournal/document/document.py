@@ -29,7 +29,7 @@ class Document:
     """
     A Cournal document, having multiple pages.
     """
-    def __init__(self, pdfname):
+    def __init__(self, pdfname, history):
         """
         Constructor
         
@@ -43,9 +43,10 @@ class Document:
         self.width = 0
         self.height = 0
         self.pages = []
+        self.history = history
         
         for i in range(self.pdf.get_n_pages()):
-            page = Page(self, self.pdf.get_page(i), i)
+            page = Page(self, self.pdf.get_page(i), i, history=self.history)
             self.pages.append(page)
             
             self.width = max(self.width, page.width)

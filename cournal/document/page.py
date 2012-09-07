@@ -17,8 +17,6 @@
 # You should have received a copy of the GNU General Public License
 # along with Cournal.  If not, see <http://www.gnu.org/licenses/>.
 
-from math import sqrt
-
 from cournal.document.layer import Layer
 from cournal.document.stroke import Stroke
 from cournal.network import network
@@ -27,7 +25,7 @@ class Page:
     """
     A page in a document, having a number and multiple layers.
     """
-    def __init__(self, document, pdf, number, layers=None):
+    def __init__(self, document, pdf, number, layers=None, history=None):
         """
         Constructor
         
@@ -47,6 +45,7 @@ class Page:
             self.layers = [Layer(self, 0)]
         
         self.widget = None
+        self.history = history
         self.width, self.height = pdf.get_size()
     
     def new_stroke(self, stroke, send_to_network=False):
@@ -89,6 +88,7 @@ class Page:
         stroke -- The Stroke object, that was finished
         """
         #TODO: rerender that part of the screen.
+        self.history.register_draw_stroke(stroke, self)
         stroke.calculate_bounding_box()
         network.new_stroke(self.number, stroke)
 
@@ -103,7 +103,7 @@ class Page:
             if stroke.coords == coords:
                 self.delete_stroke(stroke, send_to_network=False)
     
-    def delete_stroke(self, stroke, send_to_network=False):
+    def delete_stroke(self, stroke, send_to_network=False, register=True):
         """
         Delete a stroke on this page and possibly send this request to the server,
         if connected.
@@ -120,6 +120,8 @@ class Page:
             self.widget.delete_remote_stroke(stroke)
         if send_to_network:
             network.delete_stroke_with_coords(self.number, stroke.coords)
+            if register:
+                self.history.register_delete_stroke(stroke, self)
     
     def get_strokes_near(self, x, y, radius):
         """
