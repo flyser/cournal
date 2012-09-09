@@ -30,6 +30,7 @@ from cournal.document import xojparser
 from cournal.network import network
 from cournal.connectiondialog.connectiondialog import ConnectionDialog
 from cournal.aboutdialog import AboutDialog
+from cournal.document import search
 
 pdf_filter = Gtk.FileFilter()
 pdf_filter.add_mime_type("application/pdf")
@@ -82,6 +83,7 @@ class MainWindow(Gtk.Window):
         self.menu_import_xoj = builder.get_object("imagemenuitem_import_xoj")
         self.menu_quit = builder.get_object("imagemenuitem_quit")
         self.menu_about = builder.get_object("imagemenuitem_about")
+        self.menu_search = builder.get_object("imagemenuitem_search")
         
         # Toolbar:
         self.tool_open_pdf = builder.get_object("tool_open_pdf")
@@ -100,6 +102,7 @@ class MainWindow(Gtk.Window):
         self.menu_save_as.set_sensitive(False)
         self.menu_export_pdf.set_sensitive(False)
         self.menu_import_xoj.set_sensitive(False)
+        self.menu_search.set_sensitive(False)
         self.tool_save.set_sensitive(False)
         self.tool_connect.set_sensitive(False)
         self.tool_zoom_in.set_sensitive(False)
@@ -119,6 +122,7 @@ class MainWindow(Gtk.Window):
         self.menu_import_xoj.connect("activate", self.run_import_xoj_dialog)
         self.menu_quit.connect("activate", lambda _: self.destroy())
         self.menu_about.connect("activate", self.run_about_dialog)
+        self.menu_search.connect("activate", self.show_search_bar)
         self.tool_open_pdf.connect("clicked", self.run_open_pdf_dialog)
         self.tool_save.connect("clicked", self.save)
         self.tool_connect.connect("clicked", self.run_connection_dialog)
@@ -142,6 +146,15 @@ class MainWindow(Gtk.Window):
         self.statusbar_pagenum_entry.connect("activate", self.jump_to_page)
         self.button_prev_page.connect("clicked", self.jump_to_prev_page)
         self.button_next_page.connect("clicked", self.jump_to_next_page)
+
+        # Search bar:
+        self.search_bar = builder.get_object("search_bar")
+        self.search_field = builder.get_object("search_field")
+        self.search_button = builder.get_object("search_button")
+        self.search_close = builder.get_object("search_close")
+        
+        self.search_close.connect("clicked", self.hide_search_bar)
+        self.search_button.connect("clicked", self.search_document)
 
     def connect_event(self):
         """
@@ -181,6 +194,28 @@ class MainWindow(Gtk.Window):
             self.overlay.add(self.overlaybox)
         self.overlaybox.connect("destroy", destroyed)
     
+    def search_document(self, menuitem):
+        """
+        Search document
+        """
+        result = search.search(self.search_field.get_text(), from_page=self.curr_page)
+        if result > -1:
+            self.statusbar_pagenum_entry.set_text(str(result+1))
+            self.jump_to_page(self.statusbar_pagenum_entry)
+            
+    def show_search_bar(self, menuitem):
+        """
+        Show a search bar at the bottom of the window.
+        """
+        self.search_bar.set_visible(True)
+        Gtk.Window.set_focus(self, self.search_field)
+
+    def hide_search_bar(self, menuitem):
+        """
+        Hide the search bar.
+        """
+        self.search_bar.set_visible(False)
+
     def _set_document(self, document):
         """
         Replace the current document (if any) with a new one.
@@ -212,6 +247,7 @@ class MainWindow(Gtk.Window):
         self.tool_pensize_big.set_sensitive(True)
         self.statusbar_pagenum.set_sensitive(True)
         self.statusbar_pagenum_entry.set_sensitive(True)
+        self.menu_search.set_sensitive(True)
         
         if self.document.num_of_pages > 1:
             self.button_next_page.set_sensitive(True)
