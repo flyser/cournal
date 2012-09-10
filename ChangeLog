@@ -1,5 +1,6 @@
 Version 0.3 -- not yet released
-  * to do
+  * Undo/Redo
+  * Accelerated stroke deletion
 
 Version 0.2.1 -- 2012-07-31
   * Support for system-wide installation via setup.py
