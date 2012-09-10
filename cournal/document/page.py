@@ -48,6 +48,7 @@ class Page:
         
         self.widget = None
         self.width, self.height = pdf.get_size()
+        self.search_marker = None
     
     def new_stroke(self, stroke, send_to_network=False):
         """
