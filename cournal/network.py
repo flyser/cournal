@@ -156,6 +156,23 @@ class _Network(pb.Referenceable):
         d.addErrback(self.disconnect)
         return d
     
+    def get_user_list(self):
+        """
+        Request user list from server
+        """
+        if self.is_connected:
+            d = self.server_document.callRemote("list_users")
+            return d
+
+    def remote_user_list(self, users):
+        """
+        User list request resonse
+        
+        Positional arguments:
+        users -- user list
+        """
+        self.window.got_user_list(users)
+    
     def join_document_session(self, documentname):
         """
         Joins a "document editing session". This means, that we will automatically

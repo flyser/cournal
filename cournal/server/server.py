@@ -283,6 +283,15 @@ class User(pb.Avatar):
         debug(2, _("User {} requested document list").format(self.name))
         
         return list(self.server.documents.keys())
+
+    def perspective_list_users(self, document):
+        """
+        Return a list of all our documents.
+        """
+        debug(2, _("User {} requested user list for {}").format(self.name), document)
+        
+        return list(self.server.documents.keys())
+
     
     def perspective_join_document(self, documentname):
         """
@@ -343,6 +352,7 @@ class Document(pb.Viewable):
         for pagenum in range(len(self.pages)):
             for stroke in self.pages[pagenum].strokes:
                 user.call_remote("new_stroke", pagenum, stroke)
+        self.broadcast_user_list()
     
     def remove_user(self, user):
         """
@@ -352,6 +362,7 @@ class Document(pb.Viewable):
         user -- The concerning User object.
         """
         self.users.remove(user)
+        self.broadcast_user_list()
         
     def broadcast(self, method, *args, except_user=None):
         """
@@ -367,6 +378,29 @@ class Document(pb.Viewable):
         for user in self.users:
             if user != except_user:
                 user.call_remote(method, *args)
+    
+    def broadcast_user_list(self):
+        """
+        Broadcast user list to all clients.
+        """
+        user_names = []
+        for u in self.users:
+            user_names.append(u.name)
+        for u in self.users:
+            u.call_remote("user_list", user_names)        
+    
+    def view_list_users(self, from_user):
+        """
+        Send user name list to clients
+        
+        Positional arguments:
+        from_user -- user that sent the request
+        """
+        user_names = []
+        for u in self.users:
+            user_names.append(u.name)
+        #from_user.call_remote("user_list", user_names)
+        return user_names
     
     def view_new_stroke(self, from_user, pagenum, stroke):
         """

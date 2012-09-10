@@ -82,6 +82,7 @@ class MainWindow(Gtk.Window):
         self.menu_import_xoj = builder.get_object("imagemenuitem_import_xoj")
         self.menu_quit = builder.get_object("imagemenuitem_quit")
         self.menu_about = builder.get_object("imagemenuitem_about")
+        self.menu_user_list = builder.get_object("imagemenuitem_userlist")
         
         # Toolbar:
         self.tool_open_pdf = builder.get_object("tool_open_pdf")
@@ -119,6 +120,7 @@ class MainWindow(Gtk.Window):
         self.menu_import_xoj.connect("activate", self.run_import_xoj_dialog)
         self.menu_quit.connect("activate", lambda _: self.destroy())
         self.menu_about.connect("activate", self.run_about_dialog)
+        self.menu_user_list.connect("toggled", self.toggle_user_list)
         self.tool_open_pdf.connect("clicked", self.run_open_pdf_dialog)
         self.tool_save.connect("clicked", self.save)
         self.tool_connect.connect("clicked", self.run_connection_dialog)
@@ -142,6 +144,39 @@ class MainWindow(Gtk.Window):
         self.statusbar_pagenum_entry.connect("activate", self.jump_to_page)
         self.button_prev_page.connect("clicked", self.jump_to_prev_page)
         self.button_next_page.connect("clicked", self.jump_to_next_page)
+
+        # User list:
+        self.userlist_tree_view = builder.get_object("userlist_tree_view")
+        self.userlist_store = builder.get_object("userlist_store")
+        self.treeview_user_column = builder.get_object("treeview_user_column")
+        
+        self.cell = Gtk.CellRendererText()
+        self.treeview_user_column.pack_start(self.cell, True)
+        self.treeview_user_column.add_attribute(self.cell, "text", 0)
+        self.userlist_store.set_sort_column_id(0, Gtk.SortType.ASCENDING)
+    
+    def toggle_user_list(self, menuitem):
+        """
+        Toggle user lists visibility
+        
+        Positional arguments:
+        menuitem -- triggeing menu item
+        """
+        if menuitem.get_active():
+            self.userlist_tree_view.set_visible(True)
+        else:
+            self.userlist_tree_view.set_visible(False)
+
+    def got_user_list(self, users):
+        """
+        Received user list from sever
+        
+        Positional arguments:
+        users -- user list
+        """
+        self.userlist_store.clear()
+        for i in users:
+            self.userlist_store.append(None, [i])
 
     def connect_event(self):
         """
