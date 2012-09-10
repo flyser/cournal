@@ -21,6 +21,7 @@ from gi.repository import Gtk, Gdk
 import cairo
 
 from cournal.viewer.tools import pen, eraser, navigation
+from cournal.document import search
 
 class PageWidget(Gtk.DrawingArea):
     """
@@ -133,6 +134,10 @@ class PageWidget(Gtk.DrawingArea):
             for stroke in self.page.layers[0].strokes:
                 stroke.draw(bb_ctx, scaling)
             
+            # Highlight search result
+            if self.page.search_marker:
+                search.draw(bb_ctx, self.page)
+            
             # Then the image is painted on top of a white "page". Instead of
             # creating a second image, painting it white, then painting the
             # PDF image over it we can use the cairo.OPERATOR_DEST_OVER
@@ -212,6 +217,39 @@ class PageWidget(Gtk.DrawingArea):
         Positional arguments:
         stroke -- The Stroke object, which was deleted.
         """
+        if self.backbuffer:
+            self.backbuffer_valid = False
+            if self.get_window():
+                self.get_window().invalidate_rect(None, False)
+
+    def draw_search_marker(self, rect):
+        """
+        Draw the search marker on the widget
+        
+        Positional arguments:
+        rect -- The rect marking the found search text
+        """
+        self.page.search_marker = rect.x1, self.page.height-rect.y1, rect.x2, self.page.height-rect.y2
+        if self.backbuffer:
+            scaling = self.widget_width / self.page.width
+            context = cairo.Context(self.backbuffer)
+            
+            context.scale(scaling, scaling)
+            search.draw(context, self.page)
+            update_rect = Gdk.Rectangle()
+            update_rect.x = rect.x1*scaling
+            update_rect.y = (self.page.height-rect.y2)*scaling
+            update_rect.width = (rect.x2-rect.x1)*scaling
+            update_rect.height = (rect.y2-rect.y1)*scaling
+            
+            if self.get_window():
+                self.get_window().invalidate_rect(update_rect, False)
+
+    def delete_search_marker(self):
+        """
+        Rerender the part of the widget, where the marker was deleted
+        """
+        self.page.search_marker = None
         if self.backbuffer:
             self.backbuffer_valid = False
             if self.get_window():

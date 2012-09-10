@@ -17,10 +17,6 @@
 # You should have received a copy of the GNU General Public License
 # along with Cournal.  If not, see <http://www.gnu.org/licenses/>.
 
-#TODO:
-# * "find next"
-# * find the poppler search function
-
 def set_pdf(pdf):
     """
     Set the pdf to be searched through.
@@ -28,31 +24,64 @@ def set_pdf(pdf):
     Positional arguments:
     pdf -- pdf poppler document
     """
-    global _pdf
+    global _pdf, _found, _position, _page
     _pdf = pdf
-    _last_page = -1
-    _last_pos = 0
+    reset()
+    
+def get_last_result_page():
+    """
+    Get the page, where the last result was found on
+    """
+    if _position < len(_found):
+        return _page
+    return -1
 
-def search(search_text, from_page = 0):
+def search(search_text):
     """
     Search text in document
     
     Positional arguments:
     search_text -- String to be searched
-    
-    Keyword arguments:
-    from_page = page to start search from
     """
-    # Sadly, the poppler search function does not work in python :(
-    # Thus, the page number is the most accurate we can return
+    global _found, _position, _page
     
-    # Search from actual page
-    for i in range(from_page, _pdf.get_n_pages()):
-        if _pdf.get_page(i).get_text().find(search_text) > -1:
-            return i
-    # Start from beginning
-    for i in range(from_page):
-        if _pdf.get_page(i).get_text().find(search_text) > -1:
-            return i
-    return -1
+    _position += 1
+    if _position < len(_found):
+        return _page, _found[_position]
+    else:
+        _position = 0
+        for i in range(_pdf.get_n_pages()):
+            _page += 1
+            if _page >= _pdf.get_n_pages():
+                _page = 0 
+            _found = _pdf.get_page(_page).find_text(search_text)
+            if _found:
+                return _page, _found[_position]
+    return -1, None
+
+def reset():
+    """
+    Reset last search
+    """
+    global _found, _position, _page
+    _position = 0
+    _page = 0
+    _found = []
     
+def draw(context, page):
+    """
+    Render search result marker
+    
+    Positional arguments:
+    context -- The cairo context to draw on
+    page -- Page search text was found on
+    """
+    context.save()
+    context.set_source_rgba(1, 1, 0.4, 0.5)
+    context.move_to(page.search_marker[0], page.search_marker[1])
+    context.line_to(page.search_marker[2], page.search_marker[1])
+    context.line_to(page.search_marker[2], page.search_marker[3])
+    context.line_to(page.search_marker[0], page.search_marker[3])
+    context.close_path()
+    context.fill()
+    context.restore()

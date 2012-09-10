@@ -152,7 +152,10 @@ class MainWindow(Gtk.Window):
         self.search_field = builder.get_object("search_field")
         self.search_button = builder.get_object("search_button")
         self.search_close = builder.get_object("search_close")
+        self.hadjustment = self.scrolledwindow.get_hadjustment()
+        #self.hadjustment.connect("value_changed", self.show_page_numbers)
         
+        self.search_field.connect("insert-text", self.reset_search)
         self.search_close.connect("clicked", self.hide_search_bar)
         self.search_button.connect("clicked", self.search_document)
 
@@ -198,16 +201,29 @@ class MainWindow(Gtk.Window):
         """
         Search document
         """
-        result = search.search(self.search_field.get_text(), from_page=self.curr_page)
-        if result > -1:
-            self.statusbar_pagenum_entry.set_text(str(result+1))
-            self.jump_to_page(self.statusbar_pagenum_entry)
+        # delete last results marker
+        last_page = search.get_last_result_page()
+        if last_page > -1:
+            for page in self.document.pages:
+                if page.number == int(last_page):
+                    page.widget.delete_search_marker()
+        result_page, result_pos = search.search(self.search_field.get_text())
+        if result_page > -1:
+            self.statusbar_pagenum_entry.set_text(str(result_page+1))
+            for page in self.document.pages:
+                if page.number == int(result_page):
+                    page.widget.draw_search_marker(result_pos)
+                    self.vadjustment.set_value(page.widget.get_allocation().y + page.widget.widget_height * (page.height-result_pos.y2) / page.height)
+                    self.hadjustment.set_value(page.widget.widget_width * result_pos.x1 / page.width)
+        else:
+            self.search_field.modify_fg(0,Gdk.Color(65535,0,0))
             
     def show_search_bar(self, menuitem):
         """
         Show a search bar at the bottom of the window.
         """
         self.search_bar.set_visible(True)
+        self.search_field.modify_fg(0, Gdk.Color(0,0,0))
         Gtk.Window.set_focus(self, self.search_field)
 
     def hide_search_bar(self, menuitem):
@@ -215,6 +231,27 @@ class MainWindow(Gtk.Window):
         Hide the search bar.
         """
         self.search_bar.set_visible(False)
+        # delete last results marker
+        last_page = search.get_last_result_page()
+        if last_page > -1:
+            for page in self.document.pages:
+                if page.number == int(last_page):
+                    page.widget.delete_search_marker()
+        search.reset()
+
+    def reset_search(self, one, two, three, four):
+        """
+        Reset search.
+        """
+        # delete last results marker
+        self.search_bar.set_visible(True)
+        self.search_field.modify_fg(0, Gdk.Color(0,0,0))
+        last_page = search.get_last_result_page()
+        if last_page > -1:
+            for page in self.document.pages:
+                if page.number == int(last_page):
+                    page.widget.delete_search_marker()
+        search.reset()
 
     def _set_document(self, document):
         """
