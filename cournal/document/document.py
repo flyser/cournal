@@ -24,6 +24,7 @@ from gi.repository import Poppler, GLib
 import cairo
 
 from cournal.document.page import Page
+from cournal.document import history
 
 class Document:
     """
@@ -43,7 +44,8 @@ class Document:
         self.width = 0
         self.height = 0
         self.pages = []
-        
+        history.reset()
+                
         for i in range(self.pdf.get_n_pages()):
             page = Page(self, self.pdf.get_page(i), i)
             self.pages.append(page)
