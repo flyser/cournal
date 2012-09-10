@@ -143,6 +143,22 @@ class MainWindow(Gtk.Window):
         self.button_prev_page.connect("clicked", self.jump_to_prev_page)
         self.button_next_page.connect("clicked", self.jump_to_next_page)
 
+        # Accelerators
+        self.accelgroup = builder.get_object("accelgroup1")
+        self.tool_save.add_accelerator("clicked", self.accelgroup, ord('s'),
+            Gdk.ModifierType.CONTROL_MASK, Gtk.AccelFlags.VISIBLE)
+        self.tool_open_pdf.add_accelerator("clicked", self.accelgroup, ord('o'),
+            Gdk.ModifierType.CONTROL_MASK, Gtk.AccelFlags.VISIBLE)
+        self.tool_zoom_in.add_accelerator("clicked", self.accelgroup, ord('+'),
+            Gdk.ModifierType.CONTROL_MASK, Gtk.AccelFlags.VISIBLE)
+        self.tool_zoom_out.add_accelerator("clicked", self.accelgroup, ord('-'),
+            Gdk.ModifierType.CONTROL_MASK, Gtk.AccelFlags.VISIBLE)
+        self.tool_zoom_100.add_accelerator("clicked", self.accelgroup, ord('0'),
+            Gdk.ModifierType.CONTROL_MASK, Gtk.AccelFlags.VISIBLE)
+        self.tool_connect.add_accelerator("clicked", self.accelgroup, ord('n'),
+            Gdk.ModifierType.CONTROL_MASK, Gtk.AccelFlags.VISIBLE)
+        self.add_accel_group(self.accelgroup)
+
     def connect_event(self):
         """
         Called by the networking layer when a connection is established.
