@@ -35,8 +35,10 @@ from cournal.document import search
 
 pdf_filter = Gtk.FileFilter()
 pdf_filter.add_mime_type("application/pdf")
+pdf_filter.add_pattern("*.pdf")
 xoj_filter = Gtk.FileFilter()
 xoj_filter.add_mime_type("application/x-xoj")
+xoj_filter.add_pattern("*.xoj")
 
 LINEWIDTH_SMALL = 0.7
 LINEWIDTH_NORMAL = 1.5
