@@ -196,6 +196,7 @@ class MainWindow(Gtk.Window):
         self.search_field.connect("insert-text", self.reset_search)
         self.search_close.connect("clicked", self.hide_search_bar)
         self.search_button.connect("clicked", self.search_document)
+        self.search_field.connect("activate", self.search_document)
 
     def connect_event(self):
         """
