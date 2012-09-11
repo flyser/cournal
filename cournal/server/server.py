@@ -36,6 +36,7 @@ from twisted.python.failure import Failure
 
 from cournal import __versionstring__ as cournal_version
 from cournal.document.stroke import Stroke
+from cournal.document.rect import Rect
 
 
 # 0 - none
@@ -55,10 +56,10 @@ valid_characters = string.ascii_letters + string.digits + ' _()+,.-=^~'
 
 class Page:
     """
-    A page in a document, having multiple strokes.
+    A page in a document, having multiple objects.
     """
     def __init__(self):
-        self.strokes = []
+        self.obj = []
 
 class CournalServer:
     """
@@ -333,7 +334,7 @@ class Document(pb.Viewable):
     
     def add_user(self, user):
         """
-        Called, when a user starts editing this document. Send him all strokes
+        Called, when a user starts editing this document. Send him all objects
         that are currently in the document.
         
         Positional arguments:
@@ -341,8 +342,8 @@ class Document(pb.Viewable):
         """
         self.users.append(user)
         for pagenum in range(len(self.pages)):
-            for stroke in self.pages[pagenum].strokes:
-                user.call_remote("new_stroke", pagenum, stroke)
+            for obj in self.pages[pagenum].obj:
+                user.call_remote("new_obj", pagenum, obj)
     
     def remove_user(self, user):
         """
@@ -368,43 +369,43 @@ class Document(pb.Viewable):
             if user != except_user:
                 user.call_remote(method, *args)
     
-    def view_new_stroke(self, from_user, pagenum, stroke):
+    def view_new_obj(self, from_user, pagenum, obj):
         """
-        Broadcast the stroke received from one to all other clients.
-        Called by clients to add a new stroke.
+        Broadcast the object received from one to all other clients.
+        Called by clients to add a new obj.
         
         Positional arguments:
         from_user -- The User object of the initiiating user.
-        pagenum -- Page number the new stroke.
-        stroke -- The new stroke
+        pagenum -- Page number the new object.
+        obj -- The new object
         """
         self.has_unsaved_changes = True
         
         while len(self.pages) <= pagenum:
             self.pages.append(Page())
-        self.pages[pagenum].strokes.append(stroke)
+        self.pages[pagenum].obj.append(obj)
         
-        debug(3, _("New stroke on page {}").format(pagenum + 1))
-        self.broadcast("new_stroke", pagenum, stroke, except_user=from_user)
+        debug(3, _("New object on page {}").format(pagenum + 1))
+        self.broadcast("new_obj", pagenum, obj, except_user=from_user)
         
-    def view_delete_stroke_with_coords(self, from_user, pagenum, coords):
+    def view_delete_objects_with_coords(self, from_user, pagenum, coords):
         """
-        Broadcast the delete stroke command from one to all other clients.
-        Called by Clients to delete a stroke.
+        Broadcast the delete objects command from one to all other clients.
+        Called by Clients to delete a object.
         
         Positional arguments:
         from_user -- The User object of the initiiating user.
-        pagenum -- Page number the deleted stroke
-        coords -- The list coordinates of the deleted stroke
+        pagenum -- Page number the deleted object
+        coords -- The list coordinates of the deleted object
         """
         self.has_unsaved_changes = True
         
-        for stroke in self.pages[pagenum].strokes:
-            if stroke.coords == coords:
-                self.pages[pagenum].strokes.remove(stroke)
+        for obj in self.pages[pagenum].obj:
+            if obj.coords == coords:
+                self.pages[pagenum].obj.remove(obj)
                 
-                debug(3, _("Deleted stroke on page {}").format(pagenum + 1))
-                self.broadcast("delete_stroke_with_coords", pagenum, coords, except_user=from_user)
+                debug(3, _("Deleted object on page {}").format(pagenum + 1))
+                self.broadcast("delete_objects_with_coords", pagenum, coords, except_user=from_user)
 
 class CmdlineParser():
     """

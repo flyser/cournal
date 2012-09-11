@@ -56,19 +56,19 @@ class Document:
         
     def is_empty(self):
         """
-        Returns True, if no page of this document has a stroke on it.
+        Returns True, if no page of this document has a object on it.
         Otherwise False
         """
         for page in self.pages:
-            if len(page.layers[0].strokes) != 0:
+            if len(page.layers[0].obj) != 0:
                 return False
         return True
 
     def clear_pages(self):
-        """Deletes all strokes on all pages of this document"""
+        """Deletes all objects on all pages of this document"""
         for page in self.pages:
-            for stroke in page.layers[0].strokes[:]:
-                page.delete_stroke(stroke, send_to_network=False)
+            for obj in page.layers[0].obj[:]:
+                page.delete_obj(obj, send_to_network=False)
     
     def export_pdf(self, filename):
         """
@@ -90,8 +90,8 @@ class Document:
             
             page.pdf.render_for_printing(context)
             
-            for stroke in page.layers[0].strokes:
-                stroke.draw(context)
+            for obj in page.layers[0].obj:
+                obj.draw(context)
             
             surface.show_page() # aka "next page"
 
@@ -127,13 +127,13 @@ class Document:
             
             for layer in page.layers:
                 r += "<layer>\n"
-                for stroke in layer.strokes:
-                    red, g, b, opacity = stroke.color
-                    r += "<stroke tool=\"pen\" color=\"#{:02X}{:02X}{:02X}{:02X}\" width=\"{}\">\n".format(red, g, b, opacity, stroke.linewidth)
-                    first = stroke.coords[0]
-                    for coord in stroke.coords:
+                for obj in layer.obj:
+                    red, g, b, opacity = obj.color
+                    r += "<stroke tool=\"pen\" color=\"#{:02X}{:02X}{:02X}{:02X}\" width=\"{}\">\n".format(red, g, b, opacity, obj.linewidth)
+                    first = obj.coords[0]
+                    for coord in obj.coords:
                         r += " {} {}".format(coord[0], coord[1])
-                    if len(stroke.coords) < 2:
+                    if len(obj.coords) < 2:
                         r += " {} {}".format(first[0], first[1])
                     r += "\n</stroke>\n"
                 r += "</layer>\n"

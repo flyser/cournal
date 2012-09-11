@@ -19,9 +19,9 @@
 
 class Layer:
     """
-    A layer on a page, having a number and multiple strokes.
+    A layer on a page, having a number and multiple objects.
     """
-    def __init__(self, page, number, strokes=None):
+    def __init__(self, page, number, obj=None):
         """
         Constructor
         
@@ -30,11 +30,11 @@ class Layer:
         number -- Layer number
         
         Keyword arguments:
-        strokes -- List of Stroke objects (defaults to [])
+        obj -- List of objects (defaults to [])
         """
         self.number = number
         self.page = page
-        self.strokes = strokes
+        self.obj = obj
         
-        if self.strokes is None:
-            self.strokes = []
+        if self.obj is None:
+            self.obj = []

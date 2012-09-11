@@ -24,7 +24,7 @@ from gi.repository.GLib import GError
 
 import cournal
 from cournal.viewer.layout import Layout
-from cournal.viewer.tools import pen
+from cournal.viewer.tools import pen, rect, primary
 from cournal.document.document import Document
 from cournal.document import xojparser
 from cournal.network import network
@@ -91,9 +91,15 @@ class MainWindow(Gtk.Window):
         self.tool_zoom_out = builder.get_object("tool_zoom_out")
         self.tool_zoom_100 = builder.get_object("tool_zoom_100")
         self.tool_pen_color = builder.get_object("tool_pen_color")
+        self.tool_pen_bg_color = builder.get_object("tool_pen_bg_color")
         self.tool_pensize_small = builder.get_object("tool_pensize_small")
         self.tool_pensize_normal = builder.get_object("tool_pensize_normal")
         self.tool_pensize_big = builder.get_object("tool_pensize_big")
+        self.tool_pen = builder.get_object("tool_pen")
+        self.tool_rect = builder.get_object("tool_rect")
+        self.tool_line = builder.get_object("tool_line")
+        self.tool_circle = builder.get_object("tool_circle")
+        self.tool_fill = builder.get_object("tool_fill")
 
         self.menu_connect.set_sensitive(False)
         self.menu_save.set_sensitive(False)
@@ -106,9 +112,15 @@ class MainWindow(Gtk.Window):
         self.tool_zoom_out.set_sensitive(False)
         self.tool_zoom_100.set_sensitive(False)
         self.tool_pen_color.set_sensitive(False)
+        self.tool_pen_bg_color.set_sensitive(False)
         self.tool_pensize_small.set_sensitive(False)
         self.tool_pensize_normal.set_sensitive(False)
         self.tool_pensize_big.set_sensitive(False)
+        self.tool_pen.set_sensitive(False)
+        self.tool_rect.set_sensitive(False)
+        self.tool_line.set_sensitive(False)
+        self.tool_circle.set_sensitive(False)
+        self.tool_fill.set_sensitive(False)
         
         self.menu_open_xoj.connect("activate", self.run_open_xoj_dialog)
         self.menu_open_pdf.connect("activate", self.run_open_pdf_dialog)
@@ -125,10 +137,13 @@ class MainWindow(Gtk.Window):
         self.tool_zoom_in.connect("clicked", self.zoom_in)
         self.tool_zoom_out.connect("clicked", self.zoom_out)
         self.tool_zoom_100.connect("clicked", self.zoom_100)
-        self.tool_pen_color.connect("color-set", self.change_pen_color)
-        self.tool_pensize_small.connect("clicked", self.change_pen_size, LINEWIDTH_SMALL)
-        self.tool_pensize_normal.connect("clicked", self.change_pen_size, LINEWIDTH_NORMAL)
-        self.tool_pensize_big.connect("clicked", self.change_pen_size, LINEWIDTH_BIG)
+        self.tool_pen_color.connect("color-set", self.change_primary_color)
+        self.tool_pen_bg_color.connect("color-set", self.change_primary_bg_color)
+        self.tool_pensize_small.connect("clicked", self.change_primary_size, LINEWIDTH_SMALL)
+        self.tool_pensize_normal.connect("clicked", self.change_primary_size, LINEWIDTH_NORMAL)
+        self.tool_pensize_big.connect("clicked", self.change_primary_size, LINEWIDTH_BIG)
+        self.tool_pen.connect("clicked", self.set_tool)
+        self.tool_rect.connect("clicked", self.set_tool)
     
         # Statusbar:
         self.statusbar_icon = builder.get_object("image_statusbar")
@@ -159,6 +174,15 @@ class MainWindow(Gtk.Window):
             Gdk.ModifierType.CONTROL_MASK, Gtk.AccelFlags.VISIBLE)
         self.add_accel_group(self.accelgroup)
 
+        self.set_tool(pen)
+
+    def set_tool(self, tool):
+        if tool == self.tool_pen:
+            tool = pen
+        if tool == self.tool_rect:
+            tool = rect
+        primary.current_tool = tool
+    
     def connect_event(self):
         """
         Called by the networking layer when a connection is established.
@@ -223,11 +247,14 @@ class MainWindow(Gtk.Window):
         self.tool_zoom_out.set_sensitive(True)
         self.tool_zoom_100.set_sensitive(True)
         self.tool_pen_color.set_sensitive(True)
+        self.tool_pen_bg_color.set_sensitive(True)
         self.tool_pensize_small.set_sensitive(True)
         self.tool_pensize_normal.set_sensitive(True)
         self.tool_pensize_big.set_sensitive(True)
         self.statusbar_pagenum.set_sensitive(True)
         self.statusbar_pagenum_entry.set_sensitive(True)
+        self.tool_pen.set_sensitive(True)
+        self.tool_rect.set_sensitive(True)
         
         if self.document.num_of_pages > 1:
             self.button_next_page.set_sensitive(True)
@@ -475,9 +502,9 @@ class MainWindow(Gtk.Window):
         message.connect("response", lambda _,x: message.destroy())
         message.show()
         
-    def change_pen_color(self, colorbutton):
+    def change_primary_color(self, colorbutton):
         """
-        Change the pen to a user defined color.
+        Change the primary tool to a user defined color.
         
         Positional arguments:
         colorbutton -- The Gtk.ColorButton, that triggered this function
@@ -488,17 +515,32 @@ class MainWindow(Gtk.Window):
         blue = int(color.blue*255)
         opacity = int(color.alpha*255)
         
-        pen.color = red, green, blue, opacity        
-    
-    def change_pen_size(self, menuitem, linewidth):
+        primary.color = red, green, blue, opacity        
+
+    def change_primary_bg_color(self, colorbutton):
         """
-        Change the pen to a user defined line width.
+        Change the primary tool to a user defined color.
+        
+        Positional arguments:
+        colorbutton -- The Gtk.ColorButton, that triggered this function
+        """
+        color = colorbutton.get_rgba()
+        red = int(color.red*255)
+        green = int(color.green*255)
+        blue = int(color.blue*255)
+        opacity = int(color.alpha*255)
+        
+        primary.fillcolor = red, green, blue, opacity  
+    
+    def change_primary_size(self, menuitem, linewidth):
+        """
+        Change the primary tool to a user defined line width.
         
         Positional arguments:
         menuitem -- The menu item, that triggered this function
         linewidth -- New line width of the pen
         """
-        pen.linewidth = linewidth
+        primary.linewidth = linewidth
         
     def zoom_in(self, menuitem):
         """Magnify document"""

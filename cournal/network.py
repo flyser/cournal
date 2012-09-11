@@ -182,19 +182,19 @@ class _Network(pb.Referenceable):
         debug(2, _("Started editing {}").format(name))
         self.server_document = server_document
 
-    def remote_new_stroke(self, pagenum, stroke):
+    def remote_new_obj(self, pagenum, obj):
         """
-        Called by the server, to inform us about a new stroke
+        Called by the server, to inform us about a new object
         
         Positional arguments:
-        pagenum -- On which page shall we add the stroke
-        stroke -- The received Stroke object
+        pagenum -- On which page shall we add the object
+        obj -- The received object
         """
         self.data_received()
         if self.document and pagenum < len(self.document.pages):
-            self.document.pages[pagenum].new_stroke(stroke)
+            self.document.pages[pagenum].new_obj(obj)
     
-    def new_stroke(self, pagenum, stroke):
+    def new_obj(self, pagenum, obj):
         """
         Called by local code to send a new stroke to the server
 
@@ -203,31 +203,31 @@ class _Network(pb.Referenceable):
         stroke -- The Stroke object to send
         """
         if self.is_connected:
-            d = self.server_document.callRemote("new_stroke", pagenum, stroke)
+            d = self.server_document.callRemote("new_obj", pagenum, obj)
             d.addCallbacks(lambda x: self.data_received(), self.disconnect)
 
-    def remote_delete_stroke_with_coords(self, pagenum, coords):
+    def remote_delete_objects_with_coords(self, pagenum, coords):
         """
-        Called by the server, when a remote user deleted a stroke
+        Called by the server, when a remote user deleted a object
         
         Positional arguments:
-        pagenum -- On which page the stroke was deleted
-        coords -- The list of coordinates identifying a stroke
+        pagenum -- On which page the object was deleted
+        coords -- The list of coordinates identifying a object
         """
         self.data_received()
         if self.document and pagenum < len(self.document.pages):
-            self.document.pages[pagenum].delete_stroke_with_coords(coords)
+            self.document.pages[pagenum].delete_objects_with_coords(coords)
     
-    def delete_stroke_with_coords(self, pagenum, coords):
+    def delete_objects_with_coords(self, pagenum, coords):
         """
         Called by local code to send a delete command to the server
         
         Positional arguments:
-        pagenum -- On which page the stroke was deleted
-        coords -- The list of coordinates identifying the stroke
+        pagenum -- On which page the object was deleted
+        coords -- The list of coordinates identifying the object
         """
         if self.is_connected:
-            d = self.server_document.callRemote("delete_stroke_with_coords", pagenum, coords)
+            d = self.server_document.callRemote("delete_objects_with_coords", pagenum, coords)
             d.addCallback(lambda x,y: self.data_received(), self.disconnect)
     
     def ping(self):
