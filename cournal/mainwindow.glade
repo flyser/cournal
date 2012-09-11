@@ -150,6 +150,51 @@
           </object>
         </child>
         <child>
+          <object class="GtkMenuItem" id="menuitem2">
+            <property name="use_action_appearance">False</property>
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="label" translatable="yes">_Edit</property>
+            <property name="use_underline">True</property>
+            <child type="submenu">
+              <object class="GtkMenu" id="menu2">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <child>
+                  <object class="GtkImageMenuItem" id="imagemenuitem_undo">
+                    <property name="label">gtk-undo</property>
+                    <property name="use_action_appearance">False</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="use_underline">True</property>
+                    <property name="use_stock">True</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkImageMenuItem" id="imagemenuitem_redo">
+                    <property name="label">gtk-redo</property>
+                    <property name="use_action_appearance">False</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="use_underline">True</property>
+                    <property name="use_stock">True</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkImageMenuItem" id="imagemenuitem_search">
+                    <property name="label">gtk-find</property>
+                    <property name="use_action_appearance">False</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="use_underline">True</property>
+                    <property name="use_stock">True</property>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
           <object class="GtkMenuItem" id="menuitem4">
             <property name="use_action_appearance">False</property>
             <property name="visible">True</property>
@@ -358,6 +403,46 @@
           </packing>
         </child>
         <child>
+          <object class="GtkSeparatorToolItem" id="tool_seperator3">
+            <property name="use_action_appearance">False</property>
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="use_action_appearance">False</property>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="homogeneous">True</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkToolButton" id="tool_undo">
+            <property name="use_action_appearance">False</property>
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="use_action_appearance">False</property>
+            <property name="use_underline">True</property>
+            <property name="stock_id">gtk-undo</property>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="homogeneous">True</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkToolButton" id="tool_redo">
+            <property name="use_action_appearance">False</property>
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="use_action_appearance">False</property>
+            <property name="use_underline">True</property>
+            <property name="stock_id">gtk-redo</property>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="homogeneous">True</property>
+          </packing>
+        </child>
+        <child>
           <object class="GtkSeparatorToolItem" id="tool_seperator2">
             <property name="use_action_appearance">False</property>
             <property name="visible">True</property>
@@ -479,6 +564,62 @@
         <property name="expand">False</property>
         <property name="fill">True</property>
         <property name="position">2</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkBox" id="search_bar">
+       <property name="can_focus">False</property>
+        <property name="no_show_all">True</property>
+        <child>
+          <object class="GtkEntry" id="search_field">
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="invisible_char">●</property>
+            <property name="primary_icon_stock">gtk-find</property>
+          </object>
+          <packing>
+            <property name="expand">True</property>
+            <property name="fill">True</property>
+            <property name="position">0</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkButton" id="search_button">
+            <property name="label">gtk-find</property>
+            <property name="use_action_appearance">False</property>
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="receives_default">True</property>
+            <property name="use_action_appearance">False</property>
+            <property name="use_stock">True</property>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">1</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkButton" id="search_close">
+            <property name="label">gtk-close</property>
+            <property name="use_action_appearance">False</property>
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="receives_default">True</property>
+            <property name="use_action_appearance">False</property>
+            <property name="use_stock">True</property>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">2</property>
+          </packing>
+        </child>
+      </object>
+      <packing>
+        <property name="expand">False</property>
+        <property name="fill">True</property>
+        <property name="position">4</property>
       </packing>
     </child>
     <child>

@@ -21,6 +21,7 @@ import cairo
 from gi.repository import Gdk
 from cournal.viewer.tools import primary
 from cournal.document.rect import Rect
+from cournal.document import history
 
 _current_object = None
 _current_coords = None
@@ -105,6 +106,7 @@ def release(widget, event):
     #_current_coords.append([_last_point[0]*widget.page.width/actualWidth, _last_point[1]*widget.page.width/actualWidth])
     #widget.page.finish_stroke(_current_stroke)
     widget.page.new_obj(_current_object, send_to_network=True)
+    history.register_draw_stroke(_current_object, widget.page)
     
     _start_point = None
     _current_coords = None
