@@ -47,53 +47,53 @@ def init(menu_undo, menu_redo, tool_undo, tool_redo):
     _redo_list = []
     
 def undo(menuitem):
-    """Undo last action."""
-    action = _undo_list.pop()
-    add_redo_action(action)
-    action.undo()
+    """Undo last command."""
+    command = _undo_list.pop()
+    add_redo_command(command)
+    command.undo()
     if len(_undo_list) == 0:
         deactivate_undo()
 
 def redo(menuitem):
-    """Redo undone action."""
-    action = _redo_list.pop()
-    add_undo_action(action, clear_redo=False)
-    action.redo()
+    """Redo undone command."""
+    command = _redo_list.pop()
+    add_undo_command(command, clear_redo=False)
+    command.redo()
     if len(_redo_list) == 0:
         deactivate_redo()
 
 def register_draw_stroke(stroke, page):
     """
-    Register draw stroke action in history.
+    Register draw stroke command in history.
     
     Positional arguments:
     stroke -- drawn stroke
     page -- page stroke was drawn on
     """
-    add_undo_action(ActionDrawStroke(stroke, page))
+    add_undo_command(CommandDrawStroke(stroke, page))
 
 def register_delete_stroke(stroke, page):
     """
-    Register delete stroke action in history.
+    Register delete stroke command in history.
     
     Positional arguments:
     stroke -- deleted stroke
     page -- page stroke was deleted from
     """
-    add_undo_action(ActionDeleteStroke(stroke, page))
+    add_undo_command(CommandDeleteStroke(stroke, page))
 
-def add_undo_action(action, clear_redo=True):
+def add_undo_command(command, clear_redo=True):
     """
-    Add action to undo history
+    Add command to undo history
     
     Positional arguments:
-    action -- action to be registered
+    command -- command to be registered
     
     Keyword arguments:
     clear_redo -- clear redo history
     """
     global _redo_list
-    _undo_list.append(action)
+    _undo_list.append(command)
     if len(_undo_list) > 20:
         _undo_list.pop(0)
     if len(_undo_list) == 1:
@@ -102,14 +102,14 @@ def add_undo_action(action, clear_redo=True):
         _redo_list = []
         deactivate_redo()
 
-def add_redo_action(action):
+def add_redo_command(command):
     """
-    Add action to redo history
+    Add command to redo history
     
     Positional arguments:
-    action -- action to be registered
+    command -- command to be registered
     """
-    _redo_list.append(action)
+    _redo_list.append(command)
     if len(_redo_list) == 1:
         activate_redo()
 
@@ -133,8 +133,8 @@ def activate_redo():
     _menu_redo.set_sensitive(True)
     _tool_redo.set_sensitive(True)
 
-class ActionDrawStroke:
-    """Draw stroke action."""
+class CommandDrawStroke:
+    """Draw stroke command."""
     def __init__(self, stroke, page):
         self.stroke = stroke
         self.page = page
@@ -145,8 +145,8 @@ class ActionDrawStroke:
     def redo(self):
         self.page.new_stroke(self.stroke, send_to_network=True)
 
-class ActionDeleteStroke:
-    """Delete stroke action."""
+class CommandDeleteStroke:
+    """Delete stroke command."""
     def __init__(self, stroke, page):
         self.stroke = stroke
         self.page = page
