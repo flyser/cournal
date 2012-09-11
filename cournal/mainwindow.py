@@ -176,6 +176,14 @@ class MainWindow(Gtk.Window):
             Gdk.ModifierType.CONTROL_MASK, Gtk.AccelFlags.VISIBLE)
         self.tool_connect.add_accelerator("clicked", self.accelgroup, ord('n'),
             Gdk.ModifierType.CONTROL_MASK, Gtk.AccelFlags.VISIBLE)
+        self.tool_undo.add_accelerator("clicked", self.accelgroup, ord('z'),
+            Gdk.ModifierType.CONTROL_MASK, Gtk.AccelFlags.VISIBLE)
+        self.tool_redo.add_accelerator("clicked", self.accelgroup, ord('y'),
+            Gdk.ModifierType.CONTROL_MASK, Gtk.AccelFlags.VISIBLE)
+        self.tool_redo.add_accelerator("clicked", self.accelgroup, ord('z'),
+            Gdk.ModifierType.CONTROL_MASK | Gdk.ModifierType.SHIFT_MASK, Gtk.AccelFlags.VISIBLE)
+        self.menu_search.add_accelerator("activate", self.accelgroup, ord('f'),
+            Gdk.ModifierType.CONTROL_MASK, Gtk.AccelFlags.VISIBLE)
         self.add_accel_group(self.accelgroup)
 
         # Search bar:
