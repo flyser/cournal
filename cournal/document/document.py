@@ -25,6 +25,7 @@ import cairo
 
 from cournal.document.page import Page
 from cournal.document import history
+from cournal.document import search
 
 class Document:
     """
@@ -41,6 +42,7 @@ class Document:
         self.pdfname = abspath(pdfname)
         uri = GLib.filename_to_uri(self.pdfname, None)
         self.pdf = Poppler.Document.new_from_file(uri, None)
+        search.set_pdf(self.pdf)
         self.width = 0
         self.height = 0
         self.pages = []
