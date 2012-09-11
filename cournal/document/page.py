@@ -51,25 +51,25 @@ class Page:
         self.width, self.height = pdf.get_size()
         self.search_marker = None
     
-    def new_obj(self, obj, send_to_network=False):
+    def new_item(self, item, send_to_network=False):
         """
-        Add a new object to this page and possibly send it to the server, if
+        Add a new item to this page and possibly send it to the server, if
         connected.
         
         Positional arguments:
-        obj -- The object, that will be added to this page
+        item -- The item, that will be added to this page
         
         Keyword arguments:
-        send_to_network -- Set True, to send the object to the server
+        send_to_network -- Set True, to send the item to the server
                            (defaults to False)
         """
-        self.layers[0].obj.append(obj)
-        obj.calculate_bounding_box()
-        obj.layer = self.layers[0]
+        self.layers[0].items.append(item)
+        item.calculate_bounding_box()
+        item.layer = self.layers[0]
         if self.widget:
-            self.widget.draw_remote_obj(obj)
+            self.widget.draw_remote_item(item)
         if send_to_network:
-            network.new_obj(self.number, obj)
+            network.new_item(self.number, item)
 
     def new_unfinished_stroke(self, color, linewidth):
         """
@@ -91,45 +91,45 @@ class Page:
         stroke -- The Stroke object, that was finished
         """
         #TODO: rerender that part of the screen.
-        history.register_draw_stroke(stroke, self)
+        history.register_draw_item(stroke, self)
         stroke.calculate_bounding_box()
-        network.new_obj(self.number, stroke)
+        network.new_item(self.number, stroke)
 
-    def delete_objects_with_coords(self, coords):
+    def delete_item_with_coords(self, coords):
         """
-        Delete all objects, which have exactly the same coordinates as given.
+        Delete all items, which have exactly the same coordinates as given.
         
         Positional arguments
         coords -- The list of coordinates
         """
-        for obj in self.layers[0].obj[:]:
-            if obj.coords == coords:
-                self.delete_obj(obj, send_to_network=False)
+        for item in self.layers[0].items[:]:
+            if item.coords == coords:
+                self.delete_item(item, send_to_network=False)
     
-    def delete_obj(self, obj, send_to_network=False, register_in_history=True):
+    def delete_item(self, item, send_to_network=False, register_in_history=True):
         """
-        Delete a object on this page and possibly send this request to the server,
+        Delete a item on this page and possibly send this request to the server,
         if connected.
         
         Positional arguments:
-        obj -- The object, that will be deleted.
+        item -- The item, that will be deleted.
         
         Keyword arguments:
         send_to_network -- Set to True, to send the request for deletion the server
                            (defaults to False)
         register_in_history -- Make this command undoable
         """
-        self.layers[0].obj.remove(obj)
+        self.layers[0].items.remove(item)
         if self.widget:
-            self.widget.delete_remote_obj(obj)
+            self.widget.delete_remote_item(item)
         if send_to_network:
-            network.delete_objects_with_coords(self.number, obj.coords)
+            network.delete_item_with_coords(self.number, item.coords)
             if register_in_history:
-                history.register_delete_stroke(obj, self)
+                history.register_delete_item(item, self)
     
-    def get_objects_near(self, x, y, radius):
+    def get_items_near(self, x, y, radius):
         """
-        Finds objects near a given point
+        Finds items near a given point
         
         Positional arguments:
         x -- x coordinate of the given point
@@ -138,14 +138,15 @@ class Page:
         
         Return value: Generator for a list of all objects, which are near that point
         """
-        for obj in self.layers[0].obj[:]:
-            if obj.in_bounds(x, y):
-                if isinstance(obj, Stroke):
-                    for coord in obj.coords:
+        #TODO: Create tool dependent delete if coord match function
+        for item in self.layers[0].items[:]:
+            if item.in_bounds(x, y):
+                if isinstance(item, Stroke):
+                    for coord in item.coords:
                         s_x = coord[0]
                         s_y = coord[1]
                         if ((s_x-x)**2 + (s_y-y)**2) < radius**2:
-                            yield obj
+                            yield item
                             break
-                elif isinstance(obj, Rect):
-                     yield obj
+                elif isinstance(item, Rect):
+                     yield item

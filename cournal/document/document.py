@@ -26,6 +26,7 @@ import cairo
 from cournal.document.page import Page
 from cournal.document import history
 from cournal.document import search
+from cournal.document.stroke import Stroke
 
 class Document:
     """
@@ -60,19 +61,19 @@ class Document:
         
     def is_empty(self):
         """
-        Returns True, if no page of this document has a object on it.
+        Returns True, if no page of this document has a item on it.
         Otherwise False
         """
         for page in self.pages:
-            if len(page.layers[0].obj) != 0:
+            if len(page.layers[0].items) != 0:
                 return False
         return True
 
     def clear_pages(self):
-        """Deletes all objects on all pages of this document"""
+        """Deletes all item on all pages of this document"""
         for page in self.pages:
-            for obj in page.layers[0].obj[:]:
-                page.delete_obj(obj, send_to_network=False)
+            for item in page.layers[0].items[:]:
+                page.delete_item(item, send_to_network=False)
     
     def export_pdf(self, filename):
         """
@@ -94,8 +95,8 @@ class Document:
             
             page.pdf.render_for_printing(context)
             
-            for obj in page.layers[0].obj:
-                obj.draw(context)
+            for item in page.layers[0].items:
+                item.draw(context)
             
             surface.show_page() # aka "next page"
 
@@ -131,15 +132,17 @@ class Document:
             
             for layer in page.layers:
                 r += "<layer>\n"
-                for obj in layer.obj:
-                    red, g, b, opacity = obj.color
-                    r += "<stroke tool=\"pen\" color=\"#{:02X}{:02X}{:02X}{:02X}\" width=\"{}\">\n".format(red, g, b, opacity, obj.linewidth)
-                    first = obj.coords[0]
-                    for coord in obj.coords:
-                        r += " {} {}".format(coord[0], coord[1])
-                    if len(obj.coords) < 2:
-                        r += " {} {}".format(first[0], first[1])
-                    r += "\n</stroke>\n"
+                for item in layer.items:
+                    #TODO: Parse other Items
+                    if isinstance(item, Stroke):
+                        red, g, b, opacity = item.color
+                        r += "<stroke tool=\"pen\" color=\"#{:02X}{:02X}{:02X}{:02X}\" width=\"{}\">\n".format(red, g, b, opacity, item.linewidth)
+                        first = item.coords[0]
+                        for coord in item.coords:
+                            r += " {} {}".format(coord[0], coord[1])
+                        if len(item.coords) < 2:
+                            r += " {} {}".format(first[0], first[1])
+                        r += "\n</stroke>\n"
                 r += "</layer>\n"
                 r += "</page>\n"
         r += "</xournal>"

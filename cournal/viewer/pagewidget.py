@@ -132,8 +132,8 @@ class PageWidget(Gtk.DrawingArea):
             self.page.pdf.render(bb_ctx)
             bb_ctx.restore()
             
-            for obj in self.page.layers[0].obj:
-                obj.draw(bb_ctx, scaling)
+            for item in self.page.layers[0].items:
+                item.draw(bb_ctx, scaling)
             
             # Highlight search result
             if self.page.search_marker:
@@ -187,20 +187,20 @@ class PageWidget(Gtk.DrawingArea):
             self.active_tool.release(self, event)
             self.active_tool = None
     
-    def draw_remote_obj(self, obj):
+    def draw_remote_item(self, item):
         """
-        Draw a single object on the widget.
-        Meant to be called by networking code, when a remote user drew a object.
+        Draw a single item on the widget.
+        Meant to be called by networking code, when a remote user drew a item.
         
         Positional arguments:
-        obj -- The object, which is to be drawn.
+        item -- The item, which is to be drawn.
         """
         if self.backbuffer:
             scaling = self.widget_width / self.page.width
             context = cairo.Context(self.backbuffer)
             
             context.scale(scaling, scaling)
-            x, y, x2, y2 = obj.draw(context, scaling)
+            x, y, x2, y2 = item.draw(context, scaling)
             
             update_rect = Gdk.Rectangle()
             update_rect.x = x-2
@@ -210,13 +210,13 @@ class PageWidget(Gtk.DrawingArea):
             if self.get_window():
                 self.get_window().invalidate_rect(update_rect, False)
     
-    def delete_remote_obj(self, obj):
+    def delete_remote_item(self, item):
         """
-        Rerender the part of the widget, where a object was deleted
-        Meant do be called by networking code, when a remote user deleted a object.
+        Rerender the part of the widget, where a item was deleted
+        Meant do be called by networking code, when a remote user deleted a item.
         
         Positional arguments:
-        obj -- The object, which was deleted.
+        item -- The item, which was deleted.
         """
         if self.backbuffer:
             self.backbuffer_valid = False

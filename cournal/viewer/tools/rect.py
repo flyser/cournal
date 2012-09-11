@@ -23,32 +23,29 @@ from cournal.viewer.tools import primary
 from cournal.document.rect import Rect
 from cournal.document import history
 
-_current_object = None
+_current_item = None
 _current_coords = None
 _start_point = None
 
 def press(widget, event):
     """
-    Mouse down event. Draw a point on the pointer location.
+    Mouse down event. Set the start point for the rect
     
     Positional arguments:
     widget -- The PageWidget, which triggered the event
     event -- The Gdk.Event, which stores the location of the pointer
     """
-    global _start_point, _current_coords, _current_object
+    global _start_point, _current_coords, _current_item
     
     actualWidth = widget.get_allocation().width
     
-    _current_object = Rect(widget.page.layers[0], primary.color, primary.fillcolor, primary.linewidth, [])
-    #_current_stroke = widget.page.new_unfinished_stroke(color=primary.color, linewidth=primary.linewidth)
-    _current_coords = _current_object.coords
+    _current_item = Rect(widget.page.layers[0], primary.color, primary.fillcolor, primary.linewidth, [])
+    _current_coords = _current_item.coords
 
     _start_point = [event.x, event.y]
     _current_coords.append(event.x*widget.page.width/actualWidth)
     _current_coords.append(event.y*widget.page.width/actualWidth)
     
-    #widget.page.layers[0].obj.append(_current_stroke)
-
 def motion(widget, event):
     pass
 
@@ -61,7 +58,7 @@ def release(widget, event):
     
     Positional arguments: see press()
     """
-    global _start_point, _current_coords, _current_object
+    global _start_point, _current_coords, _current_item
     r, g, b, opacity = primary.fillcolor
     actualWidth = widget.get_allocation().width
 
@@ -105,9 +102,9 @@ def release(widget, event):
     #_current_coords.append([event.x*widget.page.width/actualWidth, _last_point[1]*widget.page.width/actualWidth])
     #_current_coords.append([_last_point[0]*widget.page.width/actualWidth, _last_point[1]*widget.page.width/actualWidth])
     #widget.page.finish_stroke(_current_stroke)
-    widget.page.new_obj(_current_object, send_to_network=True)
-    history.register_draw_stroke(_current_object, widget.page)
+    widget.page.new_item(_current_item, send_to_network=True)
+    history.register_draw_item(_current_item, widget.page)
     
     _start_point = None
     _current_coords = None
-    _current_object = None
+    _current_item = None

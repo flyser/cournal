@@ -62,25 +62,25 @@ def redo(menuitem):
     if len(_redo_list) == 0:
         deactivate_redo()
 
-def register_draw_stroke(stroke, page):
+def register_draw_item(item, page):
     """
-    Register draw stroke command in history.
+    Register draw item command in history.
     
     Positional arguments:
-    stroke -- drawn stroke
-    page -- page stroke was drawn on
+    item -- drawn item
+    page -- page item was drawn on
     """
-    add_undo_command(CommandDrawStroke(stroke, page))
+    add_undo_command(CommandDrawItem(item, page))
 
-def register_delete_stroke(stroke, page):
+def register_delete_item(item, page):
     """
-    Register delete stroke command in history.
+    Register delete item command in history.
     
     Positional arguments:
-    stroke -- deleted stroke
-    page -- page stroke was deleted from
+    item -- deleted item
+    page -- page item was deleted from
     """
-    add_undo_command(CommandDeleteStroke(stroke, page))
+    add_undo_command(CommandDeleteItem(item, page))
 
 def add_undo_command(command, clear_redo=True):
     """
@@ -133,26 +133,26 @@ def activate_redo():
     _menu_redo.set_sensitive(True)
     _tool_redo.set_sensitive(True)
 
-class CommandDrawStroke:
-    """Draw stroke command."""
-    def __init__(self, stroke, page):
-        self.stroke = stroke
+class CommandDrawItem:
+    """Draw item command."""
+    def __init__(self, item, page):
+        self.item = item
         self.page = page
     
     def undo(self):
-        self.page.delete_obj(self.stroke, send_to_network=True, register_in_history=False)
+        self.page.delete_item(self.item, send_to_network=True, register_in_history=False)
 
     def redo(self):
-        self.page.new_obj(self.stroke, send_to_network=True)
+        self.page.new_item(self.item, send_to_network=True)
 
-class CommandDeleteStroke:
-    """Delete stroke command."""
-    def __init__(self, stroke, page):
-        self.stroke = stroke
+class CommandDeleteItem:
+    """Delete item command."""
+    def __init__(self, item, page):
+        self.item = item
         self.page = page
     
     def undo(self):
-        self.page.new_obj(self.stroke, send_to_network=True)
+        self.page.new_item(self.item, send_to_network=True)
 
     def redo(self):
-        self.page.delete_obj(self.stroke, send_to_network=True, register_in_history=False)
+        self.page.delete_item(self.item, send_to_network=True, register_in_history=False)

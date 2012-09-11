@@ -46,7 +46,7 @@ def press(widget, event):
     _last_point = [event.x, event.y]
     motion(widget, event)
     
-    widget.page.layers[0].obj.append(_current_stroke)
+    widget.page.layers[0].items.append(_current_stroke)
 
 def motion(widget, event):
     """

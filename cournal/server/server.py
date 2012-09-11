@@ -59,7 +59,7 @@ class Page:
     A page in a document, having multiple objects.
     """
     def __init__(self):
-        self.obj = []
+        self.items = []
 
 class CournalServer:
     """
@@ -334,7 +334,7 @@ class Document(pb.Viewable):
     
     def add_user(self, user):
         """
-        Called, when a user starts editing this document. Send him all objects
+        Called, when a user starts editing this document. Send him all items
         that are currently in the document.
         
         Positional arguments:
@@ -342,8 +342,8 @@ class Document(pb.Viewable):
         """
         self.users.append(user)
         for pagenum in range(len(self.pages)):
-            for obj in self.pages[pagenum].obj:
-                user.call_remote("new_obj", pagenum, obj)
+            for item in self.pages[pagenum].items:
+                user.call_remote("new_item", pagenum, item)
     
     def remove_user(self, user):
         """
@@ -369,43 +369,43 @@ class Document(pb.Viewable):
             if user != except_user:
                 user.call_remote(method, *args)
     
-    def view_new_obj(self, from_user, pagenum, obj):
+    def view_new_item(self, from_user, pagenum, item):
         """
-        Broadcast the object received from one to all other clients.
-        Called by clients to add a new obj.
+        Broadcast the item received from one to all other clients.
+        Called by clients to add a new item.
         
         Positional arguments:
-        from_user -- The User object of the initiiating user.
-        pagenum -- Page number the new object.
-        obj -- The new object
+        from_user -- The User item of the initiiating user.
+        pagenum -- Page number the new item.
+        item -- The new item
         """
         self.has_unsaved_changes = True
         
         while len(self.pages) <= pagenum:
             self.pages.append(Page())
-        self.pages[pagenum].obj.append(obj)
+        self.pages[pagenum].items.append(item)
         
-        debug(3, _("New object on page {}").format(pagenum + 1))
-        self.broadcast("new_obj", pagenum, obj, except_user=from_user)
+        debug(3, _("New item on page {}").format(pagenum + 1))
+        self.broadcast("new_item", pagenum, item, except_user=from_user)
         
-    def view_delete_objects_with_coords(self, from_user, pagenum, coords):
+    def view_delete_item_with_coords(self, from_user, pagenum, coords):
         """
-        Broadcast the delete objects command from one to all other clients.
-        Called by Clients to delete a object.
+        Broadcast the delete items command from one to all other clients.
+        Called by Clients to delete a item.
         
         Positional arguments:
-        from_user -- The User object of the initiiating user.
-        pagenum -- Page number the deleted object
-        coords -- The list coordinates of the deleted object
+        from_user -- The User item of the initiiating user.
+        pagenum -- Page number the deleted item
+        coords -- The list coordinates of the deleted item
         """
         self.has_unsaved_changes = True
         
-        for obj in self.pages[pagenum].obj:
-            if obj.coords == coords:
-                self.pages[pagenum].obj.remove(obj)
+        for item in self.pages[pagenum].items:
+            if item.coords == coords:
+                self.pages[pagenum].items.remove(item)
                 
-                debug(3, _("Deleted object on page {}").format(pagenum + 1))
-                self.broadcast("delete_objects_with_coords", pagenum, coords, except_user=from_user)
+                debug(3, _("Deleted item on page {}").format(pagenum + 1))
+                self.broadcast("delete_item_with_coords", pagenum, coords, except_user=from_user)
 
 class CmdlineParser():
     """

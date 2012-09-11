@@ -19,9 +19,9 @@
 
 class Layer:
     """
-    A layer on a page, having a number and multiple objects.
+    A layer on a page, having a number and multiple item.
     """
-    def __init__(self, page, number, obj=None):
+    def __init__(self, page, number, items=None):
         """
         Constructor
         
@@ -30,11 +30,11 @@ class Layer:
         number -- Layer number
         
         Keyword arguments:
-        obj -- List of objects (defaults to [])
+        item -- List of items (defaults to [])
         """
         self.number = number
         self.page = page
-        self.obj = obj
+        self.items = items
         
-        if self.obj is None:
-            self.obj = []
+        if self.items is None:
+            self.items = []
