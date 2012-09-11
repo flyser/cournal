@@ -163,6 +163,9 @@ class MainWindow(Gtk.Window):
         self.tool_pensize_big.connect("clicked", self.change_primary_size, LINEWIDTH_BIG)
         self.tool_pen.connect("clicked", self.set_tool)
         self.tool_rect.connect("clicked", self.set_tool)
+        self.tool_line.connect("clicked", self.set_tool)
+        self.tool_circle.connect("clicked", self.set_tool)
+        self.tool_fill.connect("clicked", self.set_fill)
     
         # Statusbar:
         self.statusbar_icon = builder.get_object("image_statusbar")
@@ -215,12 +218,32 @@ class MainWindow(Gtk.Window):
         self.search_button.connect("clicked", self.search_document)
 
     def set_tool(self, tool):
+        """
+        Set the tool to be used
+        
+        Positional arguments:
+        tool -- clicked tool button
+        """
         if tool == self.tool_pen:
             tool = pen
-        if tool == self.tool_rect:
+            self.tool_fill.set_sensitive(False)
+        elif tool == self.tool_rect:
             tool = rect
+            self.tool_fill.set_sensitive(True)
         primary.current_tool = tool
         
+    def set_fill(self, tool):
+        """
+        Set the shape filling method
+        
+        Positional arguments:
+        tool -- fill button
+        """
+        if tool.get_active():
+            primary.fill = True
+        else:
+            primary.fill = False
+    
     def connect_event(self):
         """
         Called by the networking layer when a connection is established.
@@ -349,8 +372,10 @@ class MainWindow(Gtk.Window):
         self.statusbar_pagenum_entry.set_sensitive(True)
         self.tool_pen.set_sensitive(True)
         self.tool_rect.set_sensitive(True)
+        #self.tool_line.set_sensitive(True)
+        #self.tool_circle.set_sensitive(True)
         self.menu_search.set_sensitive(True)
-        
+       
         if self.document.num_of_pages > 1:
             self.button_next_page.set_sensitive(True)
         

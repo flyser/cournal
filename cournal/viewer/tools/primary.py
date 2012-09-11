@@ -28,3 +28,4 @@ linewidth = 1.5
 color = (0,0,128,255)
 fillcolor = (255,128,0,255)
 current_tool = None
+fill = True

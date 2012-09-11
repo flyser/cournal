@@ -22,7 +22,7 @@ import cairo
 from twisted.spread import pb
 
 class Rect(pb.Copyable, pb.RemoteCopy):
-    def __init__(self, layer, color, fill_color, linewidth, coords=None):
+    def __init__(self, layer, color, fill, fill_color, linewidth, coords=None):
         """
         Constructor
         
@@ -37,6 +37,7 @@ class Rect(pb.Copyable, pb.RemoteCopy):
         self.layer = layer
         self.color = color
         self.fill_color = fill_color
+        self.fill = fill
         self.linewidth = linewidth
         self.coords = coords
         if self.coords is None:
@@ -103,13 +104,14 @@ class Rect(pb.Copyable, pb.RemoteCopy):
         context.set_line_cap(cairo.LINE_CAP_ROUND)
         context.set_line_width(self.linewidth)
 
-        # Fill rect
-        context.move_to(self.coords[0], self.coords[1])
-        context.line_to(self.coords[0], self.coords[3])
-        context.line_to(self.coords[2], self.coords[3])
-        context.line_to(self.coords[2], self.coords[1])
-        context.close_path()
-        context.fill()
+        if self.fill:
+            # Fill rect
+            context.move_to(self.coords[0], self.coords[1])
+            context.line_to(self.coords[0], self.coords[3])
+            context.line_to(self.coords[2], self.coords[3])
+            context.line_to(self.coords[2], self.coords[1])
+            context.close_path()
+            context.fill()
         
         # Draw border
         context.move_to(self.coords[0], self.coords[1])
