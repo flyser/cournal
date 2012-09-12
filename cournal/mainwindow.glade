@@ -1,25 +1,121 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
   <!-- interface-requires gtk+ 3.0 -->
-  <object class="GtkAccelGroup" id="accelgroup1"/>
-  <object class="GtkImage" id="image1">
-    <property name="visible">True</property>
-    <property name="can_focus">False</property>
-    <property name="stock">gtk-convert</property>
+  <object class="GtkAccelGroup" id="accelgroup"/>
+  <object class="GtkActionGroup" id="actiongroup_always_sensitive">
+    <property name="accel_group">accelgroup</property>
+    <child>
+      <object class="GtkAction" id="action_open_xoj">
+        <property name="stock_id">gtk-open</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkAction" id="action_open_pdf">
+        <property name="label" translatable="yes">Annotate PDF</property>
+        <property name="stock_id">gtk-edit</property>
+      </object>
+      <accelerator key="o" modifiers="GDK_CONTROL_MASK"/>
+    </child>
+    <child>
+      <object class="GtkAction" id="action_quit">
+        <property name="stock_id">gtk-quit</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkAction" id="action_about">
+        <property name="stock_id">gtk-about</property>
+      </object>
+    </child>
   </object>
-  <object class="GtkImage" id="image2">
-    <property name="visible">True</property>
-    <property name="can_focus">False</property>
-    <property name="stock">gtk-edit</property>
-  </object>
-  <object class="GtkImage" id="image3">
-    <property name="visible">True</property>
-    <property name="can_focus">False</property>
-    <property name="stock">gtk-connect</property>
-  </object>
-  <object class="GtkImage" id="image4">
-    <property name="visible">True</property>
-    <property name="can_focus">False</property>
+  <object class="GtkActionGroup" id="actiongroup_document_specific">
+    <property name="accel_group">accelgroup</property>
+    <child>
+      <object class="GtkAction" id="action_save">
+        <property name="stock_id">gtk-save</property>
+      </object>
+      <accelerator key="s" modifiers="GDK_CONTROL_MASK"/>
+    </child>
+    <child>
+      <object class="GtkAction" id="action_save_as">
+        <property name="stock_id">gtk-save-as</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkAction" id="action_export_pdf">
+        <property name="label" translatable="yes">Export PDF</property>
+        <property name="stock_id">gtk-convert</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkAction" id="action_import_xoj">
+        <property name="label" translatable="yes">Import</property>
+        <property name="stock_id"> </property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkAction" id="action_undo">
+        <property name="stock_id">gtk-undo</property>
+      </object>
+      <accelerator key="z" modifiers="GDK_CONTROL_MASK"/>
+    </child>
+    <child>
+      <object class="GtkAction" id="action_redo">
+        <property name="stock_id">gtk-redo</property>
+      </object>
+      <accelerator key="z" modifiers="GDK_SHIFT_MASK | GDK_CONTROL_MASK"/>
+    </child>
+    <child>
+      <object class="GtkAction" id="action_search">
+        <property name="stock_id">gtk-find</property>
+      </object>
+      <accelerator key="f" modifiers="GDK_CONTROL_MASK"/>
+    </child>
+    <child>
+      <object class="GtkAction" id="action_zoom_in">
+        <property name="stock_id">gtk-zoom-in</property>
+      </object>
+      <accelerator key="plus" modifiers="GDK_CONTROL_MASK"/>
+    </child>
+    <child>
+      <object class="GtkAction" id="action_zoom_out">
+        <property name="stock_id">gtk-zoom-out</property>
+      </object>
+      <accelerator key="minus" modifiers="GDK_CONTROL_MASK"/>
+    </child>
+    <child>
+      <object class="GtkAction" id="action_zoom_fit">
+        <property name="stock_id">gtk-zoom-fit</property>
+      </object>
+      <accelerator key="0" modifiers="GDK_CONTROL_MASK"/>
+    </child>
+    <child>
+      <object class="GtkRadioAction" id="action_pensize_normal">
+        <property name="label" translatable="yes">1.5</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkRadioAction" id="action_pensize_small">
+        <property name="label" translatable="yes">0.7</property>
+        <property name="group">action_pensize_normal</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkRadioAction" id="action_pensize_big">
+        <property name="label" translatable="yes">8.0</property>
+        <property name="value">3</property>
+        <property name="group">action_pensize_normal</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkAction" id="action_pen_color"/>
+    </child>
+    <child>
+      <object class="GtkAction" id="action_connect">
+        <property name="label" translatable="yes">Connect to Server</property>
+        <property name="stock_id">gtk-connect</property>
+      </object>
+      <accelerator key="n" modifiers="GDK_CONTROL_MASK"/>
+    </child>
   </object>
   <object class="GtkImage" id="image_btn_next">
     <property name="visible">True</property>
@@ -52,7 +148,7 @@
                 <property name="can_focus">False</property>
                 <child>
                   <object class="GtkImageMenuItem" id="imagemenuitem_open_xoj">
-                    <property name="label">gtk-open</property>
+                    <property name="related_action">action_open_xoj</property>
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="use_underline">True</property>
@@ -61,25 +157,25 @@
                 </child>
                 <child>
                   <object class="GtkImageMenuItem" id="imagemenuitem_open_pdf">
-                    <property name="label" translatable="yes">Annotate PDF</property>
+                    <property name="related_action">action_open_pdf</property>
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
-                    <property name="image">image2</property>
-                    <property name="use_stock">False</property>
+                    <property name="use_underline">True</property>
+                    <property name="use_stock">True</property>
                   </object>
                 </child>
                 <child>
                   <object class="GtkImageMenuItem" id="imagemenuitem_connect">
-                    <property name="label" translatable="yes">Connect to Server</property>
+                    <property name="related_action">action_connect</property>
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
-                    <property name="image">image3</property>
-                    <property name="use_stock">False</property>
+                    <property name="use_underline">True</property>
+                    <property name="use_stock">True</property>
                   </object>
                 </child>
                 <child>
                   <object class="GtkImageMenuItem" id="imagemenuitem_save">
-                    <property name="label">gtk-save</property>
+                    <property name="related_action">action_save</property>
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="use_underline">True</property>
@@ -88,7 +184,7 @@
                 </child>
                 <child>
                   <object class="GtkImageMenuItem" id="imagemenuitem_save_as">
-                    <property name="label">gtk-save-as</property>
+                    <property name="related_action">action_save_as</property>
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="use_underline">True</property>
@@ -103,20 +199,19 @@
                 </child>
                 <child>
                   <object class="GtkImageMenuItem" id="imagemenuitem_export_pdf">
-                    <property name="label" translatable="yes">Export PDF</property>
+                    <property name="related_action">action_export_pdf</property>
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
-                    <property name="image">image1</property>
-                    <property name="use_stock">False</property>
+                    <property name="use_underline">True</property>
+                    <property name="use_stock">True</property>
                   </object>
                 </child>
                 <child>
-                  <object class="GtkImageMenuItem" id="imagemenuitem_import_xoj">
-                    <property name="label" translatable="yes">Import</property>
+                  <object class="GtkMenuItem" id="imagemenuitem_import_xoj">
+                    <property name="related_action">action_import_xoj</property>
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
-                    <property name="image">image4</property>
-                    <property name="use_stock">False</property>
+                    <property name="use_underline">True</property>
                   </object>
                 </child>
                 <child>
@@ -127,7 +222,7 @@
                 </child>
                 <child>
                   <object class="GtkImageMenuItem" id="imagemenuitem_quit">
-                    <property name="label">gtk-quit</property>
+                    <property name="related_action">action_quit</property>
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="use_underline">True</property>
@@ -150,7 +245,7 @@
                 <property name="can_focus">False</property>
                 <child>
                   <object class="GtkImageMenuItem" id="imagemenuitem_undo">
-                    <property name="label">gtk-undo</property>
+                    <property name="related_action">action_undo</property>
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="use_underline">True</property>
@@ -159,7 +254,7 @@
                 </child>
                 <child>
                   <object class="GtkImageMenuItem" id="imagemenuitem_redo">
-                    <property name="label">gtk-redo</property>
+                    <property name="related_action">action_redo</property>
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="use_underline">True</property>
@@ -168,7 +263,7 @@
                 </child>
                 <child>
                   <object class="GtkImageMenuItem" id="imagemenuitem_search">
-                    <property name="label">gtk-find</property>
+                    <property name="related_action">action_search</property>
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="use_underline">True</property>
@@ -191,7 +286,8 @@
                 <property name="can_focus">False</property>
                 <child>
                   <object class="GtkImageMenuItem" id="imagemenuitem_about">
-                    <property name="label">gtk-about</property>
+                    <property name="related_action">action_about</property>
+                    <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="use_underline">True</property>
                     <property name="use_stock">True</property>
@@ -215,10 +311,10 @@
         <property name="toolbar_style">icons</property>
         <child>
           <object class="GtkToolButton" id="tool_open_pdf">
+            <property name="related_action">action_open_pdf</property>
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="tooltip_text" translatable="yes">Annotate PDF</property>
-            <property name="stock_id">gtk-edit</property>
           </object>
           <packing>
             <property name="expand">False</property>
@@ -227,11 +323,11 @@
         </child>
         <child>
           <object class="GtkToolButton" id="tool_connect">
+            <property name="related_action">action_connect</property>
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="has_tooltip">True</property>
             <property name="tooltip_text" translatable="yes">Connect to server</property>
-            <property name="stock_id">gtk-connect</property>
           </object>
           <packing>
             <property name="expand">False</property>
@@ -240,11 +336,11 @@
         </child>
         <child>
           <object class="GtkToolButton" id="tool_save">
+            <property name="related_action">action_save</property>
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="tooltip_text" translatable="yes">Save current document</property>
             <property name="use_underline">True</property>
-            <property name="stock_id">gtk-save</property>
           </object>
           <packing>
             <property name="expand">False</property>
@@ -263,10 +359,10 @@
         </child>
         <child>
           <object class="GtkToolButton" id="tool_zoom_in">
+            <property name="related_action">action_zoom_in</property>
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="use_underline">True</property>
-            <property name="stock_id">gtk-zoom-in</property>
           </object>
           <packing>
             <property name="expand">False</property>
@@ -275,10 +371,10 @@
         </child>
         <child>
           <object class="GtkToolButton" id="tool_zoom_out">
+            <property name="related_action">action_zoom_out</property>
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="use_underline">True</property>
-            <property name="stock_id">gtk-zoom-out</property>
           </object>
           <packing>
             <property name="expand">False</property>
@@ -286,11 +382,11 @@
           </packing>
         </child>
         <child>
-          <object class="GtkToolButton" id="tool_zoom_100">
+          <object class="GtkToolButton" id="tool_zoom_fit">
+            <property name="related_action">action_zoom_fit</property>
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="use_underline">True</property>
-            <property name="stock_id">gtk-zoom-100</property>
           </object>
           <packing>
             <property name="expand">False</property>
@@ -309,10 +405,10 @@
         </child>
         <child>
           <object class="GtkToolButton" id="tool_undo">
+            <property name="related_action">action_undo</property>
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="use_underline">True</property>
-            <property name="stock_id">gtk-undo</property>
           </object>
           <packing>
             <property name="expand">False</property>
@@ -321,10 +417,10 @@
         </child>
         <child>
           <object class="GtkToolButton" id="tool_redo">
+            <property name="related_action">action_redo</property>
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="use_underline">True</property>
-            <property name="stock_id">gtk-redo</property>
           </object>
           <packing>
             <property name="expand">False</property>
@@ -342,7 +438,9 @@
           </packing>
         </child>
         <child>
-          <object class="GtkToolItem" id="tool_color_chooser">
+          <object class="GtkToolItem" id="tool1">
+            <property name="use_action_appearance">False</property>
+            <property name="related_action">action_pen_color</property>
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <child>
@@ -363,6 +461,7 @@
         </child>
         <child>
           <object class="GtkRadioToolButton" id="tool_pensize_small">
+            <property name="related_action">action_pensize_small</property>
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="label" translatable="yes">0.7</property>
@@ -375,10 +474,10 @@
         </child>
         <child>
           <object class="GtkRadioToolButton" id="tool_pensize_normal">
+            <property name="related_action">action_pensize_normal</property>
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="label" translatable="yes">1.5</property>
-            <property name="active">True</property>
           </object>
           <packing>
             <property name="expand">False</property>
@@ -387,6 +486,7 @@
         </child>
         <child>
           <object class="GtkRadioToolButton" id="tool_pensize_big">
+            <property name="related_action">action_pensize_big</property>
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="label" translatable="yes">8.0</property>
