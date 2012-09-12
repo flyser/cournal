@@ -17,3 +17,6 @@ This is a TODO List with (hopefully) future Cournal Features!
 * Show tools preview
 * Tool icons
 * Item deletion functions
+* Import/Open/Annotate?
+* Error handling
+* Change Pickle to JSON / XML

@@ -21,6 +21,7 @@
 from cournal.document.layer import Layer
 from cournal.document.stroke import Stroke
 from cournal.document.rect import Rect
+from cournal.document.circle import Circle
 from cournal.network import network
 from cournal.document import history
 
@@ -149,4 +150,6 @@ class Page:
                             yield item
                             break
                 elif isinstance(item, Rect):
+                     yield item
+                elif isinstance(item, Circle):
                      yield item

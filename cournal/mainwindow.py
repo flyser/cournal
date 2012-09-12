@@ -24,7 +24,7 @@ from gi.repository.GLib import GError
 
 import cournal
 from cournal.viewer.layout import Layout
-from cournal.viewer.tools import pen, rect, primary, line
+from cournal.viewer.tools import pen, rect, primary, line, circle
 from cournal.document.document import Document
 from cournal.document import xojparser
 from cournal.network import network
@@ -236,6 +236,10 @@ class MainWindow(Gtk.Window):
             tool = line
             self.tool_fill.set_sensitive(False)
             self.tool_pen_bg_color.set_sensitive(False)
+        elif tool == self.tool_circle:
+            tool = circle
+            self.tool_fill.set_sensitive(True)
+            self.tool_pen_bg_color.set_sensitive(True)
         primary.current_tool = tool
         
     def set_fill(self, tool):
@@ -379,7 +383,7 @@ class MainWindow(Gtk.Window):
         self.tool_pen.set_sensitive(True)
         self.tool_rect.set_sensitive(True)
         self.tool_line.set_sensitive(True)
-        #self.tool_circle.set_sensitive(True)
+        self.tool_circle.set_sensitive(True)
         self.menu_search.set_sensitive(True)
        
         if self.document.num_of_pages > 1:

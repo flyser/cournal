@@ -37,6 +37,7 @@ from twisted.python.failure import Failure
 from cournal import __versionstring__ as cournal_version
 from cournal.document.stroke import Stroke
 from cournal.document.rect import Rect
+from cournal.document.circle import Circle
 
 
 # 0 - none

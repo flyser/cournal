@@ -81,6 +81,7 @@ class Rect(pb.Copyable, pb.RemoteCopy):
         d = dict()
         d["color"] = self.color
         d["fill_color"] = self.fill_color
+        d["fill"] = self.fill
         d["coords"] = self.coords
         d["linewidth"] = self.linewidth
         return d
