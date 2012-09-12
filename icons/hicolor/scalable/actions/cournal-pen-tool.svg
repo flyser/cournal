@@ -8,10 +8,34 @@
    xmlns:svg="http://www.w3.org/2000/svg"
    xmlns="http://www.w3.org/2000/svg"
    xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    version="1.0"
    width="158.97142"
    height="158.97142"
-   id="svg2">
+   id="svg2"
+   inkscape:version="0.48.3.1 r9886"
+   sodipodi:docname="cournal-pen-tool.svg">
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1600"
+     inkscape:window-height="853"
+     id="namedview3290"
+     showgrid="false"
+     inkscape:zoom="1.4845436"
+     inkscape:cx="-68.034379"
+     inkscape:cy="79.48571"
+     inkscape:window-x="-2"
+     inkscape:window-y="-3"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="g3040" />
   <metadata
      id="metadata30">
     <rdf:RDF>
@@ -20,7 +44,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -30,33 +54,33 @@
        id="linearGradient6178">
       <stop
          id="stop6180"
-         style="stop-color:#a02800;stop-opacity:1"
+         style="stop-color:#505050;stop-opacity:1;"
          offset="0" />
       <stop
          id="stop6182"
-         style="stop-color:#501500;stop-opacity:1"
+         style="stop-color:#282828;stop-opacity:1;"
          offset="1" />
     </linearGradient>
     <linearGradient
        id="linearGradient5085">
       <stop
          id="stop5087"
-         style="stop-color:#f8e26d;stop-opacity:1"
+         style="stop-color:#d8cc8d;stop-opacity:1;"
          offset="0" />
       <stop
          id="stop5089"
-         style="stop-color:#bfa30a;stop-opacity:1"
+         style="stop-color:#9a892f;stop-opacity:1;"
          offset="1" />
     </linearGradient>
     <linearGradient
        id="linearGradient5069">
       <stop
          id="stop5071"
-         style="stop-color:#f03c00;stop-opacity:1"
+         style="stop-color:#787878;stop-opacity:1;"
          offset="0" />
       <stop
          id="stop5073"
-         style="stop-color:#a02900;stop-opacity:1"
+         style="stop-color:#505050;stop-opacity:1;"
          offset="1" />
     </linearGradient>
     <linearGradient
@@ -196,6 +220,6 @@
     <path
        d="m 80.000255,118.61889 15.555839,0 c 0,0 7.777926,4.5562 7.777926,15.55584 0,23.33376 -31.653012,34.82159 -46.667523,38.8896 0,0 23.333758,-15.55584 15.555839,-38.8896 -2.459596,-7.37878 7.777919,-15.55584 7.777919,-15.55584 z"
        id="path3038"
-       style="fill:url(#linearGradient5091);fill-opacity:1;stroke:#501a00;stroke-width:3;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+       style="fill:url(#linearGradient5091);fill-opacity:1;stroke:#372319;stroke-width:3;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
   </g>
 </svg>

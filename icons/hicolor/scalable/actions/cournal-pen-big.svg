@@ -24,7 +24,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -42,7 +42,7 @@
      id="namedview28"
      showgrid="true"
      inkscape:zoom="2.9690871"
-     inkscape:cx="148.34679"
+     inkscape:cx="74.586744"
      inkscape:cy="81.488136"
      inkscape:window-x="-2"
      inkscape:window-y="-3"
@@ -60,20 +60,20 @@
       <stop
          id="stop6343"
          offset="0"
-         style="stop-color:#a02800;stop-opacity:1;" />
+         style="stop-color:#505050;stop-opacity:1;" />
       <stop
          id="stop6345"
          offset="1"
-         style="stop-color:#501500;stop-opacity:1;" />
+         style="stop-color:#282828;stop-opacity:1;" />
     </linearGradient>
     <linearGradient
        id="linearGradient6325">
       <stop
-         style="stop-color:#f03c00;stop-opacity:1;"
+         style="stop-color:#787878;stop-opacity:1;"
          offset="0"
          id="stop6327" />
       <stop
-         style="stop-color:#a02900;stop-opacity:1;"
+         style="stop-color:#505050;stop-opacity:1;"
          offset="1"
          id="stop6329" />
     </linearGradient>
@@ -293,27 +293,8 @@
          sodipodi:cy="81.47142"
          sodipodi:rx="22.5"
          sodipodi:ry="22.5"
-         d="m 105,81.47142 a 22.5,22.5 0 1 1 -45,0 22.5,22.5 0 1 1 45,0 z"
+         d="m 105,81.47142 c 0,12.426407 -10.073593,22.5 -22.5,22.5 -12.426407,0 -22.5,-10.073593 -22.5,-22.5 0,-12.426407 10.073593,-22.5 22.5,-22.5 12.426407,0 22.5,10.073593 22.5,22.5 z"
          transform="matrix(4.2622826,-4.2622826,4.2622826,4.2622826,-593.52507,-11.077801)" />
-      <g
-         transform="matrix(0.70710678,-0.70710678,0.70710678,0.70710678,0,0)"
-         inkscape:transform-center-x="35.759501"
-         inkscape:transform-center-y="-18.451999"
-         style="font-size:70px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
-         id="text6626">
-        <path
-           d="m 101.90325,176.40583 c 0,-3.822 2.05801,-7.35 4.802,-9.898 7.84,3.332 13.132,5.39001 13.132,10.878 0,5.194 -3.528,7.742 -8.33,7.742 -5.19399,0 -9.604,-3.23401 -9.604,-8.722 m 13.23,-18.718 c -6.36999,-2.45 -10.682,-4.9 -10.682,-9.996 0,-4.80199 3.13601,-7.154 6.958,-7.154 4.704,0 7.546,3.23401 7.546,8.036 0,3.234 -1.372,6.272 -3.822,9.114 m -25.577995,20.384 c 0,10.09399 9.212012,17.052 21.657995,17.052 13.22999,0 22.05,-7.44801 22.05,-17.248 0,-8.23199 -4.802,-13.034 -10.78,-16.268 l 0,-0.392 c 4.312,-2.842 8.134,-7.64401 8.134,-13.622 0,-10.28999 -7.54601,-17.052 -18.914,-17.052 -11.56398,0 -19.893995,6.56601 -19.893995,17.15 0,6.56599 3.528005,11.074 8.329995,14.7 l 0,0.392 c -5.879989,3.136 -10.583995,7.74201 -10.583995,15.288"
-           style="font-size:98px;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:Source Sans Pro;-inkscape-font-specification:Source Sans Pro Bold"
-           id="path6643" />
-        <path
-           d="m 143.09694,186.10783 c 0,5.096 3.72401,9.016 8.722,9.016 4.998,0 8.722,-3.92 8.722,-9.016 0,-5.19399 -3.724,-9.114 -8.722,-9.114 -4.99799,0 -8.722,3.92001 -8.722,9.114"
-           style="font-size:98px;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:Source Sans Pro;-inkscape-font-specification:Source Sans Pro Bold"
-           id="path6645" />
-        <path
-           d="m 192.4675,195.12383 c 13.32799,0 22.246,-11.36802 22.246,-32.536 0,-21.16798 -8.91801,-32.046 -22.246,-32.046 -13.32798,0 -22.246,10.87802 -22.246,32.046 0,21.16798 8.91802,32.536 22.246,32.536 m 0,-11.172 c -4.80199,0 -8.624,-4.41002 -8.624,-21.364 0,-17.05198 3.82201,-20.874 8.624,-20.874 4.9,0 8.624,3.82202 8.624,20.874 0,16.95398 -3.724,21.364 -8.624,21.364"
-           style="font-size:98px;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:Source Sans Pro;-inkscape-font-specification:Source Sans Pro Bold"
-           id="path6647" />
-      </g>
     </g>
   </g>
 </svg>

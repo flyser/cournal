@@ -24,7 +24,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -42,7 +42,7 @@
      id="namedview28"
      showgrid="true"
      inkscape:zoom="2.9690871"
-     inkscape:cx="73.659003"
+     inkscape:cx="-0.10104264"
      inkscape:cy="81.488136"
      inkscape:window-x="-2"
      inkscape:window-y="-3"
@@ -60,20 +60,20 @@
       <stop
          id="stop6298"
          offset="0"
-         style="stop-color:#f03c00;stop-opacity:1;" />
+         style="stop-color:#787878;stop-opacity:1;" />
       <stop
          id="stop6300"
          offset="1"
-         style="stop-color:#a02900;stop-opacity:1;" />
+         style="stop-color:#505050;stop-opacity:1;" />
     </linearGradient>
     <linearGradient
        id="linearGradient6280">
       <stop
-         style="stop-color:#a02800;stop-opacity:1;"
+         style="stop-color:#505050;stop-opacity:1;"
          offset="0"
          id="stop6282" />
       <stop
-         style="stop-color:#641a00;stop-opacity:1;"
+         style="stop-color:#323232;stop-opacity:1;"
          offset="1"
          id="stop6284" />
     </linearGradient>
