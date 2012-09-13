@@ -35,8 +35,10 @@ from cournal.document import search
 
 pdf_filter = Gtk.FileFilter()
 pdf_filter.add_mime_type("application/pdf")
+pdf_filter.add_pattern("*.pdf")
 xoj_filter = Gtk.FileFilter()
 xoj_filter.add_mime_type("application/x-xoj")
+xoj_filter.add_pattern("*.xoj")
 
 LINEWIDTH_SMALL = 0.7
 LINEWIDTH_NORMAL = 1.5
@@ -68,99 +70,91 @@ class MainWindow(Gtk.Window):
         builder.set_translation_domain("cournal")
         builder.add_from_file(cournal.__path__[0] + "/mainwindow.glade")
         self.add(builder.get_object("outer_box"))
-        
-        # Initialize the main journal layout
+        self.add_accel_group(builder.get_object("accelgroup"))
         self.layout = None
         self.overlay = builder.get_object("overlay")
         self.scrolledwindow = builder.get_object("scrolledwindow")
         
-        # Menu Bar:
-        self.menu_open_xoj = builder.get_object("imagemenuitem_open_xoj")
-        self.menu_open_pdf = builder.get_object("imagemenuitem_open_pdf")
-        self.menu_connect = builder.get_object("imagemenuitem_connect")
-        self.menu_save = builder.get_object("imagemenuitem_save")
-        self.menu_save_as = builder.get_object("imagemenuitem_save_as")
-        self.menu_export_pdf = builder.get_object("imagemenuitem_export_pdf")
-        self.menu_import_xoj = builder.get_object("imagemenuitem_import_xoj")
-        self.menu_quit = builder.get_object("imagemenuitem_quit")
-        self.menu_about = builder.get_object("imagemenuitem_about")
-        self.menu_undo = builder.get_object("imagemenuitem_undo")
-        self.menu_redo = builder.get_object("imagemenuitem_redo")
-        self.menu_search = builder.get_object("imagemenuitem_search")
-        
         # Toolbar:
-        self.tool_open_pdf = builder.get_object("tool_open_pdf")
-        self.tool_save = builder.get_object("tool_save")
-        self.tool_connect = builder.get_object("tool_connect")
-        self.tool_zoom_in = builder.get_object("tool_zoom_in")
-        self.tool_zoom_out = builder.get_object("tool_zoom_out")
-        self.tool_zoom_100 = builder.get_object("tool_zoom_100")
-        self.tool_undo = builder.get_object("tool_undo")
-        self.tool_redo = builder.get_object("tool_redo")
-        self.tool_pen_color = builder.get_object("tool_pen_color")
         self.tool_pen_bg_color = builder.get_object("tool_pen_bg_color")
-        self.tool_pensize_small = builder.get_object("tool_pensize_small")
-        self.tool_pensize_normal = builder.get_object("tool_pensize_normal")
-        self.tool_pensize_big = builder.get_object("tool_pensize_big")
         self.tool_pen = builder.get_object("tool_pen")
         self.tool_rect = builder.get_object("tool_rect")
         self.tool_line = builder.get_object("tool_line")
         self.tool_circle = builder.get_object("tool_circle")
         self.tool_fill = builder.get_object("tool_fill")
 
-        self.menu_connect.set_sensitive(False)
-        self.menu_save.set_sensitive(False)
-        self.menu_save_as.set_sensitive(False)
-        self.menu_export_pdf.set_sensitive(False)
-        self.menu_import_xoj.set_sensitive(False)
-        self.menu_undo.set_sensitive(False)
-        self.menu_redo.set_sensitive(False)
-        self.menu_search.set_sensitive(False)
-        self.tool_save.set_sensitive(False)
-        self.tool_connect.set_sensitive(False)
-        self.tool_undo.set_sensitive(False)
-        self.tool_redo.set_sensitive(False)
-        self.tool_zoom_in.set_sensitive(False)
-        self.tool_zoom_out.set_sensitive(False)
-        self.tool_zoom_100.set_sensitive(False)
-        self.tool_pen_color.set_sensitive(False)
-        self.tool_pen_bg_color.set_sensitive(False)
-        self.tool_pensize_small.set_sensitive(False)
-        self.tool_pensize_normal.set_sensitive(False)
-        self.tool_pensize_big.set_sensitive(False)
-        self.tool_pen.set_sensitive(False)
-        self.tool_rect.set_sensitive(False)
-        self.tool_line.set_sensitive(False)
-        self.tool_circle.set_sensitive(False)
-        self.tool_fill.set_sensitive(False)
-
         history.init(self.menu_undo, self.menu_redo, self.tool_undo, self.tool_redo)
         
-        self.menu_open_xoj.connect("activate", self.run_open_xoj_dialog)
-        self.menu_open_pdf.connect("activate", self.run_open_pdf_dialog)
-        self.menu_connect.connect("activate", self.run_connection_dialog)
-        self.menu_save.connect("activate", self.save)
-        self.menu_save_as.connect("activate", self.run_save_as_dialog)
-        self.menu_export_pdf.connect("activate", self.run_export_pdf_dialog)
-        self.menu_import_xoj.connect("activate", self.run_import_xoj_dialog)
-        self.menu_quit.connect("activate", lambda _: self.destroy())
-        self.menu_about.connect("activate", self.run_about_dialog)
-        self.menu_undo.connect("activate", history.undo)
-        self.menu_redo.connect("activate", history.redo)
-        self.tool_undo.connect("clicked", history.undo)
-        self.tool_redo.connect("clicked", history.redo)
-        self.menu_search.connect("activate", self.show_search_bar)
-        self.tool_open_pdf.connect("clicked", self.run_open_pdf_dialog)
-        self.tool_save.connect("clicked", self.save)
-        self.tool_connect.connect("clicked", self.run_connection_dialog)
-        self.tool_zoom_in.connect("clicked", self.zoom_in)
-        self.tool_zoom_out.connect("clicked", self.zoom_out)
-        self.tool_zoom_100.connect("clicked", self.zoom_100)
-        self.tool_pen_color.connect("color-set", self.change_primary_color)
+        # Actions (always sensitive):
+        action_open_xoj = builder.get_object("action_open_xoj")
+        action_open_pdf = builder.get_object("action_open_pdf")
+        action_quit = builder.get_object("action_quit")
+        action_about = builder.get_object("action_about")
+        
+        # Actions (document_specific):
+        action_connect = builder.get_object("action_connect")
+        action_save = builder.get_object("action_save")
+        action_save_as = builder.get_object("action_save_as")
+        action_export_pdf = builder.get_object("action_export_pdf")
+        action_import_xoj = builder.get_object("action_import_xoj")
+        action_undo = builder.get_object("action_undo")
+        action_redo = builder.get_object("action_redo")
+        action_search = builder.get_object("action_search")
+        action_zoom_in = builder.get_object("action_zoom_in")
+        action_zoom_out = builder.get_object("action_zoom_out")
+        action_zoom_fit = builder.get_object("action_zoom_fit")
+        action_pensize_small = builder.get_object("action_pensize_small")
+        action_pensize_normal = builder.get_object("action_pensize_normal")
+        action_pensize_big = builder.get_object("action_pensize_big")
+        tool_pen_color = builder.get_object("tool_pen_color")
+        self.actiongroup_document_specific = builder.get_object("actiongroup_document_specific")
+        self.actiongroup_document_specific.set_sensitive(False)
+        builder.get_object("tool_pensize_normal").set_active(True)
+        
+        # Workaround for bug https://bugzilla.gnome.org/show_bug.cgi?id=671786
+        if not Gtk.check_version(3,4,5) == None and not Gtk.check_version(3,6,0) == None:
+            # Gtk 3.4 without bugfix
+            a = builder.get_object("accelgroup")
+            a.connect_by_path(action_open_xoj.get_accel_path(), lambda a,b,c,d: action_open_xoj.activate())
+            a.connect_by_path(action_open_pdf.get_accel_path(), lambda a,b,c,d: action_open_pdf.activate())
+            a.connect_by_path(action_quit.get_accel_path(), lambda a,b,c,d: action_quit.activate())
+            a.connect_by_path(action_about.get_accel_path(), lambda a,b,c,d: action_about.activate())
+            a.connect_by_path(action_connect.get_accel_path(), lambda a,b,c,d: action_connect.activate())
+            a.connect_by_path(action_save.get_accel_path(), lambda a,b,c,d: action_save.activate())
+            a.connect_by_path(action_save_as.get_accel_path(), lambda a,b,c,d: action_save_as.activate())
+            a.connect_by_path(action_export_pdf.get_accel_path(), lambda a,b,c,d: action_export_pdf.activate())
+            a.connect_by_path(action_import_xoj.get_accel_path(), lambda a,b,c,d: action_import_xoj.activate())
+            a.connect_by_path(action_undo.get_accel_path(), lambda a,b,c,d: action_undo.activate())
+            a.connect_by_path(action_redo.get_accel_path(), lambda a,b,c,d: action_redo.activate())
+            a.connect_by_path(action_search.get_accel_path(), lambda a,b,c,d: action_search.activate())
+            a.connect_by_path(action_zoom_in.get_accel_path(), lambda a,b,c,d: action_zoom_in.activate())
+            a.connect_by_path(action_zoom_out.get_accel_path(), lambda a,b,c,d: action_zoom_out.activate())
+            a.connect_by_path(action_zoom_fit.get_accel_path(), lambda a,b,c,d: action_zoom_fit.activate())
+            a.connect_by_path(action_pensize_small.get_accel_path(), lambda a,b,c,d: action_pensize_small.activate())
+            a.connect_by_path(action_pensize_normal.get_accel_path(), lambda a,b,c,d: action_pensize_normal.activate())
+            a.connect_by_path(action_pensize_big.get_accel_path(), lambda a,b,c,d: action_pensize_big.activate())
+
+        action_open_xoj.connect("activate", self.run_open_xoj_dialog)
+        action_open_pdf.connect("activate", self.run_open_pdf_dialog)
+        action_connect.connect("activate", self.run_connection_dialog)
+        action_save.connect("activate", self.save)
+        action_save_as.connect("activate", self.run_save_as_dialog)
+        action_export_pdf.connect("activate", self.run_export_pdf_dialog)
+        action_import_xoj.connect("activate", self.run_import_xoj_dialog)
+        action_quit.connect("activate", lambda _: self.destroy())
+        action_about.connect("activate", self.run_about_dialog)
+        action_undo.connect("activate", history.undo)
+        action_redo.connect("activate", history.redo)
+        action_search.connect("activate", self.show_search_bar)
+        action_zoom_in.connect("activate", self.zoom_in)
+        action_zoom_out.connect("activate", self.zoom_out)
+        action_zoom_fit.connect("activate", self.zoom_fit)
+        tool_pen_color.connect("color-set", self.change_pen_color)
+        action_pensize_small.connect("activate", self.change_pen_size, LINEWIDTH_SMALL)
+        action_pensize_normal.connect("activate", self.change_pen_size, LINEWIDTH_NORMAL)
+        action_pensize_big.connect("activate", self.change_pen_size, LINEWIDTH_BIG)
+
         self.tool_pen_bg_color.connect("color-set", self.change_primary_bg_color)
-        self.tool_pensize_small.connect("clicked", self.change_primary_size, LINEWIDTH_SMALL)
-        self.tool_pensize_normal.connect("clicked", self.change_primary_size, LINEWIDTH_NORMAL)
-        self.tool_pensize_big.connect("clicked", self.change_primary_size, LINEWIDTH_BIG)
         self.tool_pen.connect("clicked", self.set_tool)
         self.tool_rect.connect("clicked", self.set_tool)
         self.tool_line.connect("clicked", self.set_tool)
@@ -180,32 +174,10 @@ class MainWindow(Gtk.Window):
         self.button_prev_page.connect("clicked", self.jump_to_prev_page)
         self.button_next_page.connect("clicked", self.jump_to_next_page)
 
-        # Accelerators
-        self.accelgroup = builder.get_object("accelgroup1")
-        self.tool_save.add_accelerator("clicked", self.accelgroup, ord('s'),
-            Gdk.ModifierType.CONTROL_MASK, Gtk.AccelFlags.VISIBLE)
-        self.tool_open_pdf.add_accelerator("clicked", self.accelgroup, ord('o'),
-            Gdk.ModifierType.CONTROL_MASK, Gtk.AccelFlags.VISIBLE)
-        self.tool_zoom_in.add_accelerator("clicked", self.accelgroup, ord('+'),
-            Gdk.ModifierType.CONTROL_MASK, Gtk.AccelFlags.VISIBLE)
-        self.tool_zoom_out.add_accelerator("clicked", self.accelgroup, ord('-'),
-            Gdk.ModifierType.CONTROL_MASK, Gtk.AccelFlags.VISIBLE)
-        self.tool_zoom_100.add_accelerator("clicked", self.accelgroup, ord('0'),
-            Gdk.ModifierType.CONTROL_MASK, Gtk.AccelFlags.VISIBLE)
-        self.tool_connect.add_accelerator("clicked", self.accelgroup, ord('n'),
-            Gdk.ModifierType.CONTROL_MASK, Gtk.AccelFlags.VISIBLE)
-        self.tool_undo.add_accelerator("clicked", self.accelgroup, ord('z'),
-            Gdk.ModifierType.CONTROL_MASK, Gtk.AccelFlags.VISIBLE)
-        self.tool_redo.add_accelerator("clicked", self.accelgroup, ord('y'),
-            Gdk.ModifierType.CONTROL_MASK, Gtk.AccelFlags.VISIBLE)
-        self.tool_redo.add_accelerator("clicked", self.accelgroup, ord('z'),
-            Gdk.ModifierType.CONTROL_MASK | Gdk.ModifierType.SHIFT_MASK, Gtk.AccelFlags.VISIBLE)
-        self.menu_search.add_accelerator("activate", self.accelgroup, ord('f'),
-            Gdk.ModifierType.CONTROL_MASK, Gtk.AccelFlags.VISIBLE)
-        self.add_accel_group(self.accelgroup)
-
         self.set_tool(pen)
 
+        history.init(action_undo, action_redo)
+        
         # Search bar:
         self.search_bar = builder.get_object("search_bar")
         self.search_field = builder.get_object("search_field")
@@ -216,6 +188,7 @@ class MainWindow(Gtk.Window):
         self.search_field.connect("insert-text", self.reset_search)
         self.search_close.connect("clicked", self.hide_search_bar)
         self.search_button.connect("clicked", self.search_document)
+        self.search_field.connect("activate", self.search_document)
 
     def set_tool(self, tool):
         """
@@ -363,29 +336,14 @@ class MainWindow(Gtk.Window):
         self.scrolledwindow.show_all()
         self.last_filename = None
         
-        self.menu_connect.set_sensitive(True)
-        self.menu_save.set_sensitive(True)
-        self.menu_save_as.set_sensitive(True)
-        self.menu_export_pdf.set_sensitive(True)
-        self.menu_import_xoj.set_sensitive(True)
-        self.tool_save.set_sensitive(True)
-        self.tool_connect.set_sensitive(True)
-        self.tool_zoom_in.set_sensitive(True)
-        self.tool_zoom_out.set_sensitive(True)
-        self.tool_zoom_100.set_sensitive(True)
-        self.tool_pen_color.set_sensitive(True)
         self.tool_pen_bg_color.set_sensitive(True)
-        self.tool_pensize_small.set_sensitive(True)
-        self.tool_pensize_normal.set_sensitive(True)
-        self.tool_pensize_big.set_sensitive(True)
-        self.statusbar_pagenum.set_sensitive(True)
-        self.statusbar_pagenum_entry.set_sensitive(True)
         self.tool_pen.set_sensitive(True)
         self.tool_rect.set_sensitive(True)
         self.tool_line.set_sensitive(True)
         self.tool_circle.set_sensitive(True)
-        self.menu_search.set_sensitive(True)
-       
+
+        self.actiongroup_document_specific.set_sensitive(True)
+
         if self.document.num_of_pages > 1:
             self.button_next_page.set_sensitive(True)
         
@@ -680,7 +638,7 @@ class MainWindow(Gtk.Window):
         """Zoom out"""
         self.layout.set_zoomlevel(change=-0.2)
     
-    def zoom_100(self, menuitem):
+    def zoom_fit(self, menuitem):
         """Reset Zoom"""
         self.layout.set_zoomlevel(1)
 
