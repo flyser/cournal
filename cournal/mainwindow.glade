@@ -538,7 +538,6 @@
             <property name="label" translatable="yes">Line</property>
             <property name="use_underline">True</property>
             <property name="icon_name">cournal-line-tool</property>
-            <property name="active">True</property>
             <property name="group">tool_pen</property>
           </object>
           <packing>
@@ -557,7 +556,6 @@
             <property name="label" translatable="yes">Circle</property>
             <property name="use_underline">True</property>
             <property name="icon_name">cournal-circle-tool</property>
-            <property name="active">True</property>
             <property name="group">tool_pen</property>
           </object>
           <packing>
