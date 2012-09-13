@@ -15,8 +15,8 @@ This is a TODO List with (hopefully) future Cournal Features!
 * Android Port
 * Show position of other users in scrollbar
 * Show tools preview
-* Tool icons
 * Item deletion functions
-* Import/Open/Annotate?
 * Error handling
-* Change Pickle to JSON / XML
+* Change Pickle to JSON
+* Make fill color chooser more discreet
+* Set sensitivity for not incompatible actions

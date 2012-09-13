@@ -90,12 +90,14 @@
       <object class="GtkRadioAction" id="action_pensize_normal">
         <property name="label" translatable="yes">1.5</property>
       </object>
+      <accelerator key="2"/>
     </child>
     <child>
       <object class="GtkRadioAction" id="action_pensize_small">
         <property name="label" translatable="yes">0.7</property>
         <property name="group">action_pensize_normal</property>
       </object>
+      <accelerator key="1"/>
     </child>
     <child>
       <object class="GtkRadioAction" id="action_pensize_big">
@@ -103,6 +105,7 @@
         <property name="value">3</property>
         <property name="group">action_pensize_normal</property>
       </object>
+      <accelerator key="3"/>
     </child>
     <child>
       <object class="GtkAction" id="action_pen_color"/>
@@ -113,6 +116,46 @@
         <property name="stock_id">gtk-connect</property>
       </object>
       <accelerator key="n" modifiers="GDK_CONTROL_MASK"/>
+    </child>
+    <child>
+      <object class="GtkRadioAction" id="action_tool_pen">
+        <property name="label" translatable="yes">Pen</property>
+        <property name="draw_as_radio">True</property>
+      </object>
+      <accelerator key="p"/>
+    </child>
+    <child>
+      <object class="GtkRadioAction" id="action_tool_rect">
+        <property name="label" translatable="yes">Rectangle</property>
+        <property name="draw_as_radio">True</property>
+        <property name="group">action_tool_pen</property>
+      </object>
+      <accelerator key="r"/>
+    </child>
+    <child>
+      <object class="GtkRadioAction" id="action_tool_line">
+        <property name="label" translatable="yes">Line</property>
+        <property name="draw_as_radio">True</property>
+        <property name="group">action_tool_pen</property>
+      </object>
+      <accelerator key="l"/>
+    </child>
+    <child>
+      <object class="GtkRadioAction" id="action_tool_circle">
+        <property name="label" translatable="yes">Circle</property>
+        <property name="draw_as_radio">True</property>
+        <property name="group">action_tool_pen</property>
+      </object>
+      <accelerator key="c"/>
+    </child>
+    <child>
+      <object class="GtkToggleAction" id="action_fill_tool">
+        <property name="label" translatable="yes">Fill</property>
+      </object>
+      <accelerator key="f"/>
+    </child>
+    <child>
+      <object class="GtkAction" id="action_pen_fillcolor"/>
     </child>
   </object>
   <object class="GtkImage" id="image_btn_next">
@@ -451,8 +494,10 @@
         <child>
           <object class="GtkRadioToolButton" id="tool_pen">
             <property name="use_action_appearance">False</property>
+            <property name="related_action">action_tool_pen</property>
             <property name="visible">True</property>
             <property name="can_focus">False</property>
+            <property name="related_action">action_tool_pen</property>
             <property name="use_action_appearance">False</property>
             <property name="label" translatable="yes">Pen</property>
             <property name="use_underline">True</property>
@@ -467,8 +512,10 @@
         <child>
           <object class="GtkRadioToolButton" id="tool_rect">
             <property name="use_action_appearance">False</property>
+            <property name="related_action">action_tool_rect</property>
             <property name="visible">True</property>
             <property name="can_focus">False</property>
+            <property name="related_action">action_tool_rect</property>
             <property name="use_action_appearance">False</property>
             <property name="label" translatable="yes">Rect</property>
             <property name="use_underline">True</property>
@@ -483,8 +530,10 @@
         <child>
           <object class="GtkRadioToolButton" id="tool_line">
             <property name="use_action_appearance">False</property>
+            <property name="related_action">action_tool_line</property>
             <property name="visible">True</property>
             <property name="can_focus">False</property>
+            <property name="related_action">action_tool_line</property>
             <property name="use_action_appearance">False</property>
             <property name="label" translatable="yes">Line</property>
             <property name="use_underline">True</property>
@@ -500,8 +549,10 @@
         <child>
           <object class="GtkRadioToolButton" id="tool_circle">
             <property name="use_action_appearance">False</property>
+            <property name="related_action">action_tool_circle</property>
             <property name="visible">True</property>
             <property name="can_focus">False</property>
+            <property name="related_action">action_tool_circle</property>
             <property name="use_action_appearance">False</property>
             <property name="label" translatable="yes">Circle</property>
             <property name="use_underline">True</property>
@@ -525,7 +576,7 @@
           </packing>
         </child>
         <child>
-          <object class="GtkToolItem" id="tool1">
+          <object class="GtkToolItem" id="tool_color_chooser">
             <property name="use_action_appearance">False</property>
             <property name="related_action">action_pen_color</property>
             <property name="visible">True</property>
@@ -553,11 +604,13 @@
         <child>
           <object class="GtkToolItem" id="tool_bg_color_chooser">
             <property name="use_action_appearance">False</property>
+            <property name="related_action">action_pen_fillcolor</property>
             <property name="visible">True</property>
             <property name="can_focus">False</property>
+            <property name="related_action">action_pen_fillcolor</property>
             <property name="use_action_appearance">False</property>
             <child>
-              <object class="GtkColorButton" id="tool_pen_bg_color">
+              <object class="GtkColorButton" id="tool_pen_fillcolor">
                 <property name="use_action_appearance">False</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
@@ -577,8 +630,10 @@
         <child>
           <object class="GtkToggleToolButton" id="tool_fill">
             <property name="use_action_appearance">False</property>
+            <property name="related_action">action_fill_tool</property>
             <property name="visible">True</property>
             <property name="can_focus">False</property>
+            <property name="related_action">action_fill_tool</property>
             <property name="use_action_appearance">False</property>
             <property name="label" translatable="yes">Fill</property>
             <property name="use_underline">True</property>
@@ -604,10 +659,12 @@
         </child>
         <child>
           <object class="GtkRadioToolButton" id="tool_pensize_small">
+            <property name="use_action_appearance">False</property>
             <property name="related_action">action_pensize_small</property>
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="related_action">action_pensize_small</property>
+            <property name="use_action_appearance">False</property>
             <property name="label" translatable="yes">0.7</property>
             <property name="icon_name">cournal-pen-small</property>
             <property name="group">tool_pensize_normal</property>
@@ -619,10 +676,12 @@
         </child>
         <child>
           <object class="GtkRadioToolButton" id="tool_pensize_normal">
+            <property name="use_action_appearance">False</property>
             <property name="related_action">action_pensize_normal</property>
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="related_action">action_pensize_normal</property>
+            <property name="use_action_appearance">False</property>
             <property name="label" translatable="yes">1.5</property>
             <property name="icon_name">cournal-pen-medium</property>
           </object>
@@ -633,10 +692,12 @@
         </child>
         <child>
           <object class="GtkRadioToolButton" id="tool_pensize_big">
+            <property name="use_action_appearance">False</property>
             <property name="related_action">action_pensize_big</property>
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="related_action">action_pensize_big</property>
+            <property name="use_action_appearance">False</property>
             <property name="label" translatable="yes">8.0</property>
             <property name="icon_name">cournal-pen-big</property>
             <property name="group">tool_pensize_normal</property>

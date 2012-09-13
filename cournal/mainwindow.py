@@ -75,16 +75,6 @@ class MainWindow(Gtk.Window):
         self.overlay = builder.get_object("overlay")
         self.scrolledwindow = builder.get_object("scrolledwindow")
         
-        # Toolbar:
-        self.tool_pen_bg_color = builder.get_object("tool_pen_bg_color")
-        self.tool_pen = builder.get_object("tool_pen")
-        self.tool_rect = builder.get_object("tool_rect")
-        self.tool_line = builder.get_object("tool_line")
-        self.tool_circle = builder.get_object("tool_circle")
-        self.tool_fill = builder.get_object("tool_fill")
-
-        #history.init(self.menu_undo, self.menu_redo, self.tool_undo, self.tool_redo)
-        
         # Actions (always sensitive):
         action_open_xoj = builder.get_object("action_open_xoj")
         action_open_pdf = builder.get_object("action_open_pdf")
@@ -107,6 +97,13 @@ class MainWindow(Gtk.Window):
         action_pensize_normal = builder.get_object("action_pensize_normal")
         action_pensize_big = builder.get_object("action_pensize_big")
         tool_pen_color = builder.get_object("tool_pen_color")
+        tool_pen_fillcolor = builder.get_object("tool_pen_fillcolor")
+        action_tool_pen = builder.get_object("action_tool_pen")
+        action_tool_rect = builder.get_object("action_tool_rect")
+        action_tool_line = builder.get_object("action_tool_line")
+        action_tool_circle = builder.get_object("action_tool_circle")
+        action_fill_tool = builder.get_object("action_fill_tool")
+
         self.actiongroup_document_specific = builder.get_object("actiongroup_document_specific")
         self.actiongroup_document_specific.set_sensitive(False)
         builder.get_object("tool_pensize_normal").set_active(True)
@@ -133,6 +130,11 @@ class MainWindow(Gtk.Window):
             a.connect_by_path(action_pensize_small.get_accel_path(), lambda a,b,c,d: action_pensize_small.activate())
             a.connect_by_path(action_pensize_normal.get_accel_path(), lambda a,b,c,d: action_pensize_normal.activate())
             a.connect_by_path(action_pensize_big.get_accel_path(), lambda a,b,c,d: action_pensize_big.activate())
+            a.connect_by_path(action_tool_pen.get_accel_path(), lambda a,b,c,d: action_tool_pen.activate())
+            a.connect_by_path(action_tool_rect.get_accel_path(), lambda a,b,c,d: action_tool_rect.activate())
+            a.connect_by_path(action_tool_line.get_accel_path(), lambda a,b,c,d: action_tool_line.activate())
+            a.connect_by_path(action_tool_circle.get_accel_path(), lambda a,b,c,d: action_tool_circle.activate())
+            a.connect_by_path(action_fill_tool.get_accel_path(), lambda a,b,c,d: action_fill_tool.activate())
 
         action_open_xoj.connect("activate", self.run_open_xoj_dialog)
         action_open_pdf.connect("activate", self.run_open_pdf_dialog)
@@ -153,13 +155,12 @@ class MainWindow(Gtk.Window):
         action_pensize_small.connect("activate", self.change_primary_size, LINEWIDTH_SMALL)
         action_pensize_normal.connect("activate", self.change_primary_size, LINEWIDTH_NORMAL)
         action_pensize_big.connect("activate", self.change_primary_size, LINEWIDTH_BIG)
-
-        self.tool_pen_bg_color.connect("color-set", self.change_primary_bg_color)
-        self.tool_pen.connect("clicked", self.set_tool)
-        self.tool_rect.connect("clicked", self.set_tool)
-        self.tool_line.connect("clicked", self.set_tool)
-        self.tool_circle.connect("clicked", self.set_tool)
-        self.tool_fill.connect("clicked", self.set_fill)
+        tool_pen_fillcolor.connect("color-set", self.change_primary_fillcolor)
+        action_tool_pen.connect("activate", self.set_tool)
+        action_tool_rect.connect("activate", self.set_tool)
+        action_tool_line.connect("activate", self.set_tool)
+        action_tool_circle.connect("activate", self.set_tool)
+        action_fill_tool.connect("activate", self.set_fill)
     
         # Statusbar:
         self.statusbar_icon = builder.get_object("image_statusbar")
@@ -197,22 +198,26 @@ class MainWindow(Gtk.Window):
         Positional arguments:
         tool -- clicked tool button
         """
-        if tool == self.tool_pen:
-            tool = pen
-            self.tool_fill.set_sensitive(False)
-            self.tool_pen_bg_color.set_sensitive(False)
-        elif tool == self.tool_rect:
-            tool = rect
-            self.tool_fill.set_sensitive(True)
-            self.tool_pen_bg_color.set_sensitive(True)
-        elif tool == self.tool_line:
-            tool = line
-            self.tool_fill.set_sensitive(False)
-            self.tool_pen_bg_color.set_sensitive(False)
-        elif tool == self.tool_circle:
-            tool = circle
-            self.tool_fill.set_sensitive(True)
-            self.tool_pen_bg_color.set_sensitive(True)
+        #TODO: Check what happend to the action
+        #TODO: Maybe change sensitivity
+       
+        if tool not in [pen, rect, line, circle]:
+            if tool.get_name() == "action_tool_pen":
+                tool = pen
+                #action_fill_tool.set_sensitive(False)
+                #action_tool_pen_bg_color.set_sensitive(False)
+            elif tool.get_name() == "action_tool_rect":
+                tool = rect
+                #action_fill_tool.set_sensitive(True)
+                #action_tool_pen_bg_color.set_sensitive(True)
+            elif tool.get_name() == "action_tool_line":
+                tool = line
+                #action_tool_fill.set_sensitive(False)
+                #action_tool_pen_bg_color.set_sensitive(False)
+            elif tool.get_name() == "action_tool_circle":
+                tool = circle
+                #action_tool_fill.set_sensitive(True)
+                #action_tool_pen_bg_color.set_sensitive(True)
         primary.current_tool = tool
         
     def set_fill(self, tool):
@@ -336,12 +341,6 @@ class MainWindow(Gtk.Window):
         self.scrolledwindow.show_all()
         self.last_filename = None
         
-        self.tool_pen_bg_color.set_sensitive(True)
-        self.tool_pen.set_sensitive(True)
-        self.tool_rect.set_sensitive(True)
-        self.tool_line.set_sensitive(True)
-        self.tool_circle.set_sensitive(True)
-
         self.actiongroup_document_specific.set_sensitive(True)
 
         if self.document.num_of_pages > 1:
@@ -605,7 +604,7 @@ class MainWindow(Gtk.Window):
         
         primary.color = red, green, blue, opacity        
 
-    def change_primary_bg_color(self, colorbutton):
+    def change_primary_fillcolor(self, colorbutton):
         """
         Change the primary tool to a user defined color.
         
