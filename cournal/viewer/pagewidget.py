@@ -49,6 +49,7 @@ class PageWidget(Gtk.DrawingArea):
         self.backbuffer = None
         self.backbuffer_valid = True
         self.active_tool = None
+        self.preview_item = None
 
         self.set_events(Gdk.EventMask.BUTTON_PRESS_MASK |
                         Gdk.EventMask.BUTTON_RELEASE_MASK |
@@ -148,6 +149,10 @@ class PageWidget(Gtk.DrawingArea):
         
         context.set_source_surface(self.backbuffer, 0, 0)
         context.paint()
+        
+        if self.preview_item:
+            context.scale(scaling, scaling)
+            self.preview_item.draw(context, scaling)
         
     def press(self, widget, event):
         """

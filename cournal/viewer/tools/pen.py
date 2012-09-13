@@ -57,19 +57,15 @@ def motion(widget, event):
     """
     global _last_point, _current_coords, _current_stroke
     
-    r, g, b, opacity = color
     actualWidth = widget.get_allocation().width
+
+    # item preview
     context = cairo.Context(widget.backbuffer)
-    
-    context.set_source_rgba(r/255, g/255, b/255, opacity/255)
-    context.set_antialias(cairo.ANTIALIAS_GRAY)
-    context.set_line_cap(cairo.LINE_CAP_ROUND)
     context.set_line_width(linewidth*actualWidth/widget.page.width)
-    
     context.move_to(_last_point[0], _last_point[1])
     context.line_to(event.x, event.y)
     x, y, x2, y2 = context.stroke_extents()
-    context.stroke()
+    widget.preview_item = _current_stroke
     
     update_rect = Gdk.Rectangle()
     update_rect.x = x-2
@@ -92,6 +88,28 @@ def release(widget, event):
     """
     global _last_point, _current_coords, _current_stroke
     widget.page.finish_stroke(_current_stroke)
+
+    # render stroke to backbuffer
+    widget.preview_item = None
+    r, g, b, opacity = color
+    actualWidth = widget.get_allocation().width
+    context = cairo.Context(widget.backbuffer)
+    context.set_source_rgba(r/255, g/255, b/255, opacity/255)
+    context.set_antialias(cairo.ANTIALIAS_GRAY)
+    context.set_line_cap(cairo.LINE_CAP_ROUND)
+    context.set_line_width(linewidth*actualWidth/widget.page.width)
+    context.move_to(_current_coords[0][0]/widget.page.width*actualWidth, _current_coords[0][1]/widget.page.width*actualWidth)
+    for coord in _current_coords[1:]:
+        context.line_to(coord[0]/widget.page.width*actualWidth, coord[1]/widget.page.width*actualWidth)
+    context.line_to(event.x, event.y)
+    x, y, x2, y2 = context.stroke_extents()
+    context.stroke()
+    update_rect = Gdk.Rectangle()
+    update_rect.x = x-2
+    update_rect.y = y-2
+    update_rect.width = x2-x+4
+    update_rect.height = y2-y+4
+    widget.get_window().invalidate_rect(update_rect, False)
     
     _last_point = None
     _current_coords = None
