@@ -83,7 +83,7 @@ class MainWindow(Gtk.Window):
         self.tool_circle = builder.get_object("tool_circle")
         self.tool_fill = builder.get_object("tool_fill")
 
-        history.init(self.menu_undo, self.menu_redo, self.tool_undo, self.tool_redo)
+        #history.init(self.menu_undo, self.menu_redo, self.tool_undo, self.tool_redo)
         
         # Actions (always sensitive):
         action_open_xoj = builder.get_object("action_open_xoj")
@@ -149,10 +149,10 @@ class MainWindow(Gtk.Window):
         action_zoom_in.connect("activate", self.zoom_in)
         action_zoom_out.connect("activate", self.zoom_out)
         action_zoom_fit.connect("activate", self.zoom_fit)
-        tool_pen_color.connect("color-set", self.change_pen_color)
-        action_pensize_small.connect("activate", self.change_pen_size, LINEWIDTH_SMALL)
-        action_pensize_normal.connect("activate", self.change_pen_size, LINEWIDTH_NORMAL)
-        action_pensize_big.connect("activate", self.change_pen_size, LINEWIDTH_BIG)
+        tool_pen_color.connect("color-set", self.change_primary_color)
+        action_pensize_small.connect("activate", self.change_primary_size, LINEWIDTH_SMALL)
+        action_pensize_normal.connect("activate", self.change_primary_size, LINEWIDTH_NORMAL)
+        action_pensize_big.connect("activate", self.change_primary_size, LINEWIDTH_BIG)
 
         self.tool_pen_bg_color.connect("color-set", self.change_primary_bg_color)
         self.tool_pen.connect("clicked", self.set_tool)
