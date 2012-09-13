@@ -8,34 +8,10 @@
    xmlns:svg="http://www.w3.org/2000/svg"
    xmlns="http://www.w3.org/2000/svg"
    xmlns:xlink="http://www.w3.org/1999/xlink"
-   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
-   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    version="1.0"
    width="158.97142"
    height="158.97142"
-   id="svg2"
-   inkscape:version="0.48.3.1 r9886"
-   sodipodi:docname="cournal-pen-medium.svg">
-  <sodipodi:namedview
-     pagecolor="#ffffff"
-     bordercolor="#666666"
-     borderopacity="1"
-     objecttolerance="10"
-     gridtolerance="10"
-     guidetolerance="10"
-     inkscape:pageopacity="0"
-     inkscape:pageshadow="2"
-     inkscape:window-width="1600"
-     inkscape:window-height="853"
-     id="namedview3201"
-     showgrid="false"
-     inkscape:zoom="1.4845436"
-     inkscape:cx="-68.034379"
-     inkscape:cy="79.48571"
-     inkscape:window-x="-2"
-     inkscape:window-y="-3"
-     inkscape:window-maximized="1"
-     inkscape:current-layer="g6367" />
+   id="svg2">
   <metadata
      id="metadata30">
     <rdf:RDF>
@@ -44,7 +20,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title />
+        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -54,22 +30,22 @@
        id="linearGradient6341">
       <stop
          id="stop6343"
-         style="stop-color:#505050;stop-opacity:1;"
+         style="stop-color:#505050;stop-opacity:1"
          offset="0" />
       <stop
          id="stop6345"
-         style="stop-color:#282828;stop-opacity:1;"
+         style="stop-color:#282828;stop-opacity:1"
          offset="1" />
     </linearGradient>
     <linearGradient
        id="linearGradient6325">
       <stop
          id="stop6327"
-         style="stop-color:#787878;stop-opacity:1;"
+         style="stop-color:#787878;stop-opacity:1"
          offset="0" />
       <stop
          id="stop6329"
-         style="stop-color:#505050;stop-opacity:1;"
+         style="stop-color:#505050;stop-opacity:1"
          offset="1" />
     </linearGradient>
     <linearGradient
@@ -121,8 +97,8 @@
        color-interpolation-filters="sRGB"
        id="filter3517">
       <feGaussianBlur
-         id="feGaussianBlur3519"
-         stdDeviation="0.59409041" />
+         stdDeviation="0.59409041"
+         id="feGaussianBlur3519" />
     </filter>
     <linearGradient
        x1="47.75"
@@ -166,8 +142,8 @@
        color-interpolation-filters="sRGB"
        id="filter3517-0">
       <feGaussianBlur
-         id="feGaussianBlur3519-6"
-         stdDeviation="0.97623979" />
+         stdDeviation="0.97623979"
+         id="feGaussianBlur3519-6" />
     </filter>
     <linearGradient
        x1="47.75"
@@ -193,8 +169,8 @@
        color-interpolation-filters="sRGB"
        id="filter3517-09">
       <feGaussianBlur
-         id="feGaussianBlur3519-1"
-         stdDeviation="1.1714877" />
+         stdDeviation="1.1714877"
+         id="feGaussianBlur3519-1" />
     </filter>
     <linearGradient
        x1="10"
