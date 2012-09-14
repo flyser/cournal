@@ -107,6 +107,7 @@ class MainWindow(Gtk.Window):
         self.actiongroup_document_specific = builder.get_object("actiongroup_document_specific")
         self.actiongroup_document_specific.set_sensitive(False)
         builder.get_object("tool_pensize_normal").set_active(True)
+        builder.get_object("tool_pen").set_active(True)
         
         # Workaround for bug https://bugzilla.gnome.org/show_bug.cgi?id=671786
         if not Gtk.check_version(3,4,5) == None and not Gtk.check_version(3,6,0) == None:
@@ -176,6 +177,7 @@ class MainWindow(Gtk.Window):
         self.button_next_page.connect("clicked", self.jump_to_next_page)
 
         self.set_tool(pen)
+        #action_tool_pen.activate()
 
         history.init(action_undo, action_redo)
         

@@ -26,6 +26,7 @@ from cournal.document import history
 _current_item = None
 _current_coords = None
 _start_point = None
+_last_point = None
 
 def press(widget, event):
     """
@@ -47,8 +48,67 @@ def press(widget, event):
     _current_coords.append(event.y*widget.page.width/actualWidth)
     
 def motion(widget, event):
-    pass
+    """
+    Mouse motion event. Generate preview item and set render borders
+    
+    Positional arguments: see press()
+    """
+    global _last_point
 
+    if _last_point:
+        # Bounding Box for last line
+        actualWidth = widget.get_allocation().width
+        context = cairo.Context(widget.backbuffer)
+        context.set_line_width(primary.linewidth*actualWidth/widget.page.width)
+        context.move_to(_start_point[0], _start_point[1])
+        context.line_to(_last_point[0], _last_point[1])
+        x, y, x2, y2 = context.stroke_extents()
+        update_rect = Gdk.Rectangle()
+        update_rect.x = x-2*primary.linewidth*actualWidth/widget.page.width
+        update_rect.y = y-2*primary.linewidth*actualWidth/widget.page.width
+        update_rect.width = x2-x+4*primary.linewidth*actualWidth/widget.page.width
+        update_rect.height = y2-y+4*primary.linewidth*actualWidth/widget.page.width
+        widget.get_window().invalidate_rect(update_rect, False)
+        widget.preview_item = Rect(
+            widget.page.layers[0],
+            primary.color,
+            primary.fill,
+            primary.fillcolor,
+            primary.linewidth,
+            [_start_point[0]*widget.page.width/actualWidth,
+            _start_point[1]*widget.page.width/actualWidth,
+            event.x*widget.page.width/actualWidth,
+            event.y*widget.page.width/actualWidth]
+            )
+    else:
+        _last_point = [0,0]
+    _last_point[0] = event.x
+    _last_point[1] = event.y
+
+    actualWidth = widget.get_allocation().width
+    context = cairo.Context(widget.backbuffer)
+    context.set_line_width(primary.linewidth*actualWidth/widget.page.width)
+    context.move_to(_start_point[0], _start_point[1])
+    context.line_to(event.x, event.y)
+    x, y, x2, y2 = context.stroke_extents()
+    update_rect = Gdk.Rectangle()
+    update_rect.x = x-2*primary.linewidth*actualWidth/widget.page.width
+    update_rect.y = y-2*primary.linewidth*actualWidth/widget.page.width
+    update_rect.width = x2-x+4*primary.linewidth*actualWidth/widget.page.width
+    update_rect.height = y2-y+4*primary.linewidth*actualWidth/widget.page.width
+    widget.get_window().invalidate_rect(update_rect, False)
+    widget.preview_item = Rect(
+        widget.page.layers[0],
+        primary.color,
+        primary.fill,
+        primary.fillcolor,
+        primary.linewidth,
+        [_start_point[0]*widget.page.width/actualWidth,
+        _start_point[1]*widget.page.width/actualWidth,
+        event.x*widget.page.width/actualWidth,
+        event.y*widget.page.width/actualWidth]
+        )
+        
 def release(widget, event):
     """
     Mouse release event. Inform the corresponding Page instance, that the stroke
@@ -58,45 +118,11 @@ def release(widget, event):
     
     Positional arguments: see press()
     """
+
+    widget.preview_item = None
+
     global _start_point, _current_coords, _current_item
     actualWidth = widget.get_allocation().width
-
-    context = cairo.Context(widget.backbuffer)
-    context.set_line_cap(cairo.LINE_CAP_ROUND)
-    context.set_line_join(cairo.LINE_JOIN_ROUND)
-    context.set_line_width(primary.linewidth*actualWidth/widget.page.width)
-    context.set_antialias(cairo.ANTIALIAS_GRAY)
-    
-    if primary.fill:
-        # Fill rect
-        context.move_to(_start_point[0], _start_point[1])
-        context.line_to(_start_point[0], event.y)
-        context.line_to(event.x, event.y)
-        context.line_to(event.x, _start_point[1])
-        context.close_path()
-        
-        r, g, b, opacity = primary.fillcolor
-        context.set_source_rgba(r/255, g/255, b/255, opacity/255)
-        context.fill()
-        
-    # Draw border
-    context.move_to(_start_point[0], _start_point[1])
-    context.line_to(_start_point[0], event.y)
-    context.line_to(event.x, event.y)
-    context.line_to(event.x, _start_point[1])
-    context.close_path()
-    
-    r, g, b, opacity = primary.color
-    context.set_source_rgba(r/255, g/255, b/255, opacity/255)
-    x, y, x2, y2 = context.stroke_extents()
-    context.stroke()
-    
-    update_rect = Gdk.Rectangle()
-    update_rect.x = x-2
-    update_rect.y = y-2
-    update_rect.width = x2-x+4
-    update_rect.height = y2-y+4
-    widget.get_window().invalidate_rect(update_rect, False)
 
     _current_coords.append(event.x*widget.page.width/actualWidth)
     _current_coords.append(event.y*widget.page.width/actualWidth)

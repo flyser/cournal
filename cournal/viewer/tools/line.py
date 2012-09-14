@@ -22,12 +22,14 @@ from gi.repository import Gdk
 from cournal.viewer.tools import primary
 
 """
-A pen tool. Draws a stroke with a certain color and size.
+A line tool. Draws a straight line with a certain color and size.
 """
 
 _start_point = None
 _current_coords = None
 _current_stroke = None
+_last_point = None
+from cournal.document.stroke import Stroke
 
 def press(widget, event):
     """
@@ -49,7 +51,53 @@ def press(widget, event):
     widget.page.layers[0].items.append(_current_stroke)
 
 def motion(widget, event):
-    pass
+    """
+    Mouse motion event. Generate preview item and set render borders
+    
+    Positional arguments: see press()
+    """
+    global _last_point
+
+    if _last_point:
+        # Bounding Box for last line
+        actualWidth = widget.get_allocation().width
+        context = cairo.Context(widget.backbuffer)
+        context.set_line_width(primary.linewidth*actualWidth/widget.page.width)
+        context.move_to(_start_point[0], _start_point[1])
+        context.line_to(_last_point[0], _last_point[1])
+        x, y, x2, y2 = context.stroke_extents()
+        update_rect = Gdk.Rectangle()
+        update_rect.x = x-2*primary.linewidth*actualWidth/widget.page.width
+        update_rect.y = y-2*primary.linewidth*actualWidth/widget.page.width
+        update_rect.width = x2-x+4*primary.linewidth*actualWidth/widget.page.width
+        update_rect.height = y2-y+4*primary.linewidth*actualWidth/widget.page.width
+        widget.get_window().invalidate_rect(update_rect, False)
+    else:
+        _last_point = [0,0]
+    _last_point[0] = event.x
+    _last_point[1] = event.y
+    
+    # Bounding Box for new line
+    actualWidth = widget.get_allocation().width
+    context = cairo.Context(widget.backbuffer)
+    context.set_line_width(primary.linewidth*actualWidth/widget.page.width)
+    context.move_to(_start_point[0], _start_point[1])
+    context.line_to(event.x, event.y)
+    x, y, x2, y2 = context.stroke_extents()
+    update_rect = Gdk.Rectangle()
+    update_rect.x = x-2*primary.linewidth*actualWidth/widget.page.width
+    update_rect.y = y-2*primary.linewidth*actualWidth/widget.page.width
+    update_rect.width = x2-x+4*primary.linewidth*actualWidth/widget.page.width
+    update_rect.height = y2-y+4*primary.linewidth*actualWidth/widget.page.width
+    widget.get_window().invalidate_rect(update_rect, False)
+
+    widget.preview_item = Stroke(
+        widget.page.layers[0],
+        primary.color,
+        primary.linewidth,
+        [[_start_point[0]*widget.page.width/actualWidth, _start_point[1]*widget.page.width/actualWidth],
+        [event.x*widget.page.width/actualWidth, event.y*widget.page.width/actualWidth]]
+        )
 
 def release(widget, event):
     """
@@ -61,6 +109,8 @@ def release(widget, event):
     Positional arguments: see press()
     """
     global _start_point, _current_coords, _current_stroke
+    
+    widget.preview_item = None
     
     r, g, b, opacity = primary.color
     actualWidth = widget.get_allocation().width

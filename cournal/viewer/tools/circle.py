@@ -25,14 +25,16 @@ from cournal.document import history
 import math
 
 """
-A pen tool. Draws a stroke with a certain color and size.
+A circle tool. Draws a circle with certain colors and radius.
 """
 
 _start_point = None
+_last_point = None
+_start_point_copy = [0,0]
 
 def press(widget, event):
     """
-    Mouse down event. Draw a point on the pointer location.
+    Mouse down event. Keep the position
     
     Positional arguments:
     widget -- The PageWidget, which triggered the event
@@ -42,7 +44,109 @@ def press(widget, event):
     _start_point = [event.x, event.y]
 
 def motion(widget, event):
-    pass
+    """
+    Mouse motion event. Generate preview item and set render borders
+    
+    Positional arguments: see press()
+    """
+    global _last_point, _start_point, start_point_copy
+    _end_point = [0,0]
+    _start_point_copy[0]=_start_point[0]
+    _start_point_copy[1]=_start_point[1]
+
+    actualWidth = widget.get_allocation().width
+
+    if _last_point:
+        # Sort Coords
+        if _last_point[0] < _start_point[0]:
+            _end_point[0] = _start_point[0]
+            _start_point[0] = _last_point[0]
+        else:
+            _end_point[0] = _last_point[0]
+
+        if _last_point[1] < _start_point[1]:
+            _end_point[1] = _start_point[1]
+            _start_point[1] = _last_point[1]
+        else:
+            _end_point[1] = _last_point[1]
+        center = [(_end_point[0] + _start_point[0]) / 2, (_end_point[1] + _start_point[1]) / 2]
+        width = _end_point[0] - _start_point[0]
+        height = _end_point[1] - _start_point[1]
+        if height != 0 and width != 0:
+            scale = (width + height) / 2
+            scale_width = width / scale
+            scale_height = height / scale
+            context = cairo.Context(widget.backbuffer)
+            context.set_line_width(primary.linewidth*actualWidth/widget.page.width)
+            # Draw Circle and scale it to oval
+            context.translate(center[0], center[1])
+            context.scale(scale_width / 2., scale_height / 2.)
+            context.arc(0., 0., scale, 0., 2 * math.pi)
+            context.scale(1 / (scale_width / 2.), 1 / (scale_height / 2.))
+            context.translate(-center[0], -center[1])
+            x, y, x2, y2 = context.stroke_extents()
+            update_rect = Gdk.Rectangle()
+            update_rect.x = x-2*primary.linewidth*actualWidth/widget.page.width
+            update_rect.y = y-2*primary.linewidth*actualWidth/widget.page.width
+            update_rect.width = x2-x+4*primary.linewidth*actualWidth/widget.page.width
+            update_rect.height = y2-y+4*primary.linewidth*actualWidth/widget.page.width
+            widget.get_window().invalidate_rect(update_rect, False)
+    else:
+        _last_point = [0,0]
+    _last_point[0] = event.x
+    _last_point[1] = event.y
+
+    _start_point[0] = _start_point_copy[0]
+    _start_point[1] = _start_point_copy[1]
+            
+    # Sort Coords
+    if event.x < _start_point[0]:
+        _end_point[0] = _start_point[0]
+        _start_point[0] = event.x
+    else:
+        _end_point[0] = event.x
+
+    if event.y < _start_point[1]:
+        _end_point[1] = _start_point[1]
+        _start_point[1] = event.y
+    else:
+        _end_point[1] = event.y
+    
+    center = [(_end_point[0] + _start_point[0]) / 2, (_end_point[1] + _start_point[1]) / 2]
+    width = _end_point[0] - _start_point[0]
+    height = _end_point[1] - _start_point[1]
+    if height == 0 or width == 0:
+        widget.preview_item = None
+    else:
+        scale = (width + height) / 2
+        scale_width = width / scale
+        scale_height = height / scale
+        context = cairo.Context(widget.backbuffer)
+        context.set_line_width(primary.linewidth*actualWidth/widget.page.width)
+        # Draw Circle and scale it to oval
+        context.translate(center[0], center[1])
+        context.scale(scale_width / 2., scale_height / 2.)
+        context.arc(0., 0., scale, 0., 2 * math.pi)
+        context.scale(1 / (scale_width / 2.), 1 / (scale_height / 2.))
+        context.translate(-center[0], -center[1])
+        x, y, x2, y2 = context.stroke_extents()
+        update_rect = Gdk.Rectangle()
+        update_rect.x = x-2*primary.linewidth*actualWidth/widget.page.width
+        update_rect.y = y-2*primary.linewidth*actualWidth/widget.page.width
+        update_rect.width = x2-x+4*primary.linewidth*actualWidth/widget.page.width
+        update_rect.height = y2-y+4*primary.linewidth*actualWidth/widget.page.width
+        widget.get_window().invalidate_rect(update_rect, False)
+        widget.preview_item = Circle(
+            widget.page.layers[0],
+            primary.color,
+            primary.fill,
+            primary.fillcolor,
+            primary.linewidth,
+            [center[0]*widget.page.width/actualWidth, center[1]*widget.page.width/actualWidth],
+            [width/2*widget.page.width/actualWidth, height/2*widget.page.width/actualWidth, scale*widget.page.width/actualWidth])
+
+    _start_point[0] = _start_point_copy[0]
+    _start_point[1] = _start_point_copy[1]
 
 def release(widget, event):
     """
@@ -54,6 +158,7 @@ def release(widget, event):
     Positional arguments: see press()
     """
     global _start_point
+    widget.preview_item = None
     _end_point = [0,0]
     actualWidth = widget.get_allocation().width
     
@@ -88,46 +193,20 @@ def release(widget, event):
     actualWidth = widget.get_allocation().width
 
     context = cairo.Context(widget.backbuffer)
-    context.set_antialias(cairo.ANTIALIAS_GRAY)
-    context.set_line_cap(cairo.LINE_CAP_ROUND)
     context.set_line_width(primary.linewidth*actualWidth/widget.page.width)
-
-    # Fill circle
-    if primary.fill:
-        r, g, b, opacity = primary.fillcolor
-        context.set_source_rgba(r/255, g/255, b/255, opacity/255)
-        # Draw Circle and scale it to oval
-        context.translate(center[0], center[1])
-        context.scale(scale_width / 2., scale_height / 2.)
-        context.arc(0., 0., scale, 0., 2 * math.pi)
-        context.scale(1 / (scale_width / 2.), 1 / (scale_height / 2.))
-        context.translate(-center[0], -center[1])
-        context.fill()
-    
-    # border
-    r, g, b, opacity = primary.color
-    context.set_source_rgba(r/255, g/255, b/255, opacity/255)
-    i = 0
-    context.move_to(center[0], center[1] + height/2)
-    # We draw the border with strokes to keep konstant border width
-    while i < (math.pi * 2):
-        i += 0.1
-        context.line_to(
-            center[0] + math.sin(i)*width/2,
-            center[1] + math.cos(i)*height/2)
+    # Draw Circle and scale it to oval
+    context.translate(center[0], center[1])
+    context.scale(scale_width / 2., scale_height / 2.)
+    context.arc(0., 0., scale, 0., 2 * math.pi)
+    context.scale(1 / (scale_width / 2.), 1 / (scale_height / 2.))
+    context.translate(-center[0], -center[1])
     x, y, x2, y2 = context.stroke_extents()
-    context.stroke()
-    
     update_rect = Gdk.Rectangle()
-    update_rect.x = x-2
-    update_rect.y = y-2
-    update_rect.width = x2-x+4
-    update_rect.height = y2-y+4
+    update_rect.x = x-2*primary.linewidth*actualWidth/widget.page.width
+    update_rect.y = y-2*primary.linewidth*actualWidth/widget.page.width
+    update_rect.width = x2-x+4*primary.linewidth*actualWidth/widget.page.width
+    update_rect.height = y2-y+4*primary.linewidth*actualWidth/widget.page.width
     widget.get_window().invalidate_rect(update_rect, False)
-
-    #_current_coords.append([event.x*widget.page.width/actualWidth, event.y*widget.page.width/actualWidth])
-
-    #widget.page.finish_stroke(_current_stroke)
     current_item = Circle(
         widget.page.layers[0],
         primary.color,
