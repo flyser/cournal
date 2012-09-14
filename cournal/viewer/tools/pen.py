@@ -39,10 +39,10 @@ def press(widget, event):
     event -- The Gdk.Event, which stores the location of the pointer
     """
     global _last_point, _current_coords, _current_stroke, linewidth, color
-    actualWidth = widget.get_allocation().width
     
     _current_stroke = widget.page.new_unfinished_stroke(color=color, linewidth=linewidth)
     _current_coords = _current_stroke.coords
+    widget.preview_item = _current_stroke
 
     _last_point = [event.x, event.y]
     motion(widget, event)
@@ -55,31 +55,24 @@ def motion(widget, event):
     
     Positional arguments: see press()
     """
-    global _last_point, _current_coords, _current_stroke
-    
-    r, g, b, opacity = color
-    actualWidth = widget.get_allocation().width
-    context = cairo.Context(widget.backbuffer)
-    
-    context.set_source_rgba(r/255, g/255, b/255, opacity/255)
-    context.set_antialias(cairo.ANTIALIAS_GRAY)
-    context.set_line_cap(cairo.LINE_CAP_ROUND)
-    context.set_line_width(linewidth*actualWidth/widget.page.width)
-    
-    context.move_to(_last_point[0], _last_point[1])
-    context.line_to(event.x, event.y)
-    x, y, x2, y2 = context.stroke_extents()
-    context.stroke()
+    global _last_point, _current_coords
     
     update_rect = Gdk.Rectangle()
+    scaling = widget.backbuffer.get_width()/widget.page.width
+
+    x = min(_last_point[0], event.x) - linewidth*scaling/2
+    y = min(_last_point[1], event.y) - linewidth*scaling/2
+    x2 = max(_last_point[0], event.x) + linewidth*scaling/2
+    y2 = max(_last_point[1], event.y) + linewidth*scaling/2
+        
     update_rect.x = x-2
     update_rect.y = y-2
     update_rect.width = x2-x+4
     update_rect.height = y2-y+4
     widget.get_window().invalidate_rect(update_rect, False)
-
+    
     _last_point = [event.x, event.y]
-    _current_coords.append([event.x*widget.page.width/actualWidth, event.y*widget.page.width/actualWidth])
+    _current_coords.append([event.x/scaling, event.y/scaling])
 
 def release(widget, event):
     """
@@ -92,7 +85,13 @@ def release(widget, event):
     """
     global _last_point, _current_coords, _current_stroke
     widget.page.finish_stroke(_current_stroke)
-    
+    widget.preview_item = None
+
+    context = cairo.Context(widget.backbuffer)
+    scaling = widget.backbuffer.get_width() / widget.page.width
+    context.scale(scaling, scaling)
+    _current_stroke.draw(context, scaling)
+        
     _last_point = None
     _current_coords = None
     _current_stroke = None
