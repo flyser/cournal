@@ -8,7 +8,8 @@ Version 0.3 -- not yet released
   * Fill color
   * Tool bar with icons
   * Keyboard shortcuts
-
+  * Tool item preview
+  
 Version 0.2.1 -- 2012-07-31
   * Support for system-wide installation via setup.py
   * Fix a bug, which caused cournal to consume too much CPU if the connection

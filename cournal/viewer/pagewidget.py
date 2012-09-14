@@ -166,8 +166,12 @@ class PageWidget(Gtk.DrawingArea):
         if event.button == 1:
             self.active_tool = primary.current_tool
         elif event.button == 2:
+            if self.preview_item:
+                self.active_tool.release(self, event)
             self.active_tool = navigation
         elif event.button == 3:
+            if self.preview_item:
+                self.active_tool.release(self, event)
             self.active_tool = eraser
         else:
             return
