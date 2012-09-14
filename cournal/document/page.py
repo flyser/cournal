@@ -91,7 +91,6 @@ class Page:
         Positional arguments:
         stroke -- The Stroke object, that was finished
         """
-        #TODO: rerender that part of the screen.
         history.register_draw_item(stroke, self)
         stroke.calculate_bounding_box()
         network.new_item(self.number, stroke)
