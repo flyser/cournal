@@ -86,6 +86,9 @@ class Circle(pb.Copyable, pb.RemoteCopy):
         Keyword arguments:
         scaling -- scale the stroke by this factor (defaults to 1.0)
         """
+        if self.scale[0] * self.scale[1] * self.scale[2] == 0:
+            return
+        
         context.save()
         r, g, b, opacity = self.fill_color
         

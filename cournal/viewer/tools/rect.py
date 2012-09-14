@@ -30,7 +30,7 @@ _last_point = None
 
 def press(widget, event):
     """
-    Mouse down event. Set the start point for the rect
+    Mouse down event. Set the start point for the item
     
     Positional arguments:
     widget -- The PageWidget, which triggered the event
@@ -46,57 +46,6 @@ def press(widget, event):
     _start_point = [event.x, event.y]
     _current_coords.append(event.x*widget.page.width/actualWidth)
     _current_coords.append(event.y*widget.page.width/actualWidth)
-    
-def motion(widget, event):
-    """
-    Mouse motion event. Generate preview item and set render borders
-    
-    Positional arguments: see press()
-    """
-    global _last_point
-
-    if _last_point:
-        # Bounding Box for last line
-        actualWidth = widget.get_allocation().width
-        context = cairo.Context(widget.backbuffer)
-        context.set_line_width(primary.linewidth*actualWidth/widget.page.width)
-        context.move_to(_start_point[0], _start_point[1])
-        context.line_to(_last_point[0], _last_point[1])
-        x, y, x2, y2 = context.stroke_extents()
-        update_rect = Gdk.Rectangle()
-        update_rect.x = x-2*primary.linewidth*actualWidth/widget.page.width
-        update_rect.y = y-2*primary.linewidth*actualWidth/widget.page.width
-        update_rect.width = x2-x+4*primary.linewidth*actualWidth/widget.page.width
-        update_rect.height = y2-y+4*primary.linewidth*actualWidth/widget.page.width
-        widget.get_window().invalidate_rect(update_rect, False)
-        widget.preview_item = Rect(
-            widget.page.layers[0],
-            primary.color,
-            primary.fill,
-            primary.fillcolor,
-            primary.linewidth,
-            [_start_point[0]*widget.page.width/actualWidth,
-            _start_point[1]*widget.page.width/actualWidth,
-            event.x*widget.page.width/actualWidth,
-            event.y*widget.page.width/actualWidth]
-            )
-    else:
-        _last_point = [0,0]
-    _last_point[0] = event.x
-    _last_point[1] = event.y
-
-    actualWidth = widget.get_allocation().width
-    context = cairo.Context(widget.backbuffer)
-    context.set_line_width(primary.linewidth*actualWidth/widget.page.width)
-    context.move_to(_start_point[0], _start_point[1])
-    context.line_to(event.x, event.y)
-    x, y, x2, y2 = context.stroke_extents()
-    update_rect = Gdk.Rectangle()
-    update_rect.x = x-2*primary.linewidth*actualWidth/widget.page.width
-    update_rect.y = y-2*primary.linewidth*actualWidth/widget.page.width
-    update_rect.width = x2-x+4*primary.linewidth*actualWidth/widget.page.width
-    update_rect.height = y2-y+4*primary.linewidth*actualWidth/widget.page.width
-    widget.get_window().invalidate_rect(update_rect, False)
     widget.preview_item = Rect(
         widget.page.layers[0],
         primary.color,
@@ -105,21 +54,55 @@ def motion(widget, event):
         primary.linewidth,
         [_start_point[0]*widget.page.width/actualWidth,
         _start_point[1]*widget.page.width/actualWidth,
-        event.x*widget.page.width/actualWidth,
-        event.y*widget.page.width/actualWidth]
+        _start_point[0]*widget.page.width/actualWidth,
+        _start_point[1]*widget.page.width/actualWidth]
         )
+    
+def motion(widget, event):
+    """
+    Mouse motion event. Update item and set render borders
+    
+    Positional arguments: see press()
+    """
+    global _last_point
+
+    scaling = widget.backbuffer.get_width()/widget.page.width
+    if _last_point:
+        update_rect = Gdk.Rectangle()
+        x = min(_last_point[0], _start_point[0]) - primary.linewidth*scaling/2
+        y = min(_last_point[1], _start_point[1]) - primary.linewidth*scaling/2
+        x2 = max(_last_point[0], _start_point[0]) + primary.linewidth*scaling/2
+        y2 = max(_last_point[1], _start_point[1]) + primary.linewidth*scaling/2
+        update_rect.x = x-2
+        update_rect.y = y-2
+        update_rect.width = x2-x+4
+        update_rect.height = y2-y+4
+        widget.get_window().invalidate_rect(update_rect, False)
+    _last_point = [event.x, event.y]
+    
+    update_rect = Gdk.Rectangle()
+    x = min(_start_point[0], event.x) - primary.linewidth*scaling/2
+    y = min(_start_point[1], event.y) - primary.linewidth*scaling/2
+    x2 = max(_start_point[0], event.x) + primary.linewidth*scaling/2
+    y2 = max(_start_point[1], event.y) + primary.linewidth*scaling/2
+        
+    update_rect.x = x-2
+    update_rect.y = y-2
+    update_rect.width = x2-x+4
+    update_rect.height = y2-y+4
+    widget.get_window().invalidate_rect(update_rect, False)
+    widget.preview_item.coords[2] = event.x/scaling
+    widget.preview_item.coords[3] = event.y/scaling
         
 def release(widget, event):
     """
-    Mouse release event. Inform the corresponding Page instance, that the stroke
-    is finished.
+    Mouse release event.
     
-    This will cause the stroke to be sent to the server, if it is connected.
+    This will cause the item to be sent to the server, if it is connected.
     
     Positional arguments: see press()
     """
 
-    widget.preview_item = None
 
     global _start_point, _current_coords, _current_item
     actualWidth = widget.get_allocation().width
@@ -129,6 +112,7 @@ def release(widget, event):
     widget.page.new_item(_current_item, send_to_network=True)
     history.register_draw_item(_current_item, widget.page)
     
+    widget.preview_item = None
     _start_point = None
     _current_coords = None
     _current_item = None
