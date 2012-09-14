@@ -102,10 +102,16 @@ def release(widget, event):
     """
 
     global _start_point, _current_coords, _current_stroke
-    actualWidth = widget.get_allocation().width
+    scaling = widget.backbuffer.get_width()/widget.page.width
 
-    _current_coords.append([event.x*widget.page.width/actualWidth, event.y*widget.page.width/actualWidth])
+    actualWidth = widget.get_allocation().width
+    _current_coords.append([event.x/scaling, event.y/scaling])
     widget.page.finish_stroke(_current_stroke)
+
+    context = cairo.Context(widget.backbuffer)
+    context.scale(scaling, scaling)
+    _current_stroke.draw(context, scaling)
+    
     
     widget.preview_item = None
     _start_point = None
