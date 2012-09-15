@@ -38,8 +38,6 @@ from twisted.python.failure import Failure
 from cournal import __versionstring__ as cournal_version
 from cournal.document.stroke import Stroke
 
-#from cournal.server.jsonparser import CournalEncoder
-
 # 0 - none
 # 1 - minimal
 # 2 - medium
@@ -140,7 +138,6 @@ class CournalServer:
         autosave_directory -- The directory within which to store the documents
         autosave_interval -- Interval in seconds within which to save the documents
         """
-
         self.documents = dict()
         self.autosave_directory = os.path.abspath(autosave_directory)
         self.autosave_interval = autosave_interval
@@ -171,7 +168,7 @@ class CournalServer:
                 self.documents[name] = Document(name)
                 self.documents[name].pages = pickle.load(file)
                 print(_(\
-"""WARNING: Found older cournal server versions file '{}'.
+"""INFO:    Found older cournal server versions file '{}'.
          It will be saved in new cournal server file format.
          Please check, if this convertion was correct, and then
          delete the old file '{}'.""").format(name, filename))
@@ -281,13 +278,13 @@ To run multiple instances concurrently, you need to set a different autosave dir
             if self.autosave_interval > 0:
                 # Try to create a savefile, if it fails deny the document creation
                 filename = docname_to_filename(documentname)
-                #try:
-                file = open(self.autosave_directory + "/" + filename, mode="w")
-                json.dump([], file)
-                file.close()
-                #except Exception as ex:
-                #    print("error", ex)
-                #    return Failure(str(ex))
+                try:
+                    file = open(self.autosave_directory + "/" + filename, mode="w")
+                    json.dump([], file)
+                    file.close()
+                except Exception as ex:
+                    print(_("Error creating file:"), ex)
+                    return Failure(str(ex))
             self.documents[documentname] = Document(documentname)
             self.documents[documentname].has_unsaved_changes = True
         return self.documents[documentname]
