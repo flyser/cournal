@@ -146,6 +146,18 @@ msgstr ""
 msgid "Loaded {} documents"
 msgstr "{} Dokumente geladen"
 
+#: cournal/server/server.py:173
+msgid ""
+"WARNING: Found older cournal server versions file '{}'.\n"
+"         It will be saved in new cournal server file format.\n"
+"         Please check, if this convertion was correct, and then\n"
+"         delete the old file '{}'."
+msgstr ""
+"WARNUNG: Die Datei '{}' wurde von einer alten Cournal-Server-Version erstellt.\n"
+"         Sie wird im neuen Cournal-Server-Dateiformat gespeichert.\n"
+"         Bitte überprüfen Sie, ob die Konvertierung korrekt durchgeführt wurde,\n"
+"         und löschen Sie anschließend die alte Datei '{}'"
+
 #: cournal/server/server.py:121
 msgid ""
 "The autosave directory was locked by another instance of cournal-server,\n"
