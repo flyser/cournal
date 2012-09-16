@@ -48,7 +48,7 @@ class _Network(pb.Referenceable):
         pb.Referenceable.__init__(self)
         self.document = None
         self.window = None
-        self.is_connected = False
+        self.is_connected = 0
         self.is_stalled = True
         self.last_data_received = 0
         self.watchdog = None
@@ -102,7 +102,7 @@ class _Network(pb.Referenceable):
         # here, otherwise it will get garbage collected at the end of this
         # function and the server will think we logged out.
         self.is_stalled = False
-        self.is_connected = True
+        self.is_connected = 1
         self.perspective = perspective
         self.perspective.notifyOnDisconnect(self.disconnect_event)
         self.data_received()
@@ -117,7 +117,7 @@ class _Network(pb.Referenceable):
         reason -- A twisted Failure object with the reason the connection failed
         """
         debug(0, _("Connection failed due to: {}").format(reason.getErrorMessage()))
-        self.is_connected = False
+        self.is_connected = 0
         
         return reason
     
@@ -130,7 +130,7 @@ class _Network(pb.Referenceable):
     
     def disconnect_event(self, event):
         """Called, when the client gets disconnected from the server."""
-        self.is_connected = False
+        self.is_connected = 0
         self.connection_problems()
         if self.window:
             self.window.disconnect_event()
@@ -180,6 +180,7 @@ class _Network(pb.Referenceable):
         """
         self.data_received()
         debug(2, _("Started editing {}").format(name))
+        self.is_connected = 2
         self.server_document = server_document
 
     def remote_new_item(self, pagenum, item):
@@ -202,7 +203,7 @@ class _Network(pb.Referenceable):
         pagenum -- On which page the item was added
         item -- The Stroke item to send
         """
-        if self.is_connected:
+        if self.is_connected > 1:
             d = self.server_document.callRemote("new_item", pagenum, item)
             d.addCallbacks(lambda x: self.data_received(), self.disconnect)
 
@@ -226,7 +227,7 @@ class _Network(pb.Referenceable):
         pagenum -- On which page the item was deleted
         coords -- The list of coordinates identifying the item
         """
-        if self.is_connected:
+        if self.is_connected > 1:
             d = self.server_document.callRemote("delete_item_with_coords", pagenum, coords)
             d.addCallback(lambda x,y: self.data_received(), self.disconnect)
     
