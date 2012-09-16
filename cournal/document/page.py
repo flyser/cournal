@@ -138,17 +138,6 @@ class Page:
         
         Return value: Generator for a list of all objects, which are near that point
         """
-        #TODO: Create tool dependent delete if coord match function
         for item in self.layers[0].items[:]:
-            if item.in_bounds(x, y):
-                if isinstance(item, Stroke):
-                    for coord in item.coords:
-                        s_x = coord[0]
-                        s_y = coord[1]
-                        if ((s_x-x)**2 + (s_y-y)**2) < radius**2:
-                            yield item
-                            break
-                elif isinstance(item, Rect):
-                     yield item
-                elif isinstance(item, Circle):
-                     yield item
+            if item.in_bounds(x, y, radius):
+                yield item

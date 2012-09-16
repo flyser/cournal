@@ -43,7 +43,7 @@ class Rect(pb.Copyable, pb.RemoteCopy):
         if self.coords is None:
             self.coords = []
     
-    def in_bounds(self, x, y):
+    def in_bounds(self, x, y, radius):
         """
         Test if point is in bounding box of the stroke.
         
@@ -66,7 +66,10 @@ class Rect(pb.Copyable, pb.RemoteCopy):
             s_y = self.coords[3]
             e_y = self.coords[1]
         
-        if x > s_x and x < e_x and y > s_y and y < e_y:
+        if x > s_x-radius and x < e_x+radius and y > s_y-radius and y < e_y+radius:
+            if not self.fill:
+                if x > s_x+radius and x < e_x-radius and y > s_y+radius and y < e_y-radius:
+                    return False
             return True
         else:
             return False

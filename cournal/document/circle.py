@@ -43,7 +43,7 @@ class Circle(pb.Copyable, pb.RemoteCopy):
         self.coords = coords
         self.scale = scale
         
-    def in_bounds(self, x, y):
+    def in_bounds(self, x, y, radius):
         """
         Test if point is in bounding box of the stroke.
         
@@ -53,9 +53,11 @@ class Circle(pb.Copyable, pb.RemoteCopy):
         Returns:
         true, if point is in bounding box
         """
-        radius = (self.coords[0] - x)**2 + (self.coords[1] - y)**2
-        if radius < max(self.scale[0], self.scale[1])**2:
-            # TODO Improve
+        distance = ((self.coords[0] - x)/self.scale[0])**2 + ((self.coords[1] - y)/self.scale[1])**2
+        if distance < 1+radius/min(self.scale[0],self.scale[1]):
+            if not self.fill:
+                if distance < 1-radius/min(self.scale[0],self.scale[1]):
+                    return False
             return True
         else:
             return False

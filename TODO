@@ -14,7 +14,6 @@ This is a TODO List with (hopefully) future Cournal Features!
 * Support to open more than one PDF Document
 * Android Port
 * Show position of other users in scrollbar
-* Item deletion functions
 * Error handling
 * Change Pickle to JSON
 * Make fill color chooser more discreet
