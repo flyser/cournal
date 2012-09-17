@@ -102,8 +102,8 @@ class MainWindow(Gtk.Window):
         builder.get_object("tool_pensize_normal").set_active(True)
         
         # Workaround for bug https://bugzilla.gnome.org/show_bug.cgi?id=671786
-        if not Gtk.check_version(3,4,5) == None and not Gtk.check_version(3,6,0) == None:
-            # Gtk 3.4 without bugfix
+        if not Gtk.check_version(3,6,0) == None:
+            # Gtk 3.4 or older
             a = builder.get_object("accelgroup")
             a.connect_by_path(action_open_xoj.get_accel_path(), lambda a,b,c,d: action_open_xoj.activate())
             a.connect_by_path(action_open_pdf.get_accel_path(), lambda a,b,c,d: action_open_pdf.activate())
