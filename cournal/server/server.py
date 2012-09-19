@@ -24,7 +24,8 @@ import string
 import atexit
 from tempfile import NamedTemporaryFile
 import argparse
-import pickle
+import json
+import pickle # deprecated
 
 from zope.interface import implementer
 
@@ -36,7 +37,6 @@ from twisted.python.failure import Failure
 
 from cournal import __versionstring__ as cournal_version
 from cournal.document.stroke import Stroke
-
 
 # 0 - none
 # 1 - minimal
@@ -53,6 +53,70 @@ PASSWORD = "testpw"
 # List of all characters that are allowed in filenames. Must not contain ; and :
 valid_characters = string.ascii_letters + string.digits + ' _()+,.-=^~'
 
+class CournalEncoder(json.JSONEncoder):
+    """
+    JSON encoder
+    """
+    def default(self, obj):
+        if isinstance(obj, Document):
+            return obj.__dict__
+        else:
+            d = obj.__dict__
+            if isinstance(obj, Page):
+                d['Class'] = "Page"
+            elif isinstance(obj, Stroke):
+                d['Class'] = "Stroke"
+            return d
+    
+class CournalDecoder():
+    """
+    JSON decoder
+    """
+    def document(obj):
+        pages = []
+        for page in obj:
+            pages.append(CournalDecoder.page(page))
+        if len(pages) == 0:
+            return None
+        else:
+            return pages
+    
+    def page(obj):
+        if obj.get("Class") == "Page":
+            # Create Object
+            ret = Page()
+            for item in obj:
+                if item == "strokes":
+                    for stroke in obj[item]:
+                        ret.strokes.append(CournalDecoder.stroke(stroke))
+                elif item == "Class":
+                    pass
+                else:
+                    print("WARNING: Unkown page item:", item)
+            return ret
+        else:
+            print("WARNING: Not a page")
+            return None
+    
+    def stroke(obj):
+        if obj.get("Class") == "Stroke":
+            # Create Object with default values
+            ret = Stroke(None, [255,0,0,128], 1.5, coords=[])
+            for prop in obj:
+                if prop == "color":
+                    ret.color = obj[prop]
+                elif prop == "linewidth":
+                    ret.linewidth = obj[prop]
+                elif prop == "coords":
+                    ret.coords = obj[prop]
+                elif prop == "layer":
+                    ret.layer = obj[prop]
+                elif prop == "Class":
+                    pass
+                else:
+                    print("WARNING: Unkown stroke property:", prop)
+            return ret
+        
 class Page:
     """
     A page in a document, having multiple strokes.
@@ -97,12 +161,26 @@ class CournalServer:
 
         self.obtain_lockfile()
         
-        # Load saved data
+        # Load saved data from older cournal server versions
         for filename in [s for s in os.listdir() if s.endswith(".save") and s.startswith("cnl-")]:
             name = filename_to_docname(filename)
             with open(filename, "rb") as file:
                 self.documents[name] = Document(name)
                 self.documents[name].pages = pickle.load(file)
+                print(_(\
+"""INFO:    Found older cournal server versions file '{}'.
+         It will be saved in new cournal server file format.
+         Please check, if this convertion was correct, and then
+         delete the old file '{}'.""").format(name, filename))
+
+        # Load saved data
+        for filename in [s for s in os.listdir() if s.endswith(".json") and s.startswith("cnl-")]:
+            name = filename_to_docname(filename)
+            with open(filename, "r") as file:
+                pages = CournalDecoder.document(json.load(file))
+                if pages:
+                    self.documents[name] = Document(name)
+                    self.documents[name].pages = pages
         
         debug(1, _("Loaded {} documents").format(len(self.documents)))
         
@@ -115,7 +193,7 @@ class CournalServer:
         """
         lockfile = self.autosave_directory + "/lock"
         if os.path.exists(lockfile):
-            with open(lockfile, "rb") as f:
+            with open(lockfile, "r") as f:
                 pid = int(f.read())
             if self.is_pid_dead(pid):
                 print(_(\
@@ -170,7 +248,7 @@ To run multiple instances concurrently, you need to set a different autosave dir
         """
         Save all documents to files named "autosave_directory/documentname.save".
         
-        The on-disk format is a pickled list of pages.
+        The on-disk format is a JSON
         """
         debug(3, _("Saving all documents."))
         for name, document in self.documents.items():
@@ -180,8 +258,8 @@ To run multiple instances concurrently, you need to set a different autosave dir
             # atomic writing of the file, meaning: In case of a crash, either the
             # old or the new version of that file is on the disk
             filename = docname_to_filename(name)
-            tmpfile = NamedTemporaryFile(prefix=filename[:-5]+'-', suffix='.delete-me', dir=self.autosave_directory, mode='wb', delete=False)
-            pickle.dump(document.pages, tmpfile, protocol=3)
+            tmpfile = NamedTemporaryFile(prefix=filename[:-5]+'-', suffix='.delete-me', dir=self.autosave_directory, mode='w', delete=False)
+            json.dump(document.pages, tmpfile, cls=CournalEncoder, indent=4)
             tmpfile.close()
             os.rename(tmpfile.name, self.autosave_directory + "/" + filename)
             document.has_unsaved_changes = False
@@ -201,10 +279,11 @@ To run multiple instances concurrently, you need to set a different autosave dir
                 # Try to create a savefile, if it fails deny the document creation
                 filename = docname_to_filename(documentname)
                 try:
-                    file = open(self.autosave_directory + "/" + filename, mode="wb")
-                    pickle.dump([], file, protocol=3)
+                    file = open(self.autosave_directory + "/" + filename, mode="w")
+                    json.dump([], file)
                     file.close()
                 except Exception as ex:
+                    print(_("Error creating file:"), ex)
                     return Failure(str(ex))
             self.documents[documentname] = Document(documentname)
             self.documents[documentname].has_unsaved_changes = True
@@ -483,7 +562,7 @@ def docname_to_filename(name):
         else:
             result += ":" + hex(ord(char))[2:] + ";"
 
-    return "cnl-" + result + ".save"
+    return "cnl-" + result + ".json"
 
 def main():
     """Start a Cournal server"""
