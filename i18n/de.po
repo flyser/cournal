@@ -146,6 +146,18 @@ msgstr ""
 msgid "Loaded {} documents"
 msgstr "{} Dokumente geladen"
 
+#: cournal/server/server.py:173
+msgid ""
+"INFO:    Found older cournal server versions file '{}'.\n"
+"         It will be saved in new cournal server file format.\n"
+"         Please check, if this convertion was correct, and then\n"
+"         delete the old file '{}'."
+msgstr ""
+"INFO:    Die Datei '{}' wurde von einer alten Cournal-Server-Version erstellt.\n"
+"         Sie wird im neuen Cournal-Server-Dateiformat gespeichert.\n"
+"         Bitte überprüfen Sie, ob die Konvertierung korrekt durchgeführt wurde,\n"
+"         und löschen Sie anschließend die alte Datei '{}'"
+
 #: cournal/server/server.py:121
 msgid ""
 "The autosave directory was locked by another instance of cournal-server,\n"
@@ -189,6 +201,10 @@ msgstr "Ein Benutzer hat sich getrennt: {}"
 #: cournal/server/server.py:283
 msgid "User {} requested document list"
 msgstr "Benutzer {} hat die Dokumentenliste angefordert"
+
+#: cournal/server/server.py:286
+msgid "Error creating file:"
+msgstr "Dateispeicherfehler:"
 
 #: cournal/server/server.py:294
 msgid "User {} started editing {}"
