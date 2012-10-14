@@ -29,7 +29,7 @@ class Stroke(pb.Copyable, pb.RemoteCopy):
     else tuples of two floats.
     FIXME: don't ignore the variable width
     """
-    def __init__(self, layer, color, linewidth, coords=None):
+    def __init__(self, color, linewidth, layer=None, coords=None):
         """
         Constructor
         
