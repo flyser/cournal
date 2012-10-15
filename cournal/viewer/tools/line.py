@@ -50,9 +50,9 @@ def press(widget, event):
    
     widget.page.layers[0].items.append(_current_stroke)
     widget.preview_item = Stroke(
-        widget.page.layers[0],
         primary.color,
         primary.linewidth,
+        widget.page.layers[0],
         [[_start_point[0]*widget.page.width/actualWidth, _start_point[1]*widget.page.width/actualWidth],
         [_start_point[0]*widget.page.width/actualWidth, _start_point[1]*widget.page.width/actualWidth]]
         )
