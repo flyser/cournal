@@ -17,6 +17,7 @@
 # You should have received a copy of the GNU General Public License
 # along with Cournal.  If not, see <http://www.gnu.org/licenses/>.
 
+import os.path
 from gi.repository import Gtk
 
 import cournal
@@ -40,7 +41,7 @@ class ConnectionDialog(Gtk.Dialog):
         
         builder = Gtk.Builder()
         builder.set_translation_domain("cournal")
-        builder.add_from_file(cournal.__path__[0] + "/connection_dialog.glade")
+        builder.add_from_file(os.path.join(cournal.__path__[0], "connection_dialog.glade"))
         grid = builder.get_object("grid_main")
         
         self.multipage = builder.get_object("multipage")

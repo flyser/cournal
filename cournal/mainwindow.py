@@ -18,6 +18,7 @@
 # along with Cournal.  If not, see <http://www.gnu.org/licenses/>.
 
 from time import time
+import os.path
 
 from gi.repository import Gtk, Gdk, GObject
 from gi.repository.GLib import GError
@@ -68,7 +69,7 @@ class MainWindow(Gtk.Window):
         # Bob the builder
         builder = Gtk.Builder()
         builder.set_translation_domain("cournal")
-        builder.add_from_file(cournal.__path__[0] + "/mainwindow.glade")
+        builder.add_from_file(os.path.join(cournal.__path__[0], "mainwindow.glade"))
         self.add(builder.get_object("outer_box"))
         self.add_accel_group(builder.get_object("accelgroup"))
         self.layout = None

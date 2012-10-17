@@ -261,7 +261,7 @@ To run multiple instances concurrently, you need to set a different autosave dir
                 # Try to create a savefile, if it fails deny the document creation
                 filename = docname_to_filename(documentname)
                 try:
-                    file = open(self.autosave_directory + "/" + filename, mode="w")
+                    file = open(os.path.join(self.autosave_directory, filename), mode="w")
                     json.dump([], file)
                     file.close()
                 except Exception as ex:
