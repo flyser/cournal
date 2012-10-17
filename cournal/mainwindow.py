@@ -452,6 +452,8 @@ class MainWindow(Gtk.Window):
             try:
                 document = xojparser.new_document(filename, self)
             except Exception as ex:
+                import traceback
+                traceback.print_tb(ex.__traceback__)
                 print(ex)
                 dialog.destroy()
                 return

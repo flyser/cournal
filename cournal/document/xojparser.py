@@ -115,7 +115,7 @@ def _parse_stroke(stroke, layer):
     if len(coordinates) == 2 and coordinates[0] == coordinates[1]:
         del coordinates[1]
 
-    return Stroke(layer, color=color, linewidth=nominalWidth, coords=coordinates)
+    return Stroke(layer=layer, color=color, linewidth=nominalWidth, coords=coordinates)
 
 def _get_background(tree):
     """
