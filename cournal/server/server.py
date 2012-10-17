@@ -147,7 +147,7 @@ class CournalServer:
                     raise ex
         self.obtain_lockfile()
         
-        # Convert saved documents pickled by cournal-server 0.3 or earlier
+        # Convert saved documents pickled by cournal-server 0.2.1 or earlier
         if DEFAULT_AUTOSAVE_DIRECTORY == self.autosave_directory:
             pickle_legacy.run(from_dir=os.path.expanduser("~/.cournal"), to_dir=self.autosave_directory)
         else:

@@ -46,7 +46,7 @@ def run(from_dir, to_dir=None):
             document.pages = pickle.load(file)
         _save(document, to_dir)
         print(_(\
-"""NOTE:  Found document '{}' saved by cournal-server 0.3 or earlier. It will be
+"""NOTE:  Found document '{}' saved by cournal-server 0.2.1 or earlier. It will be
        converted to a new file format. Please make sure the conversion went fine and
        delete the old file: '{}'.""").format(name, filename))
         
