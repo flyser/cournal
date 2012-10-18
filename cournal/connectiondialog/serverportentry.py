@@ -90,7 +90,15 @@ class ServerPortEntry(Gtk.EventBox):
         """The hostname of the server given by the user"""
         return self.server_entry.get_text()
     
+    @server.setter
+    def server(self, value):
+        self.server_entry.set_text(value)
+    
     @property
     def port(self):
         """The portnumber given by the user"""
         return int(self.port_entry.get_text())
+    
+    @port.setter
+    def port(self, value):
+        self.port_entry.set_text(value)
