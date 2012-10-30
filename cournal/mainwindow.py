@@ -280,7 +280,9 @@ class MainWindow(Gtk.Window):
         self.scrolledwindow.add(self.layout)
         self.scrolledwindow.show_all()
         self.last_filename = None
-        
+
+        self.statusbar_pagenum.set_sensitive(True)
+        self.statusbar_pagenum_entry.set_sensitive(True)
         self.actiongroup_document_specific.set_sensitive(True)
         if self.document.num_of_pages > 1:
             self.button_next_page.set_sensitive(True)
