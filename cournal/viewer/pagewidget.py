@@ -20,6 +20,7 @@
 from gi.repository import Gtk, Gdk
 import cairo
 
+from cournal.viewer.tools import pen, eraser, navigation, rect, primary
 from cournal.viewer.tools import pen, eraser, navigation
 from cournal.document import search
 
@@ -110,7 +111,7 @@ class PageWidget(Gtk.DrawingArea):
     
     def draw(self, widget, context):
         """
-        Draw the widget (the PDF, all strokes and the background). Called by Gtk.
+        Draw the widget (the PDF, all objects and the background). Called by Gtk.
         
         Positional arguments:
         widget -- The widget to redraw
@@ -132,8 +133,8 @@ class PageWidget(Gtk.DrawingArea):
             self.page.pdf.render(bb_ctx)
             bb_ctx.restore()
             
-            for stroke in self.page.layers[0].strokes:
-                stroke.draw(bb_ctx, scaling)
+            for item in self.page.layers[0].items:
+                item.draw(bb_ctx, scaling)
             
             # Highlight search result
             if self.page.search_marker:
@@ -163,10 +164,14 @@ class PageWidget(Gtk.DrawingArea):
         event -- The Gdk.Event, which stores the location of the pointer
         """
         if event.button == 1:
-            self.active_tool = pen
+            self.active_tool = primary.current_tool
         elif event.button == 2:
+            if self.preview_item:
+                self.active_tool.release(self, event)
             self.active_tool = navigation
         elif event.button == 3:
+            if self.preview_item:
+                self.active_tool.release(self, event)
             self.active_tool = eraser
         else:
             return
@@ -191,20 +196,20 @@ class PageWidget(Gtk.DrawingArea):
             self.active_tool.release(self, event)
             self.active_tool = None
     
-    def draw_remote_stroke(self, stroke):
+    def draw_remote_item(self, item):
         """
-        Draw a single stroke on the widget.
-        Meant to be called by networking code, when a remote user drew a stroke.
+        Draw a single item on the widget.
+        Meant to be called by networking code, when a remote user drew a item.
         
         Positional arguments:
-        stroke -- The Stroke object, which is to be drawn.
+        item -- The item, which is to be drawn.
         """
         if self.backbuffer:
             scaling = self.widget_width / self.page.width
             context = cairo.Context(self.backbuffer)
             
             context.scale(scaling, scaling)
-            x, y, x2, y2 = stroke.draw(context, scaling)
+            x, y, x2, y2 = item.draw(context, scaling)
             
             update_rect = Gdk.Rectangle()
             update_rect.x = x-2
@@ -214,13 +219,13 @@ class PageWidget(Gtk.DrawingArea):
             if self.get_window():
                 self.get_window().invalidate_rect(update_rect, False)
     
-    def delete_remote_stroke(self, stroke):
+    def delete_remote_item(self, item):
         """
-        Rerender the part of the widget, where a stroke was deleted
-        Meant do be called by networking code, when a remote user deleted a stroke.
+        Rerender the part of the widget, where a item was deleted
+        Meant do be called by networking code, when a remote user deleted a item.
         
         Positional arguments:
-        stroke -- The Stroke object, which was deleted.
+        item -- The item, which was deleted.
         """
         if self.backbuffer:
             self.backbuffer_valid = False

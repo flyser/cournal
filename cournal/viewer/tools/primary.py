@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # This file is part of Cournal.
-# Copyright (C) 2012 Fabian Henze
+# Copyright (C) 2012 Simon Vetter
 # 
 # Cournal is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -17,24 +17,15 @@
 # You should have received a copy of the GNU General Public License
 # along with Cournal.  If not, see <http://www.gnu.org/licenses/>.
 
-class Layer:
-    """
-    A layer on a page, having a number and multiple item.
-    """
-    def __init__(self, page, number, items=None):
-        """
-        Constructor
-        
-        Positional arguments:
-        page -- The Page object, which is the parent of this layer.
-        number -- Layer number
-        
-        Keyword arguments:
-        item -- List of items (defaults to [])
-        """
-        self.number = number
-        self.page = page
-        self.items = items
-        
-        if self.items is None:
-            self.items = []
+import cairo
+from gi.repository import Gdk
+
+"""
+The primary tool. Defines stroke color, fill color, width and the current tool
+"""
+
+linewidth = 1.5
+color = (0,0,128,255)
+fillcolor = (255,128,0,255)
+current_tool = None
+fill = True

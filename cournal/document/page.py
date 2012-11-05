@@ -20,6 +20,8 @@
 
 from cournal.document.layer import Layer
 from cournal.document.stroke import Stroke
+from cournal.document.rect import Rect
+from cournal.document.circle import Circle
 from cournal.network import network
 from cournal.document import history
 
@@ -50,26 +52,26 @@ class Page:
         self.width, self.height = pdf.get_size()
         self.search_marker = None
     
-    def new_stroke(self, stroke, send_to_network=False):
+    def new_item(self, item, send_to_network=False):
         """
-        Add a new stroke to this page and possibly send it to the server, if
+        Add a new item to this page and possibly send it to the server, if
         connected.
         
         Positional arguments:
-        stroke -- The Stroke object, that will be added to this page
+        item -- The item, that will be added to this page
         
         Keyword arguments:
-        send_to_network -- Set True, to send the stroke to the server
+        send_to_network -- Set True, to send the item to the server
                            (defaults to False)
         """
-        self.layers[0].strokes.append(stroke)
-        stroke.calculate_bounding_box()
-        stroke.layer = self.layers[0]
+        self.layers[0].items.append(item)
+        item.calculate_bounding_box()
+        item.layer = self.layers[0]
         if self.widget:
-            self.widget.draw_remote_stroke(stroke)
+            self.widget.draw_remote_item(item)
         if send_to_network:
-            network.new_stroke(self.number, stroke)
-        
+            network.new_item(self.number, item)
+
     def new_unfinished_stroke(self, color, linewidth):
         """
         Add a new empty stroke, which is not sent to the server, till
@@ -89,58 +91,53 @@ class Page:
         Positional arguments:
         stroke -- The Stroke object, that was finished
         """
-        history.register_draw_stroke(stroke, self)
+        history.register_draw_item(stroke, self)
         stroke.calculate_bounding_box()
-        network.new_stroke(self.number, stroke)
+        network.new_item(self.number, stroke)
 
-    def delete_stroke_with_coords(self, coords):
+    def delete_item_with_coords(self, coords):
         """
-        Delete all strokes, which have exactly the same coordinates as given.
+        Delete all items, which have exactly the same coordinates as given.
         
         Positional arguments
         coords -- The list of coordinates
         """
-        for stroke in self.layers[0].strokes[:]:
-            if stroke.coords == coords:
-                self.delete_stroke(stroke, send_to_network=False)
+        for item in self.layers[0].items[:]:
+            if item.coords == coords:
+                self.delete_item(item, send_to_network=False)
     
-    def delete_stroke(self, stroke, send_to_network=False, register_in_history=True):
+    def delete_item(self, item, send_to_network=False, register_in_history=True):
         """
-        Delete a stroke on this page and possibly send this request to the server,
+        Delete a item on this page and possibly send this request to the server,
         if connected.
         
         Positional arguments:
-        stroke -- The Stroke object, that will be deleted.
+        item -- The item, that will be deleted.
         
         Keyword arguments:
         send_to_network -- Set to True, to send the request for deletion the server
                            (defaults to False)
         register_in_history -- Make this command undoable
         """
-        self.layers[0].strokes.remove(stroke)
+        self.layers[0].items.remove(item)
         if self.widget:
-            self.widget.delete_remote_stroke(stroke)
+            self.widget.delete_remote_item(item)
         if send_to_network:
-            network.delete_stroke_with_coords(self.number, stroke.coords)
+            network.delete_item_with_coords(self.number, item.coords)
             if register_in_history:
-                history.register_delete_stroke(stroke, self)
+                history.register_delete_item(item, self)
     
-    def get_strokes_near(self, x, y, radius):
+    def get_items_near(self, x, y, radius):
         """
-        Finds strokes near a given point
+        Finds items near a given point
         
         Positional arguments:
         x -- x coordinate of the given point
         y -- y coordinate of the given point
         radius -- Radius in pt, which influences the decision of what is considered "near"
         
-        Return value: Generator for a list of all strokes, which are near that point
+        Return value: Generator for a list of all objects, which are near that point
         """
-        for stroke in self.layers[0].strokes[:]:
-            if stroke.in_bounds(x, y):
-                for coord in stroke.coords:
-                    s_x = coord[0]
-                    s_y = coord[1]
-                    if ((s_x-x)**2 + (s_y-y)**2) < radius**2:
-                        yield stroke
-                        break
+        for item in self.layers[0].items[:]:
+            if item.in_bounds(x, y, radius):
+                yield item

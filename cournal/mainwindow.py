@@ -25,7 +25,7 @@ from gi.repository.GLib import GError
 
 import cournal
 from cournal.viewer.layout import Layout
-from cournal.viewer.tools import pen
+from cournal.viewer.tools import pen, rect, primary, line, circle
 from cournal.document.document import Document
 from cournal.document import xojparser
 from cournal.network import network
@@ -98,9 +98,17 @@ class MainWindow(Gtk.Window):
         action_pensize_normal = builder.get_object("action_pensize_normal")
         action_pensize_big = builder.get_object("action_pensize_big")
         tool_pen_color = builder.get_object("tool_pen_color")
+        tool_pen_fillcolor = builder.get_object("tool_pen_fillcolor")
+        action_tool_pen = builder.get_object("action_tool_pen")
+        action_tool_rect = builder.get_object("action_tool_rect")
+        action_tool_line = builder.get_object("action_tool_line")
+        action_tool_circle = builder.get_object("action_tool_circle")
+        action_fill_tool = builder.get_object("action_fill_tool")
+
         self.actiongroup_document_specific = builder.get_object("actiongroup_document_specific")
         self.actiongroup_document_specific.set_sensitive(False)
         builder.get_object("tool_pensize_normal").set_active(True)
+        builder.get_object("tool_pen").set_active(True)
         
         # Workaround for bug https://bugzilla.gnome.org/show_bug.cgi?id=671786
         if not Gtk.check_version(3,6,0) == None:
@@ -124,6 +132,11 @@ class MainWindow(Gtk.Window):
             a.connect_by_path(action_pensize_small.get_accel_path(), lambda a,b,c,d: action_pensize_small.activate())
             a.connect_by_path(action_pensize_normal.get_accel_path(), lambda a,b,c,d: action_pensize_normal.activate())
             a.connect_by_path(action_pensize_big.get_accel_path(), lambda a,b,c,d: action_pensize_big.activate())
+            a.connect_by_path(action_tool_pen.get_accel_path(), lambda a,b,c,d: action_tool_pen.activate())
+            a.connect_by_path(action_tool_rect.get_accel_path(), lambda a,b,c,d: action_tool_rect.activate())
+            a.connect_by_path(action_tool_line.get_accel_path(), lambda a,b,c,d: action_tool_line.activate())
+            a.connect_by_path(action_tool_circle.get_accel_path(), lambda a,b,c,d: action_tool_circle.activate())
+            a.connect_by_path(action_fill_tool.get_accel_path(), lambda a,b,c,d: action_fill_tool.activate())
 
         action_open_xoj.connect("activate", self.run_open_xoj_dialog)
         action_open_pdf.connect("activate", self.run_open_pdf_dialog)
@@ -140,10 +153,16 @@ class MainWindow(Gtk.Window):
         action_zoom_in.connect("activate", self.zoom_in)
         action_zoom_out.connect("activate", self.zoom_out)
         action_zoom_fit.connect("activate", self.zoom_fit)
-        tool_pen_color.connect("color-set", self.change_pen_color)
-        action_pensize_small.connect("activate", self.change_pen_size, LINEWIDTH_SMALL)
-        action_pensize_normal.connect("activate", self.change_pen_size, LINEWIDTH_NORMAL)
-        action_pensize_big.connect("activate", self.change_pen_size, LINEWIDTH_BIG)
+        tool_pen_color.connect("color-set", self.change_primary_color)
+        action_pensize_small.connect("activate", self.change_primary_size, LINEWIDTH_SMALL)
+        action_pensize_normal.connect("activate", self.change_primary_size, LINEWIDTH_NORMAL)
+        action_pensize_big.connect("activate", self.change_primary_size, LINEWIDTH_BIG)
+        tool_pen_fillcolor.connect("color-set", self.change_primary_fillcolor)
+        action_tool_pen.connect("activate", self.set_tool)
+        action_tool_rect.connect("activate", self.set_tool)
+        action_tool_line.connect("activate", self.set_tool)
+        action_tool_circle.connect("activate", self.set_tool)
+        action_fill_tool.connect("activate", self.set_fill)
     
         # Statusbar:
         self.statusbar_icon = builder.get_object("image_statusbar")
@@ -157,6 +176,9 @@ class MainWindow(Gtk.Window):
         self.statusbar_pagenum_entry.connect("activate", self.jump_to_page)
         self.button_prev_page.connect("clicked", self.jump_to_prev_page)
         self.button_next_page.connect("clicked", self.jump_to_next_page)
+
+        self.set_tool(pen)
+        #action_tool_pen.activate()
 
         history.init(action_undo, action_redo)
         
@@ -172,6 +194,47 @@ class MainWindow(Gtk.Window):
         self.search_button.connect("clicked", self.search_document)
         self.search_field.connect("activate", self.search_document)
 
+    def set_tool(self, tool):
+        """
+        Set the tool to be used
+        
+        Positional arguments:
+        tool -- clicked tool button
+        """
+        #TODO: Check what happend to the action
+        #TODO: Maybe change sensitivity
+       
+        if tool not in [pen, rect, line, circle]:
+            if tool.get_name() == "action_tool_pen":
+                tool = pen
+                #action_fill_tool.set_sensitive(False)
+                #action_tool_pen_bg_color.set_sensitive(False)
+            elif tool.get_name() == "action_tool_rect":
+                tool = rect
+                #action_fill_tool.set_sensitive(True)
+                #action_tool_pen_bg_color.set_sensitive(True)
+            elif tool.get_name() == "action_tool_line":
+                tool = line
+                #action_tool_fill.set_sensitive(False)
+                #action_tool_pen_bg_color.set_sensitive(False)
+            elif tool.get_name() == "action_tool_circle":
+                tool = circle
+                #action_tool_fill.set_sensitive(True)
+                #action_tool_pen_bg_color.set_sensitive(True)
+        primary.current_tool = tool
+        
+    def set_fill(self, tool):
+        """
+        Set the shape filling method
+        
+        Positional arguments:
+        tool -- fill button
+        """
+        if tool.get_active():
+            primary.fill = True
+        else:
+            primary.fill = False
+    
     def connect_event(self):
         """
         Called by the networking layer when a connection is established.
@@ -284,6 +347,7 @@ class MainWindow(Gtk.Window):
         self.statusbar_pagenum.set_sensitive(True)
         self.statusbar_pagenum_entry.set_sensitive(True)
         self.actiongroup_document_specific.set_sensitive(True)
+
         if self.document.num_of_pages > 1:
             self.button_next_page.set_sensitive(True)
         
@@ -532,9 +596,24 @@ class MainWindow(Gtk.Window):
         message.connect("response", lambda _,x: message.destroy())
         message.show()
         
-    def change_pen_color(self, colorbutton):
+    def change_primary_color(self, colorbutton):
         """
-        Change the pen to a user defined color.
+        Change the primary tool to a user defined color.
+        
+        Positional arguments:
+        colorbutton -- The Gtk.ColorButton, that triggered this function
+        """
+        color = colorbutton.get_rgba()
+        red = int(color.red*255)
+        green = int(color.green*255)
+        blue = int(color.blue*255)
+        opacity = int(color.alpha*255)
+        
+        primary.color = red, green, blue, opacity        
+
+    def change_primary_fillcolor(self, colorbutton):
+        """
+        Change the primary tool to a user defined color.
         
         Positional arguments:
         colorbutton -- The Gtk.ColorButton, that triggered this function
@@ -551,17 +630,17 @@ class MainWindow(Gtk.Window):
         blue = int(color.blue*255)
         opacity = int(color.alpha*255)
         
-        pen.color = red, green, blue, opacity        
+        primary.fillcolor = red, green, blue, opacity  
     
-    def change_pen_size(self, menuitem, linewidth):
+    def change_primary_size(self, menuitem, linewidth):
         """
-        Change the pen to a user defined line width.
+        Change the primary tool to a user defined line width.
         
         Positional arguments:
         menuitem -- The menu item, that triggered this function
         linewidth -- New line width of the pen
         """
-        pen.linewidth = linewidth
+        primary.linewidth = linewidth
         
     def zoom_in(self, menuitem):
         """Magnify document"""

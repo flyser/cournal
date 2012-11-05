@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # This file is part of Cournal.
-# Copyright (C) 2012 Fabian Henze
+# Copyright (C) 2012 Simon Vetter
 # 
 # Cournal is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -18,18 +18,12 @@
 # along with Cournal.  If not, see <http://www.gnu.org/licenses/>.
 
 import cairo
+import math
 
 from twisted.spread import pb
 
-class Stroke(pb.Copyable, pb.RemoteCopy):
-    """
-    A pen stroke on a layer, having a color, a linewidth and a list of coordinates
-    
-    If a stroke has variable width, self.coords contains tuples of three,
-    else tuples of two floats.
-    FIXME: don't ignore the variable width
-    """
-    def __init__(self, color, linewidth, layer=None, coords=None):
+class Circle(pb.Copyable, pb.RemoteCopy):
+    def __init__(self, layer, color, fill, fill_color, linewidth, coords, scale):
         """
         Constructor
         
@@ -43,11 +37,11 @@ class Stroke(pb.Copyable, pb.RemoteCopy):
         """
         self.layer = layer
         self.color = color
+        self.fill_color = fill_color
+        self.fill = fill
         self.linewidth = linewidth
         self.coords = coords
-        if self.coords is None:
-            self.coords = []
-        self.bound_min = None   
+        self.scale = scale
         
     def in_bounds(self, x, y, radius):
         """
@@ -59,52 +53,28 @@ class Stroke(pb.Copyable, pb.RemoteCopy):
         Returns:
         true, if point is in bounding box
         """
-        if not self.bound_min:
-            self.calculate_bounding_box(radius)
-        
-        if x > self.bound_min[0] and x < self.bound_max[0] and y > self.bound_min[1] and y < self.bound_max[1]:
-            for coord in self.coords:
-                s_x = coord[0]
-                s_y = coord[1]
-                if ((s_x-x)**2 + (s_y-y)**2) < radius**2:
-                    return True
-            if len(self.coords) == 2: # line
-                dx1 = (x - self.coords[0][0])
-                dy1 = (y - self.coords[0][1])
-                dx2 = (self.coords[1][0] - self.coords[0][0])
-                dy2 = (self.coords[1][1] - self.coords[0][1])
-                if (dy1 != 0 and dy2 != 0):
-                    return (abs(abs(dx1/dy1) - abs(dx2/dy2)) < 0.02)
+        distance = ((self.coords[0] - x)/self.scale[0])**2 + ((self.coords[1] - y)/self.scale[1])**2
+        if distance < 1+radius/min(self.scale[0],self.scale[1]):
+            if not self.fill:
+                if distance < 1-radius/min(self.scale[0],self.scale[1]):
+                    return False
+            return True
         else:
             return False
-
+        
     def calculate_bounding_box(self, radius=5):
-        """
-        Calculate the bounding box of the stroke
-        
-        Keyword arguments:
-        radius -- tolerance radius
-        """
-        
-        bb_min_x = self.coords[0][0]
-        bb_max_x = self.coords[0][0]
-        bb_min_y = self.coords[0][1]
-        bb_max_y = self.coords[0][1]
-        for coord in self.coords[1:]:
-            bb_min_x = min(bb_min_x, coord[0])
-            bb_min_y = min(bb_min_y, coord[1])
-            bb_max_x = max(bb_max_x, coord[0])
-            bb_max_y = max(bb_max_y, coord[1])
-        self.bound_min = [bb_min_x-radius, bb_min_y-radius]
-        self.bound_max = [bb_max_x+radius, bb_max_y+radius]
-
+        pass
+    
     def getStateToCopy(self):
         """Gather state to send when I am serialized for a peer."""
         
         # d would be self.__dict__.copy()
         d = dict()
         d["color"] = self.color
+        d["fill_color"] = self.fill_color
+        d["fill"] = self.fill
         d["coords"] = self.coords
+        d["scale"] = self.scale
         d["linewidth"] = self.linewidth
         return d
 
@@ -118,22 +88,42 @@ class Stroke(pb.Copyable, pb.RemoteCopy):
         Keyword arguments:
         scaling -- scale the stroke by this factor (defaults to 1.0)
         """
+        if self.scale[0] * self.scale[1] * self.scale[2] == 0:
+            return
+        
         context.save()
-        r, g, b, opacity = self.color
+        r, g, b, opacity = self.fill_color
         
         context.set_source_rgba(r/255, g/255, b/255, opacity/255)
         context.set_antialias(cairo.ANTIALIAS_GRAY)
         context.set_line_join(cairo.LINE_JOIN_ROUND)
         context.set_line_cap(cairo.LINE_CAP_ROUND)
         context.set_line_width(self.linewidth)
+
+        if self.fill:
+            r, g, b, opacity = self.fill_color
+            context.set_source_rgba(r/255, g/255, b/255, opacity/255)
+            # Draw Circle and scale it to oval
+            context.translate(self.coords[0], self.coords[1])
+            context.scale(self.scale[0]/self.scale[2], self.scale[1]/self.scale[2])
+            context.arc(0., 0., self.scale[2], 0., 2 * math.pi)
+            context.scale(1 / (self.scale[0]/self.scale[2]), 1 / (self.scale[1]/self.scale[2]))
+            context.translate(-self.coords[0], -self.coords[1])
+            context.fill()
         
-        first = self.coords[0]
-        context.move_to(first[0], first[1])
-        if len(self.coords) > 1:
-            for coord in self.coords[1:]:
-                context.line_to(coord[0], coord[1])
-        else:
-            context.line_to(first[0], first[1])
+        # Draw border
+        i = 0
+        context.move_to(self.coords[0], self.coords[1] + self.scale[1])
+        # We draw the border with strokes to keep konstant border width
+        while i < (math.pi * 2):
+            i += 0.1
+            context.line_to(
+                self.coords[0] + math.sin(i)*self.scale[0],
+                self.coords[1] + math.cos(i)*self.scale[1])
+
+        r, g, b, opacity = self.color
+        context.set_source_rgba(r/255, g/255, b/255, opacity/255)
+        
         x, y, x2, y2 = (a*scaling for a in context.stroke_extents())
         context.stroke()
         context.restore()
@@ -141,4 +131,4 @@ class Stroke(pb.Copyable, pb.RemoteCopy):
         return (x, y, x2, y2)
 
 # Tell Twisted, that this class is allowed to be transmitted over the network.
-pb.setUnjellyableForClass(Stroke, Stroke)
+pb.setUnjellyableForClass(Circle, Circle)

@@ -19,6 +19,7 @@
 
 import cairo
 from gi.repository import Gdk
+from cournal.viewer.tools import primary
 
 """
 A pen tool. Draws a stroke with a certain color and size.
@@ -27,8 +28,6 @@ A pen tool. Draws a stroke with a certain color and size.
 _last_point = None
 _current_coords = None
 _current_stroke = None
-linewidth = 1.5
-color = (0,0,128,255)
 
 def press(widget, event):
     """
@@ -38,16 +37,16 @@ def press(widget, event):
     widget -- The PageWidget, which triggered the event
     event -- The Gdk.Event, which stores the location of the pointer
     """
-    global _last_point, _current_coords, _current_stroke, linewidth, color
+    global _last_point, _current_coords, _current_stroke
     
-    _current_stroke = widget.page.new_unfinished_stroke(color=color, linewidth=linewidth)
+    _current_stroke = widget.page.new_unfinished_stroke(color=primary.color, linewidth=primary.linewidth)
     _current_coords = _current_stroke.coords
     widget.preview_item = _current_stroke
 
     _last_point = [event.x, event.y]
     motion(widget, event)
     
-    widget.page.layers[0].strokes.append(_current_stroke)
+    widget.page.layers[0].items.append(_current_stroke)
 
 def motion(widget, event):
     """
@@ -60,10 +59,10 @@ def motion(widget, event):
     update_rect = Gdk.Rectangle()
     scaling = widget.backbuffer.get_width()/widget.page.width
 
-    x = min(_last_point[0], event.x) - linewidth*scaling/2
-    y = min(_last_point[1], event.y) - linewidth*scaling/2
-    x2 = max(_last_point[0], event.x) + linewidth*scaling/2
-    y2 = max(_last_point[1], event.y) + linewidth*scaling/2
+    x = min(_last_point[0], event.x) - primary.linewidth*scaling/2
+    y = min(_last_point[1], event.y) - primary.linewidth*scaling/2
+    x2 = max(_last_point[0], event.x) + primary.linewidth*scaling/2
+    y2 = max(_last_point[1], event.y) + primary.linewidth*scaling/2
         
     update_rect.x = x-2
     update_rect.y = y-2

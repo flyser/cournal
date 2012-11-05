@@ -3,7 +3,6 @@
   <!-- interface-requires gtk+ 3.0 -->
   <object class="GtkAccelGroup" id="accelgroup"/>
   <object class="GtkActionGroup" id="actiongroup_always_sensitive">
-    <property name="accel_group">accelgroup</property>
     <child>
       <object class="GtkAction" id="action_open_xoj">
         <property name="stock_id">gtk-open</property>
@@ -28,7 +27,6 @@
     </child>
   </object>
   <object class="GtkActionGroup" id="actiongroup_document_specific">
-    <property name="accel_group">accelgroup</property>
     <child>
       <object class="GtkAction" id="action_save">
         <property name="stock_id">gtk-save</property>
@@ -92,12 +90,14 @@
       <object class="GtkRadioAction" id="action_pensize_normal">
         <property name="label" translatable="yes">1.5</property>
       </object>
+      <accelerator key="2"/>
     </child>
     <child>
       <object class="GtkRadioAction" id="action_pensize_small">
         <property name="label" translatable="yes">0.7</property>
         <property name="group">action_pensize_normal</property>
       </object>
+      <accelerator key="1"/>
     </child>
     <child>
       <object class="GtkRadioAction" id="action_pensize_big">
@@ -105,6 +105,7 @@
         <property name="value">3</property>
         <property name="group">action_pensize_normal</property>
       </object>
+      <accelerator key="3"/>
     </child>
     <child>
       <object class="GtkAction" id="action_pen_color"/>
@@ -115,6 +116,46 @@
         <property name="stock_id">gtk-connect</property>
       </object>
       <accelerator key="n" modifiers="GDK_CONTROL_MASK"/>
+    </child>
+    <child>
+      <object class="GtkRadioAction" id="action_tool_pen">
+        <property name="label" translatable="yes">Pen</property>
+        <property name="draw_as_radio">True</property>
+      </object>
+      <accelerator key="p"/>
+    </child>
+    <child>
+      <object class="GtkRadioAction" id="action_tool_rect">
+        <property name="label" translatable="yes">Rectangle</property>
+        <property name="draw_as_radio">True</property>
+        <property name="group">action_tool_pen</property>
+      </object>
+      <accelerator key="r"/>
+    </child>
+    <child>
+      <object class="GtkRadioAction" id="action_tool_line">
+        <property name="label" translatable="yes">Line</property>
+        <property name="draw_as_radio">True</property>
+        <property name="group">action_tool_pen</property>
+      </object>
+      <accelerator key="l"/>
+    </child>
+    <child>
+      <object class="GtkRadioAction" id="action_tool_circle">
+        <property name="label" translatable="yes">Circle</property>
+        <property name="draw_as_radio">True</property>
+        <property name="group">action_tool_pen</property>
+      </object>
+      <accelerator key="c"/>
+    </child>
+    <child>
+      <object class="GtkToggleAction" id="action_fill_tool">
+        <property name="label" translatable="yes">Fill</property>
+      </object>
+      <accelerator key="f"/>
+    </child>
+    <child>
+      <object class="GtkAction" id="action_pen_fillcolor"/>
     </child>
   </object>
   <object class="GtkImage" id="image_btn_next">
@@ -139,6 +180,7 @@
         <property name="can_focus">False</property>
         <child>
           <object class="GtkMenuItem" id="menuitem1">
+            <property name="use_action_appearance">False</property>
             <property name="can_focus">False</property>
             <property name="label" translatable="yes">_File</property>
             <property name="use_underline">True</property>
@@ -235,6 +277,7 @@
         </child>
         <child>
           <object class="GtkMenuItem" id="menuitem2">
+            <property name="use_action_appearance">False</property>
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="label" translatable="yes">_Edit</property>
@@ -276,6 +319,7 @@
         </child>
         <child>
           <object class="GtkMenuItem" id="menuitem4">
+            <property name="use_action_appearance">False</property>
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="label" translatable="yes">_Help</property>
@@ -315,6 +359,7 @@
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="tooltip_text" translatable="yes">Annotate PDF</property>
+            <property name="related_action">action_open_pdf</property>
           </object>
           <packing>
             <property name="expand">False</property>
@@ -328,6 +373,7 @@
             <property name="can_focus">False</property>
             <property name="has_tooltip">True</property>
             <property name="tooltip_text" translatable="yes">Connect to server</property>
+            <property name="related_action">action_connect</property>
           </object>
           <packing>
             <property name="expand">False</property>
@@ -340,6 +386,7 @@
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="tooltip_text" translatable="yes">Save current document</property>
+            <property name="related_action">action_save</property>
             <property name="use_underline">True</property>
           </object>
           <packing>
@@ -362,6 +409,7 @@
             <property name="related_action">action_zoom_in</property>
             <property name="visible">True</property>
             <property name="can_focus">False</property>
+            <property name="related_action">action_zoom_in</property>
             <property name="use_underline">True</property>
           </object>
           <packing>
@@ -374,6 +422,7 @@
             <property name="related_action">action_zoom_out</property>
             <property name="visible">True</property>
             <property name="can_focus">False</property>
+            <property name="related_action">action_zoom_out</property>
             <property name="use_underline">True</property>
           </object>
           <packing>
@@ -386,6 +435,7 @@
             <property name="related_action">action_zoom_fit</property>
             <property name="visible">True</property>
             <property name="can_focus">False</property>
+            <property name="related_action">action_zoom_fit</property>
             <property name="use_underline">True</property>
           </object>
           <packing>
@@ -408,6 +458,7 @@
             <property name="related_action">action_undo</property>
             <property name="visible">True</property>
             <property name="can_focus">False</property>
+            <property name="related_action">action_undo</property>
             <property name="use_underline">True</property>
           </object>
           <packing>
@@ -420,7 +471,91 @@
             <property name="related_action">action_redo</property>
             <property name="visible">True</property>
             <property name="can_focus">False</property>
+            <property name="related_action">action_redo</property>
             <property name="use_underline">True</property>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="homogeneous">True</property>
+          </packing>
+        </child>
+      </object>
+      <packing>
+        <property name="expand">False</property>
+        <property name="fill">True</property>
+        <property name="position">1</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkToolbar" id="toolbar2">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="toolbar_style">icons</property>
+        <child>
+          <object class="GtkRadioToolButton" id="tool_pen">
+            <property name="use_action_appearance">False</property>
+            <property name="related_action">action_tool_pen</property>
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="related_action">action_tool_pen</property>
+            <property name="use_action_appearance">False</property>
+            <property name="label" translatable="yes">Pen</property>
+            <property name="use_underline">True</property>
+            <property name="icon_name">cournal-pen-tool</property>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="homogeneous">True</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkRadioToolButton" id="tool_rect">
+            <property name="use_action_appearance">False</property>
+            <property name="related_action">action_tool_rect</property>
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="related_action">action_tool_rect</property>
+            <property name="use_action_appearance">False</property>
+            <property name="label" translatable="yes">Rect</property>
+            <property name="use_underline">True</property>
+            <property name="icon_name">cournal-rect-tool</property>
+            <property name="group">tool_pen</property>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="homogeneous">True</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkRadioToolButton" id="tool_line">
+            <property name="use_action_appearance">False</property>
+            <property name="related_action">action_tool_line</property>
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="related_action">action_tool_line</property>
+            <property name="use_action_appearance">False</property>
+            <property name="label" translatable="yes">Line</property>
+            <property name="use_underline">True</property>
+            <property name="icon_name">cournal-line-tool</property>
+            <property name="group">tool_pen</property>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="homogeneous">True</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkRadioToolButton" id="tool_circle">
+            <property name="use_action_appearance">False</property>
+            <property name="related_action">action_tool_circle</property>
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="related_action">action_tool_circle</property>
+            <property name="use_action_appearance">False</property>
+            <property name="label" translatable="yes">Circle</property>
+            <property name="use_underline">True</property>
+            <property name="icon_name">cournal-circle-tool</property>
+            <property name="group">tool_pen</property>
           </object>
           <packing>
             <property name="expand">False</property>
@@ -438,16 +573,20 @@
           </packing>
         </child>
         <child>
-          <object class="GtkToolItem" id="tool1">
+          <object class="GtkToolItem" id="tool_color_chooser">
             <property name="use_action_appearance">False</property>
             <property name="related_action">action_pen_color</property>
             <property name="visible">True</property>
             <property name="can_focus">False</property>
+            <property name="related_action">action_pen_color</property>
+            <property name="use_action_appearance">False</property>
             <child>
               <object class="GtkColorButton" id="tool_pen_color">
+                <property name="use_action_appearance">False</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
+                <property name="use_action_appearance">False</property>
                 <property name="relief">none</property>
                 <property name="use_alpha">True</property>
                 <property name="title" translatable="yes">Pen Color</property>
@@ -460,11 +599,71 @@
           </packing>
         </child>
         <child>
+          <object class="GtkToolItem" id="tool_bg_color_chooser">
+            <property name="use_action_appearance">False</property>
+            <property name="related_action">action_pen_fillcolor</property>
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="related_action">action_pen_fillcolor</property>
+            <property name="use_action_appearance">False</property>
+            <child>
+              <object class="GtkColorButton" id="tool_pen_fillcolor">
+                <property name="use_action_appearance">False</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <property name="use_action_appearance">False</property>
+                <property name="relief">none</property>
+                <property name="use_alpha">True</property>
+                <property name="title" translatable="yes">Fill Color</property>
+                <property name="rgba">rgb(245,121,0)</property>
+              </object>
+            </child>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkToggleToolButton" id="tool_fill">
+            <property name="use_action_appearance">False</property>
+            <property name="related_action">action_fill_tool</property>
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="related_action">action_fill_tool</property>
+            <property name="use_action_appearance">False</property>
+            <property name="label" translatable="yes">Fill</property>
+            <property name="use_underline">True</property>
+            <property name="icon_name">cournal-fill-tool</property>
+            <property name="active">True</property>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="homogeneous">True</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkSeparatorToolItem" id="tool_seperator1">
+            <property name="use_action_appearance">False</property>
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="use_action_appearance">False</property>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="homogeneous">True</property>
+          </packing>
+        </child>
+        <child>
           <object class="GtkRadioToolButton" id="tool_pensize_small">
+            <property name="use_action_appearance">False</property>
             <property name="related_action">action_pensize_small</property>
             <property name="visible">True</property>
             <property name="can_focus">False</property>
+            <property name="related_action">action_pensize_small</property>
+            <property name="use_action_appearance">False</property>
             <property name="label" translatable="yes">0.7</property>
+            <property name="icon_name">cournal-pen-small</property>
             <property name="group">tool_pensize_normal</property>
           </object>
           <packing>
@@ -474,10 +673,14 @@
         </child>
         <child>
           <object class="GtkRadioToolButton" id="tool_pensize_normal">
+            <property name="use_action_appearance">False</property>
             <property name="related_action">action_pensize_normal</property>
             <property name="visible">True</property>
             <property name="can_focus">False</property>
+            <property name="related_action">action_pensize_normal</property>
+            <property name="use_action_appearance">False</property>
             <property name="label" translatable="yes">1.5</property>
+            <property name="icon_name">cournal-pen-medium</property>
           </object>
           <packing>
             <property name="expand">False</property>
@@ -486,10 +689,14 @@
         </child>
         <child>
           <object class="GtkRadioToolButton" id="tool_pensize_big">
+            <property name="use_action_appearance">False</property>
             <property name="related_action">action_pensize_big</property>
             <property name="visible">True</property>
             <property name="can_focus">False</property>
+            <property name="related_action">action_pensize_big</property>
+            <property name="use_action_appearance">False</property>
             <property name="label" translatable="yes">8.0</property>
+            <property name="icon_name">cournal-pen-big</property>
             <property name="group">tool_pensize_normal</property>
           </object>
           <packing>
@@ -501,7 +708,7 @@
       <packing>
         <property name="expand">False</property>
         <property name="fill">True</property>
-        <property name="position">1</property>
+        <property name="position">2</property>
       </packing>
     </child>
     <child>
@@ -522,7 +729,64 @@
       <packing>
         <property name="expand">True</property>
         <property name="fill">True</property>
-        <property name="position">2</property>
+        <property name="position">3</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkBox" id="search_bar">
+        <property name="can_focus">False</property>
+        <property name="no_show_all">True</property>
+        <property name="spacing">5</property>
+        <child>
+          <object class="GtkEntry" id="search_field">
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="invisible_char">●</property>
+            <property name="primary_icon_stock">gtk-find</property>
+          </object>
+          <packing>
+            <property name="expand">True</property>
+            <property name="fill">True</property>
+            <property name="position">0</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkButton" id="search_button">
+            <property name="label">gtk-find</property>
+            <property name="use_action_appearance">False</property>
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="receives_default">True</property>
+            <property name="use_action_appearance">False</property>
+            <property name="use_stock">True</property>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">1</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkButton" id="search_close">
+            <property name="label">gtk-close</property>
+            <property name="use_action_appearance">False</property>
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="receives_default">True</property>
+            <property name="use_action_appearance">False</property>
+            <property name="use_stock">True</property>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">2</property>
+          </packing>
+        </child>
+      </object>
+      <packing>
+        <property name="expand">False</property>
+        <property name="fill">True</property>
+        <property name="position">4</property>
       </packing>
     </child>
     <child>
@@ -549,10 +813,12 @@
             <property name="spacing">1</property>
             <child>
               <object class="GtkButton" id="btn_prev_page">
+                <property name="use_action_appearance">False</property>
                 <property name="visible">True</property>
                 <property name="sensitive">False</property>
                 <property name="can_focus">False</property>
                 <property name="receives_default">True</property>
+                <property name="use_action_appearance">False</property>
                 <property name="image">image_btn_prev</property>
                 <property name="relief">none</property>
                 <property name="focus_on_click">False</property>
@@ -596,10 +862,12 @@
             </child>
             <child>
               <object class="GtkButton" id="btn_next_page">
+                <property name="use_action_appearance">False</property>
                 <property name="visible">True</property>
                 <property name="sensitive">False</property>
                 <property name="can_focus">False</property>
                 <property name="receives_default">True</property>
+                <property name="use_action_appearance">False</property>
                 <property name="image">image_btn_next</property>
                 <property name="relief">none</property>
               </object>
@@ -637,61 +905,7 @@
         <property name="expand">False</property>
         <property name="fill">False</property>
         <property name="pack_type">end</property>
-        <property name="position">3</property>
-      </packing>
-    </child>
-    <child>
-      <object class="GtkBox" id="search_bar">
-        <property name="can_focus">False</property>
-        <property name="no_show_all">True</property>
-        <property name="spacing">5</property>
-        <child>
-          <object class="GtkEntry" id="search_field">
-            <property name="visible">True</property>
-            <property name="can_focus">True</property>
-            <property name="invisible_char">●</property>
-            <property name="primary_icon_stock">gtk-find</property>
-          </object>
-          <packing>
-            <property name="expand">True</property>
-            <property name="fill">True</property>
-            <property name="position">0</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkButton" id="search_button">
-            <property name="label">gtk-find</property>
-            <property name="visible">True</property>
-            <property name="can_focus">True</property>
-            <property name="receives_default">True</property>
-            <property name="use_stock">True</property>
-          </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">True</property>
-            <property name="position">1</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkButton" id="search_close">
-            <property name="label">gtk-close</property>
-            <property name="visible">True</property>
-            <property name="can_focus">True</property>
-            <property name="receives_default">True</property>
-            <property name="use_stock">True</property>
-          </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">True</property>
-            <property name="position">2</property>
-          </packing>
-        </child>
-      </object>
-      <packing>
-        <property name="expand">False</property>
-        <property name="fill">True</property>
-        <property name="pack_type">end</property>
-        <property name="position">4</property>
+        <property name="position">5</property>
       </packing>
     </child>
   </object>
