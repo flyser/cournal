@@ -539,7 +539,13 @@ class MainWindow(Gtk.Window):
         Positional arguments:
         colorbutton -- The Gtk.ColorButton, that triggered this function
         """
-        color = colorbutton.get_rgba()
+        color = Gdk.RGBA(0,0,0,0)
+        
+        try:
+            color = colorbutton.get_rgba()
+        except TypeError:
+            print("Your Gtk python bindings are broken, please update them")
+            colorbutton.get_rgba(color)
         red = int(color.red*255)
         green = int(color.green*255)
         blue = int(color.blue*255)
