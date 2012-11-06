@@ -73,7 +73,7 @@ def import_into_document(document, filename, window):
         strokes = pages[p].findall("layer/stroke")
         for s in range(len(strokes)):
             stroke = _parse_stroke(strokes[s], document.pages[p].layers[0])
-            document.pages[p].new_stroke(stroke, send_to_network=True)
+            document.pages[p].new_item(stroke, send_to_network=True)
     return document
 
 def _parse_stroke(stroke, layer):

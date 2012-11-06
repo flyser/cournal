@@ -47,8 +47,9 @@ class Stroke(pb.Copyable, pb.RemoteCopy):
         self.coords = coords
         if self.coords is None:
             self.coords = []
-    
-    def in_bounds(self, x, y):
+        self.bound_min = None   
+        
+    def in_bounds(self, x, y, radius):
         """
         Test if point is in bounding box of the stroke.
         
@@ -58,17 +59,24 @@ class Stroke(pb.Copyable, pb.RemoteCopy):
         Returns:
         true, if point is in bounding box
         """
-        try:
-            if x > self.bound_min[0] and x < self.bound_max[0] and y > self.bound_min[1] and y < self.bound_max[1]:
-                return True
-            else:
-                return False
-        except:
-            self.calculate_bounding_box()
-            if x > self.bound_min[0] and x < self.bound_max[0] and y > self.bound_min[1] and y < self.bound_max[1]:
-                return True
-            else:
-                return False
+        if not self.bound_min:
+            self.calculate_bounding_box(radius)
+        
+        if x > self.bound_min[0] and x < self.bound_max[0] and y > self.bound_min[1] and y < self.bound_max[1]:
+            for coord in self.coords:
+                s_x = coord[0]
+                s_y = coord[1]
+                if ((s_x-x)**2 + (s_y-y)**2) < radius**2:
+                    return True
+            if len(self.coords) == 2: # line
+                dx1 = (x - self.coords[0][0])
+                dy1 = (y - self.coords[0][1])
+                dx2 = (self.coords[1][0] - self.coords[0][0])
+                dy2 = (self.coords[1][1] - self.coords[0][1])
+                if (dy1 != 0 and dy2 != 0):
+                    return (abs(abs(dx1/dy1) - abs(dx2/dy2)) < 0.02)
+        else:
+            return False
 
     def calculate_bounding_box(self, radius=5):
         """

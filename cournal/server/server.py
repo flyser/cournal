@@ -56,7 +56,7 @@ valid_characters = string.ascii_letters + string.digits + ' _()+,.-=^~'
 
 class CournalEncoder(json.JSONEncoder):
     """
-    Encodes a any given object and all its properties to JSON.
+    Encodes a given object and all its properties to JSON.
     """
     def __init__(self, *args, **kwargs):
         #kwargs["separators"] = (',', ':')
@@ -104,7 +104,7 @@ class CournalDecoder(json.JSONDecoder):
 
 class Page:
     """
-    A page in a document, having multiple strokes.
+    A page in a document, having multiple items.
     """
     def __init__(self, strokes=None):
         if strokes is None:
@@ -408,7 +408,7 @@ class Document(pb.Viewable):
         self.users.append(user)
         for pagenum in range(len(self.pages)):
             for stroke in self.pages[pagenum].strokes:
-                user.call_remote("new_stroke", pagenum, stroke)
+                user.call_remote("new_item", pagenum, stroke)
     
     def remove_user(self, user):
         """
@@ -434,43 +434,43 @@ class Document(pb.Viewable):
             if user != except_user:
                 user.call_remote(method, *args)
     
-    def view_new_stroke(self, from_user, pagenum, stroke):
+    def view_new_item(self, from_user, pagenum, item):
         """
-        Broadcast the stroke received from one to all other clients.
-        Called by clients to add a new stroke.
+        Broadcast the item received from one to all other clients.
+        Called by clients to add a new item.
         
         Positional arguments:
         from_user -- The User object of the initiiating user.
-        pagenum -- Page number the new stroke.
-        stroke -- The new stroke
+        pagenum -- Page number of the new item.
+        item -- The new item
         """
         self.has_unsaved_changes = True
         
         while len(self.pages) <= pagenum:
             self.pages.append(Page())
-        self.pages[pagenum].strokes.append(stroke)
+        self.pages[pagenum].strokes.append(item)
         
-        debug(3, _("New stroke on page {}").format(pagenum + 1))
-        self.broadcast("new_stroke", pagenum, stroke, except_user=from_user)
+        debug(3, _("New item on page {}").format(pagenum + 1))
+        self.broadcast("new_item", pagenum, item, except_user=from_user)
         
-    def view_delete_stroke_with_coords(self, from_user, pagenum, coords):
+    def view_delete_item_with_coords(self, from_user, pagenum, coords):
         """
-        Broadcast the delete stroke command from one to all other clients.
-        Called by Clients to delete a stroke.
+        Broadcast the delete items command from one to all other clients.
+        Called by Clients to delete an item.
         
         Positional arguments:
         from_user -- The User object of the initiiating user.
-        pagenum -- Page number the deleted stroke
-        coords -- The list coordinates of the deleted stroke
+        pagenum -- Page number the deleted item
+        coords -- The list coordinates of the deleted item
         """
         self.has_unsaved_changes = True
         
-        for stroke in self.pages[pagenum].strokes:
-            if stroke.coords == coords:
-                self.pages[pagenum].strokes.remove(stroke)
+        for item in self.pages[pagenum].strokes:
+            if item.coords == coords:
+                self.pages[pagenum].strokes.remove(item)
                 
-                debug(3, _("Deleted stroke on page {}").format(pagenum + 1))
-                self.broadcast("delete_stroke_with_coords", pagenum, coords, except_user=from_user)
+                debug(3, _("Deleted item on page {}").format(pagenum + 1))
+                self.broadcast("delete_item_with_coords", pagenum, coords, except_user=from_user)
 
 class CmdlineParser():
     """
