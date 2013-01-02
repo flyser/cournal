@@ -128,9 +128,9 @@ class DocumentChooser(Gtk.Box):
         
         self.emit("got_document_list")
 
-    def on_tree_select(self, item):
+    def on_tree_select(self, treeselection):
         """Called, when the user clicked on an item in the document selector."""
-        store, iter = item.get_selected()
-        if iter:
-            self.selected = store.get(iter, 0)[0]
+        treemodel, treeiter = treeselection.get_selected()
+        if treeiter:
+            self.selected = treemodel.get(treeiter, 0)[0]
             self.doc_name.set_text(self.selected)
