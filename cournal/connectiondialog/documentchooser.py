@@ -64,7 +64,13 @@ class DocumentChooser(Gtk.Box):
         
         self.doc_tree_selection.connect("changed", self.on_tree_select)
         self.connect("map", self.on_map_event)
+        self.doc_tree.connect("row-activated", self.on_row_activated)
     
+    def on_row_activated(self, treeview, treepath, column):
+        """Called by Gtk, when the user double-clicks on a list item"""
+        self.on_tree_select(self.doc_tree_selection)
+        self.response(None, Gtk.ResponseType.ACCEPT)
+        
     def response(self, widget, response_id):
         """
         Called, when the user clicked on a button ('Connect' or 'Abort') or
