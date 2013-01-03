@@ -84,14 +84,18 @@ def release(widget, event):
     Positional arguments: see press()
     """
     global _last_point, _current_coords, _current_stroke
-    widget.page.finish_stroke(_current_stroke)
-    widget.preview_item = None
+    try:
+        widget.page.finish_stroke(_current_stroke)
+        widget.preview_item = None
 
-    context = cairo.Context(widget.backbuffer)
-    scaling = widget.backbuffer.get_width() / widget.page.width
-    context.scale(scaling, scaling)
-    _current_stroke.draw(context, scaling)
-        
+        context = cairo.Context(widget.backbuffer)
+        scaling = widget.backbuffer.get_width() / widget.page.width
+        context.scale(scaling, scaling)
+        _current_stroke.draw(context, scaling)
+    except Exception as ex:
+        import traceback
+        traceback.print_tb(ex.__traceback__)
+        print(ex)
     _last_point = None
     _current_coords = None
     _current_stroke = None
