@@ -38,7 +38,7 @@ class AboutDialog(Gtk.AboutDialog):
         
         self.set_program_name(_("Cournal"))
         self.set_logo_icon_name("cournal")
-        self.set_copyright(_("©") + " Fabian Henze")
+        self.set_copyright(_("© {}").format("Fabian Henze"))
         self.set_comments(_("A collaborative note taking and journal application using a stylus."))
         self.set_license_type(Gtk.License.GPL_3_0)
         self.set_website("http://cournal-project.org")
