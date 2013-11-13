@@ -373,10 +373,11 @@ class MainWindow(Gtk.Window):
         Positional arguments:
         page_num_widget: The Entry widget that was updated.
         """
-        for page in self.document.pages:
-            if page.number + 1 == int(page_num_widget.get_text()):
-                self.vadjustment.set_value(page.widget.get_allocation().y)
-                return
+        try:
+            page = self.document.pages[int(page_num_widget.get_text())-1]
+            self.vadjustment.set_value(page.widget.get_allocation().y)
+        except Exception as ex:
+            pass
     
     def jump_to_next_page(self, menuitem):
         """

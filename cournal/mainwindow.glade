@@ -574,6 +574,7 @@
                 <property name="primary_icon_activatable">False</property>
                 <property name="primary_icon_sensitive">False</property>
                 <property name="placeholder_text">0</property>
+                <property name="input_purpose">digits</property>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -651,6 +652,7 @@
             <property name="can_focus">True</property>
             <property name="invisible_char">●</property>
             <property name="primary_icon_stock">gtk-find</property>
+            <property name="input_hints">GTK_INPUT_HINT_NO_SPELLCHECK | GTK_INPUT_HINT_NONE</property>
           </object>
           <packing>
             <property name="expand">True</property>
