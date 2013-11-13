@@ -50,7 +50,7 @@ Users of other distributions will have to adapt the following *Ubuntu* guide:
 1. [Download the latest Cournal release](https://github.com/flyser/cournal/downloads)
 2. `tar xvf cournal-?.?.?.tar.xz`
 3. `cd cournal-?.?.?`
-4. `sudo apt-get install python3 python3-zope.interface python3-gi python3-cairo gir1.2-poppler python3-gi-cairo`
+4. `sudo apt-get install python3 python3-zope.interface python3-gi python3-cairo gir1.2-poppler python3-gi-cairo gobject-introspection gir1.2-gtk-3.0`
 5. `sudo python3 setup.py install`
 6. `cournal`
 
