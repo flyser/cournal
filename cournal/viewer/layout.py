@@ -17,6 +17,7 @@
 # You should have received a copy of the GNU General Public License
 # along with Cournal.  If not, see <http://www.gnu.org/licenses/>.
 
+import cairo
 from gi.repository import Gtk, Gdk
 
 from cournal.viewer.pagewidget import PageWidget
@@ -45,11 +46,31 @@ class Layout(Gtk.Layout):
         
         # The background color is visible between the PageWidgets
         self.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(79/255, 78/255, 77/255, 1))
+        self.connect("realize", self.set_cursor)
         
         for page in self.document.pages:
             self.children.append(PageWidget(page, self))
             self.put(self.children[-1], 0, 0)
     
+    def set_cursor(self, widget):
+        """
+        Set the cursor to a black square indicating the pen tip
+        
+        Keyword arguments:
+        widget -- The widget to set the cursor for
+        """
+        width, height = 4, 4
+        
+        s = cairo.ImageSurface(cairo.FORMAT_ARGB32, width, height)
+        context = cairo.Context(s)
+        context.set_source_rgba(0,0,0,1)
+        context.paint()
+        
+        cursor_pixbuf = Gdk.pixbuf_get_from_surface(s, 0, 0, width, height)
+        cursor = Gdk.Cursor.new_from_pixbuf(Gdk.Display.get_default(),
+                                          cursor_pixbuf, width/2, height/2)
+        widget.get_window().set_cursor(cursor)
+
     def do_size_allocate(self, allocation):
         """
         Called, when the Layout is about to be resized. Resizes all children.

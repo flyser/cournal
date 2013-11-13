@@ -56,31 +56,11 @@ class PageWidget(Gtk.DrawingArea):
                         Gdk.EventMask.POINTER_MOTION_MASK)
 #                       Gdk.EventMask.POINTER_MOTION_HINT_MASK)
 
-        self.connect("realize", self.set_cursor)
         self.connect("size-allocate", self.on_size_allocate)
         self.connect("draw", self.draw)
         self.connect("motion_notify_event", self.motion)
         self.connect("button-press-event", self.press)
         self.connect("button-release-event", self.release)
-
-    def set_cursor(self, widget):
-        """
-        Set the cursor to a black square indicating the pen tip
-        
-        Keyword arguments:
-        widget -- The widget to set the cursor for
-        """
-        width, height = 4, 4
-        
-        s = cairo.ImageSurface(cairo.FORMAT_A1, width, height)
-        context = cairo.Context(s)
-        context.set_source_rgb(0,0,0)
-        context.paint()
-        
-        cursor_pixbuf = Gdk.pixbuf_get_from_surface(s, 0, 0, width, height)
-        cursor = Gdk.Cursor.new_from_pixbuf(Gdk.Display.get_default(),
-                                            cursor_pixbuf, width/2, height/2)
-        widget.get_window().set_cursor(cursor)
 
     def do_get_request_mode(self):
         """Tell Gtk that we like to calculate our height given a width."""
