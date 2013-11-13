@@ -59,7 +59,7 @@ class Layout(Gtk.Layout):
         Keyword arguments:
         widget -- The widget to set the cursor for
         """
-        width, height = 4, 4
+        width, height = 3, 3
         
         s = cairo.ImageSurface(cairo.FORMAT_ARGB32, width, height)
         context = cairo.Context(s)
