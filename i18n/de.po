@@ -241,10 +241,9 @@ msgid "Connecting ..."
 msgstr "Verbinde ..."
 
 #: cournal/connection_dialog.glade.h:2
-msgid "Please enter the name and port of the server you want to connect to."
+msgid "Please enter the server you want to connect to."
 msgstr ""
-"Bitte geben sie den Hostnamen und Port des Servers ein zu dem sie verbinden "
-"möchten."
+"Bitte geben sie den Server ein zu dem sie verbinden möchten."
 
 #: cournal/connection_dialog.glade.h:3
 msgid "Server name:"

@@ -17,10 +17,11 @@
 # You should have received a copy of the GNU General Public License
 # along with Cournal.  If not, see <http://www.gnu.org/licenses/>.
 
+import re
+
 from gi.repository import Gtk, GObject
 from twisted.internet.defer import Deferred
 
-from cournal.connectiondialog.serverportentry import ServerPortEntry
 from cournal.network import network
 
 class ServerDetails(Gtk.Box):
@@ -36,6 +37,8 @@ class ServerDetails(Gtk.Box):
         "connected": (GObject.SIGNAL_RUN_FIRST, GObject.TYPE_NONE, ()),
         "connection_failed": (GObject.SIGNAL_RUN_FIRST, GObject.TYPE_NONE, ()),
     }
+    serverportregex = re.compile("^(.*):([0-9]*)$")
+    
     def __init__(self, dialog, builder):
         """
         Constructor
@@ -49,10 +52,9 @@ class ServerDetails(Gtk.Box):
         self.deferred = None
         
         grid = builder.get_object("grid_server_details")
-        self._server_entry = ServerPortEntry()
+        self._server_entry = builder.get_object("serverentry")
         
         self.add(grid)
-        grid.attach(self._server_entry, 1, 1, 1, 1)
         
         self._server_entry.set_activates_default(True)
     
@@ -70,12 +72,14 @@ class ServerDetails(Gtk.Box):
             self.dialog.destroy()
             return
         
-        server = self._server_entry.server
-        port = self._server_entry.port
-        
-        if port > 65535 or port < 0:
-            self.dialog.error = _("The port must be below 65535")
-            return
+        try:
+            server, port = self.serverportregex.match(self._server_entry.get_text()).groups()
+            port = int(port)
+            if port > 65535:
+                raise Exception()
+        except Exception as ex:
+            server = self._server_entry.get_text()
+            port = 6524
         
         if not self.dialog.parent.document.is_empty():
             if not self.confirm_clear_document():
@@ -126,3 +130,4 @@ class ServerDetails(Gtk.Box):
         """
         self.dialog.error = reason.getErrorMessage()
         self.emit("connection_failed")
+        self._server_entry.grab_focus()

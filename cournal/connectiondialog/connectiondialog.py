@@ -41,7 +41,7 @@ class ConnectionDialog(Gtk.Dialog):
         
         builder = Gtk.Builder()
         builder.set_translation_domain("cournal")
-        builder.add_from_file(os.path.join(cournal.__path__[0], "connection_dialog.glade"))
+        builder.add_from_file(os.path.join(cournal.__path__[0], "connectiondialog.glade"))
         grid = builder.get_object("grid_main")
         
         self.multipage = builder.get_object("multipage")

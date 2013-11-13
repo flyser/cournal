@@ -41,15 +41,6 @@
     <child>
       <placeholder/>
     </child>
-    <child>
-      <placeholder/>
-    </child>
-    <child>
-      <placeholder/>
-    </child>
-    <child>
-      <placeholder/>
-    </child>
   </object>
   <object class="GtkGrid" id="grid_main">
     <property name="visible">True</property>
@@ -116,21 +107,6 @@
         <property name="height">1</property>
       </packing>
     </child>
-    <child>
-      <placeholder/>
-    </child>
-    <child>
-      <placeholder/>
-    </child>
-    <child>
-      <placeholder/>
-    </child>
-    <child>
-      <placeholder/>
-    </child>
-    <child>
-      <placeholder/>
-    </child>
   </object>
   <object class="GtkGrid" id="grid_server_details">
     <property name="visible">True</property>
@@ -142,7 +118,7 @@
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="xalign">0</property>
-        <property name="label" translatable="yes">Please enter the name and port of the server you want to connect to.</property>
+        <property name="label" translatable="yes">Please enter the server you want to connect to.</property>
       </object>
       <packing>
         <property name="left_attach">0</property>
@@ -166,13 +142,17 @@
       </packing>
     </child>
     <child>
-      <placeholder/>
-    </child>
-    <child>
-      <placeholder/>
-    </child>
-    <child>
-      <placeholder/>
+      <object class="GtkEntry" id="serverentry">
+        <property name="visible">True</property>
+        <property name="can_focus">True</property>
+        <property name="invisible_char">●</property>
+      </object>
+      <packing>
+        <property name="left_attach">1</property>
+        <property name="top_attach">1</property>
+        <property name="width">1</property>
+        <property name="height">1</property>
+      </packing>
     </child>
   </object>
 </interface>
