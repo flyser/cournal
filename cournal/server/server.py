@@ -42,7 +42,7 @@ from cournal.server import pickle_legacy
 # 1 - minimum
 # 2 - medium
 # 3 - maximum
-DEBUGLEVEL = 3
+DEBUGLEVEL = 2
 
 DEFAULT_AUTOSAVE_DIRECTORY = os.path.expanduser("~/.cournal/documents")
 DEFAULT_AUTOSAVE_INTERVAL = 60
@@ -237,6 +237,7 @@ To run multiple instances concurrently, you need to set a different autosave dir
         for name, document in self.documents.items():
             if not document.has_unsaved_changes:
                 continue
+            debug(2, _("Saving document '{}' to '{}'").format(name, os.path.join(self.autosave_directory, docname_to_filename(name))))
             # We write to a tmpfile and move it to the actual location to ensure
             # atomic writing of the file, meaning: In case of a crash, either the
             # old or the new version of that file is on the disk
