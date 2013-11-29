@@ -2,6 +2,11 @@ Version 0.3 -- not yet released
   * Undo/Redo
   * Accelerated stroke deletion
   * Changed servers file format from Pickle to JSON
+  * User interface improvements
+  * Better rendering of semitransparent strokes
+  * Translation support
+  * Fix some bugs that were (likely) introduced due to a GTK update
+  * other random bugfixes
 
 Version 0.2.1 -- 2012-07-31
   * Support for system-wide installation via setup.py
