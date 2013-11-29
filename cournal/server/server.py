@@ -189,7 +189,7 @@ or unexpected behaviour might occur.""").format(self.autosave_directory, lockfil
                 print(_(\
 """The autosave directory is locked by another instance of cournal-server.
 To run multiple instances concurrently, you need to set a different autosave directory and port."""), file=sys.stderr)
-            sys.exit(-1)
+                sys.exit(-1)
 
         try:
             with open(lockfile, 'w') as f:
