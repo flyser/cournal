@@ -73,7 +73,7 @@ For more information see http://cournal-project.org/""",
     
     packages = packages,
     scripts = ["cournal.py", "cournal-server.py"],
-    package_data = {"cournal": ["mainwindow.glade", "connection_dialog.glade", "document_chooser.glade"]},
+    package_data = {"cournal": ["mainwindow.glade", "connectiondialog.glade", "document_chooser.glade"]},
     data_files = [
         ("share/icons/hicolor/16x16/apps/", ["icons/hicolor/16x16/apps/cournal.png"]),
         ("share/icons/hicolor/24x24/apps/", ["icons/hicolor/24x24/apps/cournal.png"]),
