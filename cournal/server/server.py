@@ -39,9 +39,9 @@ from cournal.document.stroke import Stroke
 from cournal.server import pickle_legacy
 
 # 0 - none
-# 1 - minimal
+# 1 - minimum
 # 2 - medium
-# 3 - maximal
+# 3 - maximum
 DEBUGLEVEL = 3
 
 DEFAULT_AUTOSAVE_DIRECTORY = os.path.expanduser("~/.cournal/documents")
@@ -182,19 +182,21 @@ class CournalServer:
                 print(_(\
 """The autosave directory was locked by another instance of cournal-server,
 that is not running anymore. This happens, when cournal-server crashed.
-Make sure that no server is using the autosave directory '{}',
-delete '{}' and try again.""").format(self.autosave_directory, lockfile), file=sys.stderr)
+We will unlock the autosave directory '{}'. Please make sure that this is okay
+or unexpected behaviour might occur.""").format(self.autosave_directory, lockfile), file=sys.stderr)
+                os.remove(lockfile)
             else:
                 print(_(\
 """The autosave directory is locked by another instance of cournal-server.
 To run multiple instances concurrently, you need to set a different autosave directory and port."""), file=sys.stderr)
             sys.exit(-1)
-        else:
-            try:
-                open(lockfile, 'w').write(str(os.getpid()))
-            except Exception as ex:
-                print(_("Could not create file in autosave directory: {}").format(ex), file=sys.stderr)
-                raise ex
+
+        try:
+            with open(lockfile, 'w') as f:
+                f.write(str(os.getpid()))
+        except Exception as ex:
+            print(_("Could not create file in autosave directory: {}").format(ex), file=sys.stderr)
+            raise ex
         self.lockfile = lockfile
     
     def release_lockfile(self):
