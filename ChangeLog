@@ -1,7 +1,7 @@
 Version 0.3 -- not yet released
   * Undo/Redo
   * Accelerated stroke deletion
-  * Changed servers file format from Pickle to JSON
+  * Changed servers file format from Pickle to JSON (old files should be migrated)
   * User interface improvements
   * Better rendering of semitransparent strokes
   * Translation support
