@@ -25,6 +25,7 @@ import atexit
 from tempfile import NamedTemporaryFile
 import argparse
 import json
+import subprocess
 
 from zope.interface import implementer
 
@@ -116,7 +117,7 @@ class CournalServer:
     """
     The server object, that holds global state, which is shared between all users.
     """
-    def __init__(self, autosave_directory, autosave_interval):
+    def __init__(self, autosave_directory, autosave_interval, save_hook):
         """
         Constructor.
         
@@ -125,10 +126,12 @@ class CournalServer:
         Positional arguments:
         autosave_directory -- The directory within which to store the documents
         autosave_interval -- Interval in seconds within which to save the documents
+        save_hook -- Script or application to execute after the documents were saved
         """
         self.documents = dict()
         self.autosave_directory = os.path.abspath(autosave_directory)
         self.autosave_interval = autosave_interval
+        self.save_hook = save_hook
         
         # Don't create the autosave directory, if autosaving is disabled
         if self.autosave_interval == 0:
@@ -234,6 +237,7 @@ To run multiple instances concurrently, you need to set a different autosave dir
         Save all documents to files named "autosave_directory/cnl-documentname.json".
         """
         debug(3, _("Saving all documents."))
+        savedfiles = []
         for name, document in self.documents.items():
             if not document.has_unsaved_changes:
                 continue
@@ -248,6 +252,10 @@ To run multiple instances concurrently, you need to set a different autosave dir
             tmpfile.close()
             os.rename(tmpfile.name, os.path.join(self.autosave_directory, filename))
             document.has_unsaved_changes = False
+            savedfiles.append(filename)
+        
+        if self.save_hook is not None and savedfiles:
+            subprocess.Popen([self.save_hook, self.autosave_directory] + savedfiles)
         
         reactor.callLater(self.autosave_interval, self.save_documents)
         
@@ -484,6 +492,7 @@ class CmdlineParser():
         self.port = DEFAULT_PORT
         self.autosave_directory = DEFAULT_AUTOSAVE_DIRECTORY
         self.autosave_interval = DEFAULT_AUTOSAVE_INTERVAL
+        self.save_hook = None
         
     def parse(self):
         """
@@ -497,6 +506,8 @@ class CmdlineParser():
                             help=_("The directory within which to store the documents on the server."))
         parser.add_argument("-i", "--autosave-interval", nargs=1, type=int, default=[self.autosave_interval],
                             help=_("Interval in seconds within which to save modified documents to permanent storage. Set to 0 to disable autosave."))
+        parser.add_argument("-k", "--save-hook", nargs=1,
+                            help=_("Script or application to execute after all documents were saved. The first argument is the autosave directory, followed by all filenames of files that were changed."))
         parser.add_argument("-v", "--version", action="version",
                             version="%(prog)s " + cournal_version)
         args = parser.parse_args()
@@ -504,6 +515,8 @@ class CmdlineParser():
         self.port = args.port[0]
         self.autosave_directory = args.autosave_directory[0]
         self.autosave_interval = args.autosave_interval[0]
+        if args.save_hook:
+            self.save_hook = args.save_hook[0]
         return self
 
 def filename_to_docname(filename):
@@ -564,7 +577,7 @@ def main():
     port = args.port
     
     realm = CournalRealm()
-    realm.server = CournalServer(args.autosave_directory, args.autosave_interval)
+    realm.server = CournalServer(args.autosave_directory, args.autosave_interval, args.save_hook)
     atexit.register(realm.server.exit)
     checker = checkers.InMemoryUsernamePasswordDatabaseDontUse()
     checker.addUser(USERNAME, PASSWORD)
