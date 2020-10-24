@@ -9,17 +9,9 @@ from cournal import __versionstring__ as cournal_version
 
 packages = []
 
-twisted_core = [".", "application", "cred", "enterprise", "internet", "manhole", "persisted", "protocols", "python", "spread", "trial"]
-
 for root, subFolders, files in os.walk("cournal"):
-    if not root.startswith("cournal/twisted") and "__init__.py" in files:
+    if "__init__.py" in files:
         packages.append(root.replace("/", "."))
-
-for dir in ["cournal/twisted/" + x for x in twisted_core]:
-    for root, subFolders, files in os.walk(dir):
-        if "__init__.py" in files:
-            packages.append(root.replace("/", "."))
-
 
 class my_install(distutils.command.install_scripts.install_scripts):
     def run(self):

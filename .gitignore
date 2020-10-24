@@ -5,7 +5,7 @@
 *.swp
 
 # Python
-__pycache__
+__pycache__/
 *.pyc
 *.pyo
 
@@ -18,11 +18,11 @@ __pycache__
 *.mo
 *.pot
 
-# Twisted
-cournal/twisted
-t3k
+# virtual environment
+/.venv/
+/venv/
 
 # Packaging
-build
-dist
-MANIFEST
+/build/
+/dist/
+/MANIFEST

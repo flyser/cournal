@@ -24,7 +24,7 @@ done
 xgettext --output="$OUTPUT" --language=Python --package-name="$PACKAGE" \
          --copyright-holder="$AUTHOR" --package-version="$VERSION" \
          --msgid-bugs-address="$BUGTRACKER" --from-code=UTF-8 \
-         --keyword=N_ --keyword=_ *.py cournal/*.py cournal/!(twisted)/**/*.py cournal/*.h *.h
+         --keyword=N_ --keyword=_ *.py cournal/*.py cournal/**/*.py cournal/*.h *.h
 sed -i -e "2s/YEAR/$(date +%Y)/" "$OUTPUT"
 
 # Clean up
