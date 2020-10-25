@@ -115,7 +115,7 @@ class Document:
             # FIXME: Move error handler to mainwindow.py and show error message
             return
 
-        # Thanks to Xournals awesome XML(-not)-parsing, we can't use elementtree here.
+        # Thanks to Xournal's awesome XML(-not)-parsing, we can't use ElementTree here.
         # In "Xournal World", <t a="a" b="b"> is not the same as <t b="b" a="a"> ...
 
         r = "<?xml version=\"1.0\" standalone=\"no\"?>\n"

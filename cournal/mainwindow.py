@@ -302,12 +302,14 @@ class MainWindow(Gtk.Window):
 
     def show_page_numbers(self, curr_vadjustment):
         """
-        Show current and absolute Page number in the center of the Statusbar.
-        To achive that the current visible window and page size are compared if there is a intersection.
-        If so and more than 60% of the new page are shown the current shown page number is updatet.
+        Show current and absolute page number in the center of the status bar.
+
+        To achieve that the current visible window and page size are compared
+        if there is a intersection. If so and more than 60% of the new page are
+        shown the current shown page number is updated.
 
         Positional Arguments:
-        curr_vadjustemnt - current vertical adjustment of the scrollbar
+        curr_vadjustment - current vertical adjustment of the scrollbar
         """
         biggest_intersection = [0, 0]
 

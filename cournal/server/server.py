@@ -458,7 +458,7 @@ class Document(pb.Viewable):
         Called by clients to add a new stroke.
 
         Positional arguments:
-        from_user -- The User object of the initiiating user.
+        from_user -- The User object of the initiating user.
         pagenum -- Page number the new stroke.
         stroke -- The new stroke
         """
@@ -477,7 +477,7 @@ class Document(pb.Viewable):
         Called by Clients to delete a stroke.
 
         Positional arguments:
-        from_user -- The User object of the initiiating user.
+        from_user -- The User object of the initiating user.
         pagenum -- Page number the deleted stroke
         coords -- The list coordinates of the deleted stroke
         """

@@ -29,7 +29,7 @@ class ServerDetails(Gtk.Box):
     Widget asking the user about the details (hostname and port) of the server
     he wishes to connect to.
     Note that currently the setup of the connection itself is also handled by
-    this widget. A patch that seperates the functionality from the widget would
+    this widget. A patch that separates the functionality from the widget would
     be greatly appreciated
     """
     __gsignals__ = {
