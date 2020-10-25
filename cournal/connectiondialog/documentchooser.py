@@ -43,7 +43,7 @@ class DocumentChooser(Gtk.Box):
         Positional arguments:
         dialog -- The parent GtkDialog widget.
         """
-        Gtk.Box.__init__(self)
+        super().__init__()
         self.selected = None
         self.deferred = None
         self.dialog = dialog

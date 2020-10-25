@@ -38,7 +38,7 @@ class ConnectionDialog(Gtk.Dialog):
         Positional arguments:
         parent -- Parent window of this dialog
         """
-        Gtk.Dialog.__init__(self)
+        super().__init__()
         self.parent = parent
 
         builder = Gtk.Builder()

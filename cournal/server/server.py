@@ -63,7 +63,7 @@ class CournalEncoder(json.JSONEncoder):
     def __init__(self, *args, **kwargs):
         #kwargs["separators"] = (',', ':')
         kwargs["indent"] = 0
-        json.JSONEncoder.__init__(self, *args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def default(self, obj):
         d = {'__class__': obj.__class__.__name__,
@@ -86,7 +86,7 @@ class CournalDecoder(json.JSONDecoder):
         documentname -- The name of s document is given by its on-disk filename
                         and not stored in the json file itself.
         """
-        json.JSONDecoder.__init__(self, object_hook=self.dict_to_object)
+        super().__init__(object_hook=self.dict_to_object)
         self.documentname = documentname
 
     def dict_to_object(self, d):

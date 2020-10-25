@@ -57,7 +57,7 @@ class MainWindow(Gtk.Window):
         Keyword arguments:
         **args -- Arguments passed to the Gtk.Window constructor
         """
-        Gtk.Window.__init__(self, title=_("Cournal"), **args)
+        super().__init__(title=_("Cournal"), **args)
         network.set_window(self)
 
         self.overlaybox = None
@@ -590,7 +590,7 @@ class OverlayDialog(Gtk.EventBox):
     """
     def __init__(self):
         """Constructor"""
-        Gtk.EventBox.__init__(self)
+        super().__init__()
         self.last_no_data_seconds = 0
         self.timeout_button_text = _("Disconnect and continue locally")
         self.timeout_label_text = _("No response from the server for the last {} seconds.")

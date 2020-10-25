@@ -40,7 +40,7 @@ class Layout(Gtk.Layout):
         Keyword arguments:
         **args -- Arguments passed to the Gtk.Layout constructor
         """
-        Gtk.Layout.__init__(self, **args)
+        super().__init__(**args)
         self.document = document
         self.children = []
         self.zoomlevel = 1

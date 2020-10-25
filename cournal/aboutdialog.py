@@ -32,7 +32,7 @@ class AboutDialog(Gtk.AboutDialog):
         parent -- Parent window of this dialog (defaults to no parent)
         **args -- Arguments passed to the Gtk.AboutDialog constructor
         """
-        Gtk.AboutDialog.__init__(self, **args)
+        super().__init__(**args)
 
         self.set_modal(False)
         self.set_transient_for(parent)

@@ -46,7 +46,7 @@ class _Network(pb.Referenceable):
     """
     def __init__(self):
         """Constructor"""
-        pb.Referenceable.__init__(self)
+        super().__init__()
         self.document = None
         self.window = None
         self.is_connected = False

@@ -47,7 +47,7 @@ class ServerDetails(Gtk.Box):
         dialog -- The parent GtkDialog widget.
         builder -- A builder object, which contains a "grid_server_details" object.
         """
-        Gtk.Box.__init__(self)
+        super().__init__()
         self.dialog = dialog
         self.deferred = None
 

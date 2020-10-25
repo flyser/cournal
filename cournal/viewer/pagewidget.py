@@ -39,7 +39,7 @@ class PageWidget(Gtk.DrawingArea):
         Keyword arguments:
         **args -- Arguments passed to the Gtk.DrawingArea constructor
         """
-        Gtk.DrawingArea.__init__(self, **args)
+        super().__init__(**args)
 
         self.page = page
         self.parent = parent
