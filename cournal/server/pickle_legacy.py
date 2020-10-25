@@ -18,8 +18,8 @@
 # You should have received a copy of the GNU General Public License
 # along with Cournal.  If not, see <http://www.gnu.org/licenses/>.
 
-import os
 import json
+import os
 import pickle
 from tempfile import NamedTemporaryFile
 

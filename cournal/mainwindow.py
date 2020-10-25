@@ -17,8 +17,8 @@
 # You should have received a copy of the GNU General Public License
 # along with Cournal.  If not, see <http://www.gnu.org/licenses/>.
 
-from time import time
 import os.path
+from time import time
 
 from gi.repository import Gtk, Gdk, GObject
 from gi.repository.GLib import GError

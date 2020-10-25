@@ -17,11 +17,10 @@
 # You should have received a copy of the GNU General Public License
 # along with xoj2tikz.  If not, see <http://www.gnu.org/licenses/>.
 
-import sys
 import re
 from gzip import open as open_xoj
 
-import xml.etree.cElementTree as ET
+import xml.etree.ElementTree as ET
 
 from cournal.document.document import Document
 from cournal.document.stroke import Stroke

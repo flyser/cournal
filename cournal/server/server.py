@@ -17,21 +17,22 @@
 # You should have received a copy of the GNU General Public License
 # along with Cournal.  If not, see <http://www.gnu.org/licenses/>.
 
-import os, sys
-import gettext
-from io import StringIO
-import string
-import atexit
-from tempfile import NamedTemporaryFile
 import argparse
+import atexit
+import gettext
 import json
+import os
+import string
 import subprocess
+import sys
+from io import StringIO
+from tempfile import NamedTemporaryFile
 
 from zope.interface import implementer
 from twisted.cred import portal, checkers
 from twisted.spread import pb
 from twisted.internet import reactor
-from twisted.internet.error import *
+from twisted.internet.error import CannotListenError
 from twisted.python.failure import Failure
 
 from cournal import __versionstring__ as cournal_version

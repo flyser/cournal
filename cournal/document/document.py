@@ -17,8 +17,8 @@
 # You should have received a copy of the GNU General Public License
 # along with Cournal.  If not, see <http://www.gnu.org/licenses/>.
 
-from os.path import abspath
 from gzip import open as open_xoj
+from os.path import abspath
 
 from gi.repository import Poppler, GLib
 import cairo

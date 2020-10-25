@@ -20,7 +20,6 @@
 import re
 
 from gi.repository import Gtk, GObject
-from twisted.internet.defer import Deferred
 
 from cournal.network import network
 

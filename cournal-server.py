@@ -19,7 +19,6 @@
 
 import sys
 
-import cournal
 from cournal.server import server
 
 

@@ -4,7 +4,9 @@ import os
 import shutil
 import subprocess
 from distutils.core import setup
-import distutils.command.install_scripts, distutils.command.build, distutils.cmd
+import distutils.command.install_scripts
+import distutils.command.build
+import distutils.cmd
 from cournal import __versionstring__ as cournal_version
 
 packages = []
