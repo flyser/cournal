@@ -67,10 +67,11 @@ setup(
     author_email="flyser42@gmx.de",
 
     description="Cournal is a collaborative note taking and journal application using a stylus.",
-    long_description="""Cournal allows multiple users to annotate PDF files in real-time.
-The goal of this project is a full featured note taking application (like Xournal) or Windows Journal), which allows multiple people to collaborate (like Gobby).
-
-For more information see http://cournal-project.org/""",
+    long_description=(
+        "Cournal allows multiple users to annotate PDF files in real-time.\n"
+        "The goal of this project is a full featured note taking application (like Xournal or Windows Journal), "
+        "which allows multiple people to collaborate (like Gobby).\n\n"
+        "For more information see http://cournal-project.org/"),
 
     packages=packages,
     scripts=["cournal.py", "cournal-server.py"],

@@ -98,7 +98,7 @@ def _parse_stroke(stroke, layer):
     coordinates = []
     temp = [float(x) for x in stroke.text.strip().split(' ') if len(x) > 0]
     widths = [max(0.0, float(x)) for x in stroke.attrib["width"].split(' ')]
-    nominalWidth = widths.pop(0)
+    nominal_width = widths.pop(0)
     if tool == "highlighter":
         color = parse_color(stroke.attrib["color"], default_opacity=128)
     else:
@@ -117,7 +117,7 @@ def _parse_stroke(stroke, layer):
     if len(coordinates) == 2 and coordinates[0] == coordinates[1]:
         del coordinates[1]
 
-    return Stroke(layer=layer, color=color, linewidth=nominalWidth, coords=coordinates)
+    return Stroke(layer=layer, color=color, linewidth=nominal_width, coords=coordinates)
 
 
 def _get_background(tree):
@@ -186,4 +186,3 @@ def parse_color(code, default_opacity=255):
 if __name__ == "__main__":
     import sys
     f = open_xoj(sys.argv[1], "rb")
-    parse(None, None, f)

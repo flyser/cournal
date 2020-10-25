@@ -22,18 +22,21 @@ import sys
 import gettext
 
 from twisted.internet import gtk3reactor
-gtk3reactor.install()
-from twisted.internet import reactor
 from gi.repository import Gtk
-
-from cournal.mainwindow import MainWindow
 
 
 def run():
     """Start Cournal"""
-    locale_dir = os.path.join(sys.prefix, "local",  "share", "locale")
-    # locale_dir = os.path.realpath(os.path.dirname(sys.argv[0]))
-    gettext.install("cournal")  #, locale_dir)
+    if False:
+        locale_dir = os.path.realpath(os.path.dirname(sys.argv[0]))
+        gettext.install("cournal", locale_dir)
+    else:
+        # locale_dir = os.path.join(sys.prefix, "local", "share", "locale")
+        gettext.install("cournal")  # , locale_dir)
+
+    gtk3reactor.install()
+    from twisted.internet import reactor
+    from cournal.mainwindow import MainWindow
 
     Gtk.IconTheme.get_default().prepend_search_path("./icons")
 

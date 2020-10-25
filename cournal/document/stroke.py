@@ -58,17 +58,10 @@ class Stroke(pb.Copyable, pb.RemoteCopy):
         Returns:
         true, if point is in bounding box
         """
-        try:
-            if x > self.bound_min[0] and x < self.bound_max[0] and y > self.bound_min[1] and y < self.bound_max[1]:
-                return True
-            else:
-                return False
-        except:
+        if not hasattr(self, "bound_min") or not hasattr(self, "bound_max"):
             self.calculate_bounding_box()
-            if x > self.bound_min[0] and x < self.bound_max[0] and y > self.bound_min[1] and y < self.bound_max[1]:
-                return True
-            else:
-                return False
+
+        return self.bound_min[0] <= x <= self.bound_max[0] and self.bound_min[1] <= y <= self.bound_max[1]
 
     def calculate_bounding_box(self, radius=5):
         """

@@ -37,7 +37,7 @@ class ServerDetails(Gtk.Box):
         "connected": (GObject.SIGNAL_RUN_FIRST, GObject.TYPE_NONE, ()),
         "connection_failed": (GObject.SIGNAL_RUN_FIRST, GObject.TYPE_NONE, ()),
     }
-    serverportregex = re.compile("^(.*):([0-9]*)$")
+    re_server_port = re.compile("^(.*):([0-9]*)$")
 
     def __init__(self, dialog, builder):
         """
@@ -73,11 +73,11 @@ class ServerDetails(Gtk.Box):
             return
 
         try:
-            server, port = self.serverportregex.match(self._server_entry.get_text()).groups()
+            server, port = self.re_server_port.match(self._server_entry.get_text()).groups()
             port = int(port)
             if port > 65535:
-                raise Exception()
-        except Exception as ex:
+                raise ValueError()
+        except Exception:
             server = self._server_entry.get_text()
             port = 6524
 
@@ -93,8 +93,13 @@ class ServerDetails(Gtk.Box):
         Ask the user, if he wishes to loose all changes he made to the current
         document, when he connects to a server.
         """
-        message = Gtk.MessageDialog(self.dialog, (Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT), Gtk.MessageType.WARNING, Gtk.ButtonsType.YES_NO, _("Close current document?"))
-        message.format_secondary_text(_("You will loose all changes to your current document, if you connect to a server. Continue without saving?"))
+        message = Gtk.MessageDialog(self.dialog,
+                                    Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT,
+                                    Gtk.MessageType.WARNING,
+                                    Gtk.ButtonsType.YES_NO,
+                                    _("Close current document?"))
+        message.format_secondary_text(_("You will loose all changes to your current document, "
+                                        "if you connect to a server. Continue without saving?"))
         message.set_title(_("Warning"))
         if message.run() != Gtk.ResponseType.YES:
             message.destroy()

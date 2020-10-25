@@ -104,7 +104,7 @@ class MainWindow(Gtk.Window):
         builder.get_object("tool_pensize_normal").set_active(True)
 
         # Workaround for bug https://bugzilla.gnome.org/show_bug.cgi?id=671786
-        if not Gtk.check_version(3, 6, 0) == None:
+        if Gtk.check_version(3, 6, 0) is not None:
             # Gtk 3.4 or older
             a = builder.get_object("accelgroup")
             a.connect_by_path(action_open_xoj.get_accel_path(), lambda a, b, c, d: action_open_xoj.activate())
@@ -194,7 +194,7 @@ class MainWindow(Gtk.Window):
         def destroyed(widget):
             self.overlaybox = None
             # Do we run on Gtk 3.2?
-            if Gtk.check_version(3, 4, 0) != None:
+            if Gtk.check_version(3, 4, 0) is not None:
                 self.overlay.add(self.scrolledwindow)
 
         if self.overlaybox is not None:
@@ -202,7 +202,7 @@ class MainWindow(Gtk.Window):
 
         self.overlaybox = OverlayDialog()
         # GtkOverlay is broken in Gtk 3.2, so we apply a workaround:
-        if Gtk.check_version(3, 4, 0) == None:
+        if Gtk.check_version(3, 4, 0) is None:
             # Gtk 3.4+
             self.overlay.add_overlay(self.overlaybox)
         else:
@@ -365,8 +365,9 @@ class MainWindow(Gtk.Window):
         old_text = page_num.get_text()
         try:
             insert_num = int(old_text[:position] + text + old_text[position:])
-        except:
+        except ValueError:
             page_num.emit_stop_by_name("insert_text")
+            return
         if not text.isdigit() or insert_num > self.document.num_of_pages or insert_num == 0:
             page_num.emit_stop_by_name("insert_text")
 
@@ -379,10 +380,11 @@ class MainWindow(Gtk.Window):
         page_num_widget: The Entry widget that was updated.
         """
         try:
-            page = self.document.pages[int(page_num_widget.get_text()) - 1]
-            self.vadjustment.set_value(page.widget.get_allocation().y)
-        except Exception as ex:
-            pass
+            page_num = int(page_num_widget.get_text()) - 1
+        except ValueError:
+            return
+        page = self.document.pages[page_num]
+        self.vadjustment.set_value(page.widget.get_allocation().y)
 
     def jump_to_next_page(self, menuitem):
         """

@@ -61,7 +61,7 @@ class CournalEncoder(json.JSONEncoder):
     Encodes a any given object and all its properties to JSON.
     """
     def __init__(self, *args, **kwargs):
-        #kwargs["separators"] = (',', ':')
+        kwargs["separators"] = (',', ':')
         kwargs["indent"] = 0
         super().__init__(*args, **kwargs)
 
@@ -186,16 +186,17 @@ class CournalServer:
             with open(lockfile, "r") as f:
                 pid = int(f.read())
             if self.is_pid_dead(pid):
-                print(_(\
-"""The autosave directory was locked by another instance of cournal-server,
-that is not running anymore. This happens, when cournal-server crashed.
-We will unlock the autosave directory '{}'. Please make sure that this is okay
-or unexpected behaviour might occur.""").format(self.autosave_directory, lockfile), file=sys.stderr)
+                print(_(
+                    "The autosave directory was locked by another instance of cournal-server,\n"
+                    "that is not running anymore. This happens, when cournal-server crashed.\n"
+                    "We will unlock the autosave directory '{}'. Please make sure that this is okay\n"
+                    "or unexpected behaviour might occur.").format(self.autosave_directory, lockfile), file=sys.stderr)
                 os.remove(lockfile)
             else:
-                print(_(\
-"""The autosave directory is locked by another instance of cournal-server.
-To run multiple instances concurrently, you need to set a different autosave directory and port."""), file=sys.stderr)
+                print(_(
+                    "The autosave directory is locked by another instance of cournal-server.\n"
+                    "To run multiple instances concurrently, you need to set a different autosave\n"
+                    "directory and port."), file=sys.stderr)
                 sys.exit(-1)
 
         try:
@@ -211,7 +212,8 @@ To run multiple instances concurrently, you need to set a different autosave dir
         if self.lockfile:
             os.remove(self.lockfile)
 
-    def is_pid_dead(self, pid):
+    @staticmethod
+    def is_pid_dead(pid):
         """Returns True, if no running program has the given PID."""
         try:
             # Signal 0 is no-op
@@ -491,7 +493,7 @@ class Document(pb.Viewable):
                 self.broadcast("delete_stroke_with_coords", pagenum, coords, except_user=from_user)
 
 
-class CmdlineParser():
+class CmdlineParser:
     """
     Parse commandline options. Results are available as attributes of this class
     """
@@ -513,9 +515,12 @@ class CmdlineParser():
         parser.add_argument("-s", "--autosave-directory", nargs=1, default=[self.autosave_directory],
                             help=_("The directory within which to store the documents on the server."))
         parser.add_argument("-i", "--autosave-interval", nargs=1, type=int, default=[self.autosave_interval],
-                            help=_("Interval in seconds within which to save modified documents to permanent storage. Set to 0 to disable autosave."))
+                            help=_("Interval in seconds within which to save modified documents to permanent storage. "
+                                   "Set to 0 to disable autosave."))
         parser.add_argument("-k", "--save-hook", nargs=1,
-                            help=_("Script or application to execute after all documents were saved. The first argument is the autosave directory, followed by all filenames of files that were changed."))
+                            help=_("Script or application to execute after all documents were saved. "
+                                   "The first argument is the autosave directory, "
+                                   "followed by all filenames of files that were changed."))
         parser.add_argument("-v", "--version", action="version",
                             version="%(prog)s " + cournal_version)
         args = parser.parse_args()
@@ -580,9 +585,12 @@ def docname_to_filename(name):
 
 def main():
     """Start a Cournal server"""
-    locale_dir = os.path.join(sys.prefix, "local",  "share", "locale")
-    #locale_dir = os.path.realpath(os.path.dirname(sys.argv[0]))
-    gettext.install("cournal") #, locale_dir)
+    if False:
+        locale_dir = os.path.realpath(os.path.dirname(sys.argv[0]))
+        gettext.install("cournal", locale_dir)
+    else:
+        # locale_dir = os.path.join(sys.prefix, "local", "share", "locale")
+        gettext.install("cournal")  # , locale_dir)
 
     args = CmdlineParser().parse()
     port = args.port

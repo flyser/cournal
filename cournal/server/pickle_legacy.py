@@ -46,10 +46,9 @@ def run(from_dir, to_dir=None):
             document = server.server.Document(name)
             document.pages = pickle.load(file)
         _save(document, to_dir)
-        print(_(\
-"""NOTE:  Found document '{}' saved by cournal-server 0.2.1 or earlier. It will be
-       converted to a new file format. Please make sure the conversion went fine and
-       delete the old file: '{}'.""").format(name, filename))
+        print(_("NOTE: Found document '{}' saved by cournal-server 0.2.1 or earlier.\n"
+                "      It will be converted to a new file format. Please make sure the\n"
+                "      conversion went fine and delete the old file: '{}'.").format(name, filename))
 
 
 def _save(document, dir):
