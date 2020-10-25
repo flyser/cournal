@@ -599,7 +599,7 @@ def main():
     realm.server = CournalServer(args.autosave_directory, args.autosave_interval, args.save_hook)
     atexit.register(realm.server.exit)
     checker = checkers.InMemoryUsernamePasswordDatabaseDontUse()
-    checker.addUser(USERNAME, PASSWORD)
+    checker.addUser(USERNAME.encode(), PASSWORD.encode())
     p = portal.Portal(realm, [checker])
 
     try:

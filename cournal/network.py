@@ -85,7 +85,7 @@ class _Network(pb.Referenceable):
         self.factory = pb.PBClientFactory()
         reactor.connectTCP(hostname, port, self.factory)
 
-        d = self.factory.login(credentials.UsernamePassword(USERNAME, PASSWORD),
+        d = self.factory.login(credentials.UsernamePassword(USERNAME.encode(), PASSWORD.encode()),
                                client=self)
         d.addCallbacks(self.connected, self.connection_failed)
         return d
