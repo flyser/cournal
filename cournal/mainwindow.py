@@ -412,6 +412,7 @@ class MainWindow(Gtk.Window):
         dialog.set_filter(pdf_filter)
 
         if dialog.run() == Gtk.ResponseType.ACCEPT:
+            network.disconnect()
             filename = dialog.get_filename()
 
             try:
@@ -458,6 +459,7 @@ class MainWindow(Gtk.Window):
         dialog.set_filter(xoj_filter)
 
         if dialog.run() == Gtk.ResponseType.ACCEPT:
+            network.disconnect()
             filename = dialog.get_filename()
             try:
                 document = xojparser.new_document(filename, self)
