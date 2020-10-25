@@ -1,0 +1,7 @@
+# Networking
+twisted
+zope.interface>=3.6
+
+# User interface
+PyGObject  # for GLib, Gdk, Gtk, GObject and Poppler
+pycairo
