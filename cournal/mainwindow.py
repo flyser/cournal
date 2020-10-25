@@ -310,14 +310,13 @@ class MainWindow(Gtk.Window):
  
         for page in self.document.pages:
             rectangle = Gdk.Rectangle()
-            intersection = Gdk.Rectangle()
             # horizontal adjustment is always 0, because the horizontal adjustment does not matter
             rectangle.x = 0
             rectangle.y = curr_vadjustment.get_value() 
             rectangle.height = self.layout.get_allocation().height 
             rectangle.width = self.layout.get_allocation().width
             # calculation should work in most cases (visible pages <= 3)
-            intersect = page.widget.intersect(rectangle, intersection)
+            intersect, intersection = page.widget.intersect(rectangle)
             if intersect and (intersection.height > page.widget.get_allocated_height() * 0.6):
                 self.curr_page = page.number + 1
                 self.statusbar_pagenum_entry.set_text(str(self.curr_page))
