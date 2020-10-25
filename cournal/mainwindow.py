@@ -3,17 +3,17 @@
 
 # This file is part of Cournal.
 # Copyright (C) 2012 Fabian Henze
-# 
+#
 # Cournal is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
-# 
+#
 # Cournal is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with Cournal.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -45,6 +45,7 @@ LINEWIDTH_SMALL = 0.7
 LINEWIDTH_NORMAL = 1.5
 LINEWIDTH_BIG = 8.0
 
+
 class MainWindow(Gtk.Window):
     """
     Cournals main window
@@ -52,20 +53,20 @@ class MainWindow(Gtk.Window):
     def __init__(self, **args):
         """
         Constructor.
-        
+
         Keyword arguments:
         **args -- Arguments passed to the Gtk.Window constructor
         """
         Gtk.Window.__init__(self, title=_("Cournal"), **args)
         network.set_window(self)
-        
+
         self.overlaybox = None
         self.document = None
         self.last_filename = None
-        
+
         self.set_default_size(width=500, height=700)
         self.set_icon_name("cournal")
-        
+
         # Bob the builder
         builder = Gtk.Builder()
         builder.set_translation_domain("cournal")
@@ -75,13 +76,13 @@ class MainWindow(Gtk.Window):
         self.layout = None
         self.overlay = builder.get_object("overlay")
         self.scrolledwindow = builder.get_object("scrolledwindow")
-        
+
         # Actions (always sensitive):
         action_open_xoj = builder.get_object("action_open_xoj")
         action_open_pdf = builder.get_object("action_open_pdf")
         action_quit = builder.get_object("action_quit")
         action_about = builder.get_object("action_about")
-        
+
         # Actions (document_specific):
         action_connect = builder.get_object("action_connect")
         action_save = builder.get_object("action_save")
@@ -101,29 +102,29 @@ class MainWindow(Gtk.Window):
         self.actiongroup_document_specific = builder.get_object("actiongroup_document_specific")
         self.actiongroup_document_specific.set_sensitive(False)
         builder.get_object("tool_pensize_normal").set_active(True)
-        
+
         # Workaround for bug https://bugzilla.gnome.org/show_bug.cgi?id=671786
-        if not Gtk.check_version(3,6,0) == None:
+        if not Gtk.check_version(3, 6, 0) == None:
             # Gtk 3.4 or older
             a = builder.get_object("accelgroup")
-            a.connect_by_path(action_open_xoj.get_accel_path(), lambda a,b,c,d: action_open_xoj.activate())
-            a.connect_by_path(action_open_pdf.get_accel_path(), lambda a,b,c,d: action_open_pdf.activate())
-            a.connect_by_path(action_quit.get_accel_path(), lambda a,b,c,d: action_quit.activate())
-            a.connect_by_path(action_about.get_accel_path(), lambda a,b,c,d: action_about.activate())
-            a.connect_by_path(action_connect.get_accel_path(), lambda a,b,c,d: action_connect.activate())
-            a.connect_by_path(action_save.get_accel_path(), lambda a,b,c,d: action_save.activate())
-            a.connect_by_path(action_save_as.get_accel_path(), lambda a,b,c,d: action_save_as.activate())
-            a.connect_by_path(action_export_pdf.get_accel_path(), lambda a,b,c,d: action_export_pdf.activate())
-            a.connect_by_path(action_import_xoj.get_accel_path(), lambda a,b,c,d: action_import_xoj.activate())
-            a.connect_by_path(action_undo.get_accel_path(), lambda a,b,c,d: action_undo.activate())
-            a.connect_by_path(action_redo.get_accel_path(), lambda a,b,c,d: action_redo.activate())
-            a.connect_by_path(action_search.get_accel_path(), lambda a,b,c,d: action_search.activate())
-            a.connect_by_path(action_zoom_in.get_accel_path(), lambda a,b,c,d: action_zoom_in.activate())
-            a.connect_by_path(action_zoom_out.get_accel_path(), lambda a,b,c,d: action_zoom_out.activate())
-            a.connect_by_path(action_zoom_fit.get_accel_path(), lambda a,b,c,d: action_zoom_fit.activate())
-            a.connect_by_path(action_pensize_small.get_accel_path(), lambda a,b,c,d: action_pensize_small.activate())
-            a.connect_by_path(action_pensize_normal.get_accel_path(), lambda a,b,c,d: action_pensize_normal.activate())
-            a.connect_by_path(action_pensize_big.get_accel_path(), lambda a,b,c,d: action_pensize_big.activate())
+            a.connect_by_path(action_open_xoj.get_accel_path(), lambda a, b, c, d: action_open_xoj.activate())
+            a.connect_by_path(action_open_pdf.get_accel_path(), lambda a, b, c, d: action_open_pdf.activate())
+            a.connect_by_path(action_quit.get_accel_path(), lambda a, b, c, d: action_quit.activate())
+            a.connect_by_path(action_about.get_accel_path(), lambda a, b, c, d: action_about.activate())
+            a.connect_by_path(action_connect.get_accel_path(), lambda a, b, c, d: action_connect.activate())
+            a.connect_by_path(action_save.get_accel_path(), lambda a, b, c, d: action_save.activate())
+            a.connect_by_path(action_save_as.get_accel_path(), lambda a, b, c, d: action_save_as.activate())
+            a.connect_by_path(action_export_pdf.get_accel_path(), lambda a, b, c, d: action_export_pdf.activate())
+            a.connect_by_path(action_import_xoj.get_accel_path(), lambda a, b, c, d: action_import_xoj.activate())
+            a.connect_by_path(action_undo.get_accel_path(), lambda a, b, c, d: action_undo.activate())
+            a.connect_by_path(action_redo.get_accel_path(), lambda a, b, c, d: action_redo.activate())
+            a.connect_by_path(action_search.get_accel_path(), lambda a, b, c, d: action_search.activate())
+            a.connect_by_path(action_zoom_in.get_accel_path(), lambda a, b, c, d: action_zoom_in.activate())
+            a.connect_by_path(action_zoom_out.get_accel_path(), lambda a, b, c, d: action_zoom_out.activate())
+            a.connect_by_path(action_zoom_fit.get_accel_path(), lambda a, b, c, d: action_zoom_fit.activate())
+            a.connect_by_path(action_pensize_small.get_accel_path(), lambda a, b, c, d: action_pensize_small.activate())
+            a.connect_by_path(action_pensize_normal.get_accel_path(), lambda a, b, c, d: action_pensize_normal.activate())
+            a.connect_by_path(action_pensize_big.get_accel_path(), lambda a, b, c, d: action_pensize_big.activate())
 
         action_open_xoj.connect("activate", self.run_open_xoj_dialog)
         action_open_pdf.connect("activate", self.run_open_pdf_dialog)
@@ -144,7 +145,7 @@ class MainWindow(Gtk.Window):
         action_pensize_small.connect("activate", self.change_pen_size, LINEWIDTH_SMALL)
         action_pensize_normal.connect("activate", self.change_pen_size, LINEWIDTH_NORMAL)
         action_pensize_big.connect("activate", self.change_pen_size, LINEWIDTH_BIG)
-    
+
         # Statusbar:
         self.statusbar_icon = builder.get_object("image_statusbar")
         self.statusbar_pagenum = builder.get_object("label_statusbar_center")
@@ -159,14 +160,14 @@ class MainWindow(Gtk.Window):
         self.button_next_page.connect("clicked", self.jump_to_next_page)
 
         history.init(action_undo, action_redo)
-        
+
         # Search bar:
         self.search_bar = builder.get_object("search_bar")
         self.search_field = builder.get_object("search_field")
         self.search_button = builder.get_object("search_button")
         self.search_close = builder.get_object("search_close")
         self.hadjustment = self.scrolledwindow.get_hadjustment()
-        
+
         self.search_field.connect("insert-text", self.reset_search)
         self.search_close.connect("clicked", self.hide_search_bar)
         self.search_button.connect("clicked", self.search_document)
@@ -184,7 +185,7 @@ class MainWindow(Gtk.Window):
         Called by the networking code, when we get disconnected from the server.
         """
         self.statusbar_icon.set_from_stock(Gtk.STOCK_DISCONNECT, Gtk.IconSize.SMALL_TOOLBAR)
-    
+
     def connection_problems(self):
         """
         Called by the networking code, when the server did not respond for
@@ -193,14 +194,15 @@ class MainWindow(Gtk.Window):
         def destroyed(widget):
             self.overlaybox = None
             # Do we run on Gtk 3.2?
-            if Gtk.check_version(3,4,0) != None: self.overlay.add(self.scrolledwindow)
+            if Gtk.check_version(3, 4, 0) != None:
+                self.overlay.add(self.scrolledwindow)
 
         if self.overlaybox is not None:
             return
-        
+
         self.overlaybox = OverlayDialog()
         # GtkOverlay is broken in Gtk 3.2, so we apply a workaround:
-        if Gtk.check_version(3,4,0) == None:
+        if Gtk.check_version(3, 4, 0) == None:
             # Gtk 3.4+
             self.overlay.add_overlay(self.overlaybox)
         else:
@@ -209,7 +211,7 @@ class MainWindow(Gtk.Window):
                 self.overlay.remove(self.scrolledwindow)
             self.overlay.add(self.overlaybox)
         self.overlaybox.connect("destroy", destroyed)
-    
+
     def search_document(self, menuitem):
         """
         Search document
@@ -222,22 +224,23 @@ class MainWindow(Gtk.Window):
                     page.widget.delete_search_marker()
         result_page, result_pos = search.search(self.search_field.get_text())
         if result_page > -1:
-            self.statusbar_pagenum_entry.set_text(str(result_page+1))
+            self.statusbar_pagenum_entry.set_text(str(result_page + 1))
             for page in self.document.pages:
                 if page.number == int(result_page):
                     page.widget.draw_search_marker(result_pos)
-                    self.vadjustment.set_value(page.widget.get_allocation().y + page.widget.widget_height * (page.height-result_pos.y2) / page.height)
+                    self.vadjustment.set_value(page.widget.get_allocation().y
+                                               + page.widget.widget_height * (page.height - result_pos.y2) / page.height)
                     self.hadjustment.set_value(page.widget.widget_width * result_pos.x1 / page.width)
         else:
-            self.search_field.modify_fg(0,Gdk.Color(65535,0,0))
-            
+            self.search_field.modify_fg(0, Gdk.Color(65535, 0, 0))
+
     def show_search_bar(self, menuitem):
         """
         Show a search bar at the bottom of the window.
         """
         self.search_bar.set_visible(True)
-        self.search_field.modify_fg(0, Gdk.Color(0,0,0))
-        Gtk.Window.set_focus(self, self.search_field)
+        self.search_field.modify_fg(0, Gdk.Color(0, 0, 0))
+        super().set_focus(self.search_field)
 
     def hide_search_bar(self, menuitem):
         """
@@ -258,7 +261,7 @@ class MainWindow(Gtk.Window):
         """
         # delete last results marker
         self.search_bar.set_visible(True)
-        self.search_field.modify_fg(0, Gdk.Color(0,0,0))
+        self.search_field.modify_fg(0, Gdk.Color(0, 0, 0))
         last_page = search.get_last_result_page()
         if last_page > -1:
             for page in self.document.pages:
@@ -269,7 +272,7 @@ class MainWindow(Gtk.Window):
     def _set_document(self, document):
         """
         Replace the current document (if any) with a new one.
-        
+
         Positional arguments:
         document -- The new Document object.
         """
@@ -286,7 +289,7 @@ class MainWindow(Gtk.Window):
         self.actiongroup_document_specific.set_sensitive(True)
         if self.document.num_of_pages > 1:
             self.button_next_page.set_sensitive(True)
-        
+
         # at this point we always start at page 1. If the feature to resume last page is included
         # remove this and start the method show_page_numbers() with adjustment
         self.statusbar_pagenum.set_text(_(" of {:3}").format(self.document.num_of_pages))
@@ -296,7 +299,7 @@ class MainWindow(Gtk.Window):
         # Hide the disconnection overlay dialog when the user opens a new doc
         if self.overlaybox:
             self.overlaybox.destroy()
-    
+
     def show_page_numbers(self, curr_vadjustment):
         """
         Show current and absolute Page number in the center of the Statusbar.
@@ -306,14 +309,14 @@ class MainWindow(Gtk.Window):
         Positional Arguments:
         curr_vadjustemnt - current vertical adjustment of the scrollbar
         """
-        biggest_intersection = [0,0]
- 
+        biggest_intersection = [0, 0]
+
         for page in self.document.pages:
             rectangle = Gdk.Rectangle()
             # horizontal adjustment is always 0, because the horizontal adjustment does not matter
             rectangle.x = 0
-            rectangle.y = curr_vadjustment.get_value() 
-            rectangle.height = self.layout.get_allocation().height 
+            rectangle.y = curr_vadjustment.get_value()
+            rectangle.height = self.layout.get_allocation().height
             rectangle.width = self.layout.get_allocation().width
             # calculation should work in most cases (visible pages <= 3)
             intersect, intersection = page.widget.intersect(rectangle)
@@ -325,7 +328,8 @@ class MainWindow(Gtk.Window):
             if intersection.height > biggest_intersection[0]:
                 biggest_intersection[0] = intersection.height
                 biggest_intersection[1] = page.number + 1
-        # fallback if no page has a overall visibility of more than 60%. In this case the page with the highest visibility is choosen
+        # fallback if no page has a overall visibility of more than 60%.
+        # In this case the page with the highest visibility is choosen
         self.curr_page = biggest_intersection[1]
         self.statusbar_pagenum_entry.set_text(str(self.curr_page))
         self.update_button_sensitivity()
@@ -338,7 +342,7 @@ class MainWindow(Gtk.Window):
             self.button_prev_page.set_sensitive(False)
         else:
             self.button_prev_page.set_sensitive(True)
-        
+
         if self.curr_page == self.document.num_of_pages:
             self.button_next_page.set_sensitive(False)
         else:
@@ -363,7 +367,7 @@ class MainWindow(Gtk.Window):
             page_num.emit_stop_by_name("insert_text")
         if not text.isdigit() or insert_num > self.document.num_of_pages or insert_num == 0:
             page_num.emit_stop_by_name("insert_text")
-        
+
     def jump_to_page(self, page_num_widget):
         """
         Sets the vertical adjustment of the scrollbar to the page the user wishes to jump to.
@@ -373,17 +377,17 @@ class MainWindow(Gtk.Window):
         page_num_widget: The Entry widget that was updated.
         """
         try:
-            page = self.document.pages[int(page_num_widget.get_text())-1]
+            page = self.document.pages[int(page_num_widget.get_text()) - 1]
             self.vadjustment.set_value(page.widget.get_allocation().y)
         except Exception as ex:
             pass
-    
+
     def jump_to_next_page(self, menuitem):
         """
         Jump to the next page
         called each time the button_next_page is pressed
         """
-        self.statusbar_pagenum_entry.set_text(str(self.curr_page + 1)) 
+        self.statusbar_pagenum_entry.set_text(str(self.curr_page + 1))
         self.statusbar_pagenum_entry.activate()
 
     def jump_to_prev_page(self, menuitem):
@@ -391,9 +395,9 @@ class MainWindow(Gtk.Window):
         Jump to the previous page
         called each time the button_prev_page is pressed
         """
-        self.statusbar_pagenum_entry.set_text(str(self.curr_page - 1)) 
+        self.statusbar_pagenum_entry.set_text(str(self.curr_page - 1))
         self.statusbar_pagenum_entry.activate()
-    
+
     def run_open_pdf_dialog(self, menuitem):
         """
         Run an "Open PDF" dialog and create a new document with that PDF.
@@ -402,10 +406,10 @@ class MainWindow(Gtk.Window):
                                        (Gtk.STOCK_OPEN, Gtk.ResponseType.ACCEPT,
                                         Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL))
         dialog.set_filter(pdf_filter)
-        
+
         if dialog.run() == Gtk.ResponseType.ACCEPT:
             filename = dialog.get_filename()
-            
+
             try:
                 document = Document(filename)
             except GError as ex:
@@ -414,7 +418,7 @@ class MainWindow(Gtk.Window):
                 return
             self._set_document(document)
         dialog.destroy()
-    
+
     def run_connection_dialog(self, menuitem):
         """
         Run a "Connect to Server" dialog.
@@ -425,7 +429,7 @@ class MainWindow(Gtk.Window):
         self._connection_dialog = ConnectionDialog(self)
         self._connection_dialog.connect("destroy", destroyed)
         self._connection_dialog.run_nonblocking()
-        
+
     def run_import_xoj_dialog(self, menuitem):
         """
         Run an "Import .xoj" dialog and import the strokes.
@@ -439,7 +443,7 @@ class MainWindow(Gtk.Window):
             filename = dialog.get_filename()
             xojparser.import_into_document(self.document, filename, self)
         dialog.destroy()
-    
+
     def run_open_xoj_dialog(self, menuitem):
         """
         Run an "Open .xoj" dialog and create a new document from a .xoj file.
@@ -466,7 +470,7 @@ class MainWindow(Gtk.Window):
     def save(self, menuitem):
         """
         Save document to the last known filename or ask the user for a location.
-        
+
         Positional arguments:
         menuitem -- The menu item, that triggered this function
         """
@@ -474,7 +478,7 @@ class MainWindow(Gtk.Window):
             self.document.save_xoj_file(self.last_filename)
         else:
             self.run_save_as_dialog(menuitem)
-    
+
     def run_save_as_dialog(self, menuitem):
         """
         Run a "Save as" dialog and save the document to a .xoj file
@@ -500,12 +504,12 @@ class MainWindow(Gtk.Window):
                                         Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL))
         dialog.set_filter(pdf_filter)
         dialog.set_current_name("annotated_document.pdf")
-        
+
         if dialog.run() == Gtk.ResponseType.ACCEPT:
             filename = dialog.get_filename()
             self.document.export_pdf(filename)
         dialog.destroy()
-        
+
     def run_about_dialog(self, menuitem):
         """
         Run the "About" dialog.
@@ -516,64 +520,69 @@ class MainWindow(Gtk.Window):
         self._about_dialog = AboutDialog(self)
         self._about_dialog.connect("destroy", destroyed)
         self._about_dialog.run_nonblocking()
-    
+
     def run_error_dialog(self, first, second):
         """
         Display an error dialog
-        
+
         Positional arguments:
         first -- Primary text of the message
         second -- Secondary text of the message
         """
         print(_("Unable to open PDF file: {}").format(second))
-        message = Gtk.MessageDialog(self, (Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT), Gtk.MessageType.ERROR, Gtk.ButtonsType.OK, first)
+        message = Gtk.MessageDialog(self,
+                                    Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT,
+                                    Gtk.MessageType.ERROR,
+                                    Gtk.ButtonsType.OK,
+                                    first)
         message.format_secondary_text(second)
         message.set_title("Error")
-        message.connect("response", lambda _,x: message.destroy())
+        message.connect("response", lambda _, x: message.destroy())
         message.show()
-        
+
     def change_pen_color(self, colorbutton):
         """
         Change the pen to a user defined color.
-        
+
         Positional arguments:
         colorbutton -- The Gtk.ColorButton, that triggered this function
         """
-        color = Gdk.RGBA(0,0,0,0)
-        
+        color = Gdk.RGBA(0, 0, 0, 0)
+
         try:
             color = colorbutton.get_rgba()
         except TypeError:
             print("Your Gtk python bindings are broken, please update them")
             colorbutton.get_rgba(color)
-        red = int(color.red*255)
-        green = int(color.green*255)
-        blue = int(color.blue*255)
-        opacity = int(color.alpha*255)
-        
-        pen.color = red, green, blue, opacity        
-    
+        red = int(color.red * 255)
+        green = int(color.green * 255)
+        blue = int(color.blue * 255)
+        opacity = int(color.alpha * 255)
+
+        pen.color = red, green, blue, opacity
+
     def change_pen_size(self, menuitem, linewidth):
         """
         Change the pen to a user defined line width.
-        
+
         Positional arguments:
         menuitem -- The menu item, that triggered this function
         linewidth -- New line width of the pen
         """
         pen.linewidth = linewidth
-        
+
     def zoom_in(self, menuitem):
         """Magnify document"""
         self.layout.set_zoomlevel(change=0.2)
-    
+
     def zoom_out(self, menuitem):
         """Zoom out"""
         self.layout.set_zoomlevel(change=-0.2)
-    
+
     def zoom_fit(self, menuitem):
         """Reset Zoom"""
         self.layout.set_zoomlevel(1)
+
 
 class OverlayDialog(Gtk.EventBox):
     """
@@ -587,11 +596,11 @@ class OverlayDialog(Gtk.EventBox):
         self.timeout_label_text = _("No response from the server for the last {} seconds.")
         self.disconnect_button_text = _("Continue locally")
         self.disconnect_label_text = _("The connection to the server has been terminated.")
-        
+
         self.set_valign(Gtk.Align.FILL)
         self.set_halign(Gtk.Align.FILL)
-        self.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0,0,0,0.4))
-        
+        self.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0, 0, 0, 0.4))
+
         main = Gtk.Grid()
         eventbox = Gtk.EventBox()
         whitebox = Gtk.Frame()
@@ -604,7 +613,7 @@ class OverlayDialog(Gtk.EventBox):
         main.set_column_homogeneous(True)
         eventbox.set_valign(Gtk.Align.CENTER)
         eventbox.set_halign(Gtk.Align.CENTER)
-        eventbox.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(1,1,1,1))
+        eventbox.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(1, 1, 1, 1))
         whitebox.set_shadow_type(Gtk.ShadowType.OUT)
         grid.set_border_width(5)
         grid.set_column_spacing(5)
@@ -613,7 +622,7 @@ class OverlayDialog(Gtk.EventBox):
         self.button.set_halign(Gtk.Align.END)
         self.label.set_line_wrap(True)
         self.icon.set_from_stock(Gtk.STOCK_DIALOG_WARNING, Gtk.IconSize.DIALOG)
-        
+
         grid.attach(self.icon, left=0, top=0, width=1, height=2)
         grid.attach(self.label, left=1, top=0, width=1, height=1)
         grid.attach(self.button, left=1, top=1, width=1, height=1)
@@ -621,13 +630,13 @@ class OverlayDialog(Gtk.EventBox):
         eventbox.add(whitebox)
         main.attach(eventbox, left=1, top=1, width=1, height=1)
         self.add(main)
-        
+
         self.update()
         GObject.timeout_add_seconds(1, self.update)
         self.show_all()
-        
+
         self.button.connect("clicked", self.disconnect_clicked)
-        
+
     def disconnect_clicked(self, widget):
         """Disconnect from the server and close the OverlayDialog."""
         network.disconnect()
@@ -641,7 +650,7 @@ class OverlayDialog(Gtk.EventBox):
                 # The connection problems were solved automatically
                 self.destroy()
                 return False
-            
+
             self.last_no_data_seconds = no_data_seconds
             self.label.set_text(self.timeout_label_text.format(no_data_seconds))
             self.button.set_label(self.timeout_button_text)

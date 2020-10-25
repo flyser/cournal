@@ -3,17 +3,17 @@
 
 # This file is part of Cournal.
 # Copyright (C) 2012 Fabian Henze
-# 
+#
 # Cournal is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
-# 
+#
 # Cournal is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with Cournal.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -23,6 +23,7 @@ from gi.repository import Gtk, GObject
 from twisted.internet.defer import Deferred
 
 from cournal.network import network
+
 
 class ServerDetails(Gtk.Box):
     """
@@ -38,11 +39,11 @@ class ServerDetails(Gtk.Box):
         "connection_failed": (GObject.SIGNAL_RUN_FIRST, GObject.TYPE_NONE, ()),
     }
     serverportregex = re.compile("^(.*):([0-9]*)$")
-    
+
     def __init__(self, dialog, builder):
         """
         Constructor
-        
+
         Position arguments:
         dialog -- The parent GtkDialog widget.
         builder -- A builder object, which contains a "grid_server_details" object.
@@ -50,20 +51,20 @@ class ServerDetails(Gtk.Box):
         Gtk.Box.__init__(self)
         self.dialog = dialog
         self.deferred = None
-        
+
         grid = builder.get_object("grid_server_details")
         self._server_entry = builder.get_object("serverentry")
-        
+
         self.add(grid)
-        
+
         self._server_entry.set_activates_default(True)
-    
+
     def response(self, widget, response_id):
         """
         Called, when the user clicked on a button ('Connect' or 'Abort') or
         when the dialog is closed.
         If the user clicked on connect, we try to initiate the connection.
-        
+
         Positional arguments:
         widget -- The widget, which triggered the response.
         response_id -- A Gtk.ResponseType indicating, which button the user pressed.
@@ -71,7 +72,7 @@ class ServerDetails(Gtk.Box):
         if response_id != Gtk.ResponseType.ACCEPT:
             self.dialog.destroy()
             return
-        
+
         try:
             server, port = self.serverportregex.match(self._server_entry.get_text()).groups()
             port = int(port)
@@ -80,14 +81,14 @@ class ServerDetails(Gtk.Box):
         except Exception as ex:
             server = self._server_entry.get_text()
             port = 6524
-        
+
         if not self.dialog.parent.document.is_empty():
             if not self.confirm_clear_document():
-               return
+                return
             self.dialog.parent.document.clear_pages()
-            
+
         self.new_connection(server, port)
-            
+
     def confirm_clear_document(self):
         """
         Ask the user, if he wishes to loose all changes he made to the current
@@ -101,11 +102,11 @@ class ServerDetails(Gtk.Box):
             return False
         message.destroy()
         return True
-    
+
     def new_connection(self, server, port):
         """
         Start to connect to a server and update UI accordingly.
-        
+
         Positional arguments:
         server -- The hostname of the server to connect to.
         port -- The port on the server
@@ -113,17 +114,17 @@ class ServerDetails(Gtk.Box):
         network.set_document(self.dialog.parent.document)
         d = network.connect(server, port)
         d.addCallbacks(self.on_connected, self.on_connection_failure)
-        
+
         self.dialog.error = ""
         self.emit("connecting", server, port)
         return d
-    
+
     def on_connected(self, perspective):
         """
         Called, when the connection to the server succeeded.
         """
         self.emit("connected")
-    
+
     def on_connection_failure(self, reason):
         """
         Called, when the connection to the server failed. Display error message.
