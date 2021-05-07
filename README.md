@@ -44,7 +44,7 @@ but don't know how to get started.
 ## Installation ##
 
 There are packages for [Gentoo](https://github.com/flyser/cournal-gentoo)
-and [Arch Linux](https://aur.archlinux.org/packages.php?ID=61201).
+and [Arch Linux](https://aur.archlinux.org/packages/cournal).
 Users of other distributions can use the following guide:
 
 1. [Download the latest Cournal release](https://github.com/flyser/cournal/releases)
